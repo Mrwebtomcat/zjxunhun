@@ -1,0 +1,665 @@
+<!-- vip 充值 -->
+<template>
+	<div class="vipModule">
+		<Header :isHeader="1" :ative="3"></Header>
+		<div class="vipConten flex">
+			<div class="vipclfet">
+				<div class="h_th1">会员充值</div>
+				<div class="bigBoxvip">
+					<div class="recharG">
+						<li class="threemonth slider">
+							<div class="li_box">
+								<div class="vip_h1">购买会员3个月</div>
+								<div class="vip_h2">1.06元/天</div>
+								<div class="vip_content">会员价338元</div>
+								<div class="vip_ktbtn">
+									<el-button type="primary" plain @click="ktvip(1)">立即开通</el-button>
+								</div>
+							</div>
+						</li>
+						<li class="threemonth slider">
+							<div class="li_box">
+								<div class="vip_h1">购买会员6个月</div>
+								<div class="vip_h2">1.06元/天</div>
+								<div class="vip_content">会员价368元</div>
+								<div class="vip_ktbtn">
+									<el-button type="primary" plain @click="ktvip(2)">立即开通</el-button>
+								</div>
+							</div>
+						</li>
+						<li class="threemonth slider">
+							<div class="li_box">
+								<div class="vip_h1">购买会员12个月</div>
+								<div class="vip_h2">1.06元/天</div>
+								<div class="vip_content">会员价388元</div>
+								<div class="vip_ktbtn">
+									<el-button type="primary" plain @click="ktvip(3)">立即开通</el-button>
+								</div>
+							</div>
+						</li>
+					</div>
+				</div>
+				<div class="vipqaunyi">
+					<div class="qyh1">
+						<div class="borline left"></div>
+						<div class="qyh1txt">会员权益</div>
+						<div class="borline right"></div>
+					</div>
+					<div class="jiesuo">
+						<li>
+							<div class="img youxiang"></div>
+							<span class="txt">解锁你的收件箱</span>
+						</li>
+						<li>
+							<div class="img xinxi"></div> <span class="txt">解锁消息发送</span>
+						</li>
+						<li>
+							<div class="img xunzhang"></div><span class="txt">尊贵会员勋章</span>
+						</li>
+						<li>
+							<div class="img shaixuan"></div><span class="txt">更多精准筛选条件</span>
+						</li>
+						<li>
+							<div class="img zhaopian"></div><span class="txt">无限制上传照片</span>
+						</li>
+					</div>
+					<div class="nfeibtn">
+						<el-button @click="ktvip(2)">立即开通 <span>388元/年</span></el-button>
+					</div>
+					<div class="des" >
+						<p class="title">服务说明</p>
+						<p>1、购买的服务仅限本账号使用，不能转移到其他账号；</p>
+						<p>2、在使用本服务期间，若从事不恰当或不合法的行为， 金梦情缘保留进行调查并立即终止服务的权利；</p>
+						<p>3、对于本服务和以上条款，在法律允许范围内 金梦情缘拥有最终解释权。</p>
+						<p class="title safe" >安全征婚提示</p>
+						<p>在以下情况下请不要轻易透露你的联系方式（如电话、手机号码、邮箱、即时通信、通信地址等） </p>
+						<p>1、在未充分了解对方前，请不要轻易透露你的联系方式。</p>
+						<p>2、当对方无相片或资料不完整时，请不要轻易透露你的联系方式。</p>
+						<p>3、相亲过程中，如遇对方提及借款、投资或索要等行为，请务必提高警惕，谨防受骗，并及时举报。</p>
+					</div>
+				</div>
+			</div>
+			<div class="shadows" v-if="isShowVip==1"></div>
+			<div class="showPay" v-if="isShowVip==1">
+				<div class="showPhead">会员充值 <div class="closePay" @click="closeVip"><span>X</span></div>
+				</div>
+				<div class="showPcontext">
+					<div class="hellowVip">你好，<span class="fontbold">会员1919+75545</span></div>
+					<div class="nowpay">立即充值：<span class="fontbold">会员{{vipMoneth}}个月</span>
+						<div class="Paymoney">应支付：<span class="moeyred">{{vipMoney}}元</span></div>
+					</div>
+					<div class="zffs">支付方式：</div>
+					<ul class="paytype">
+						<li @click="palypost(1)" :class="payType==1?'ative':''">支付宝</li>
+						<li @click="palypost(2)" :class="payType==2?'ative':''">微信</li>
+					</ul>
+					<div class="payCode">
+						<div class="left_qrcode">
+							<!-- 支付宝的扫码 -->
+							<img v-if="payType==1" src="https://mobilecodec.alipay.com/show.htm?code=gdxox0xozdovjgkxa2&picSize=S" alt="">
+							<img v-else src="../assets/img/payweixin.png" alt="">
+						</div>
+						<div class="right_cordeMeta" v-if="payType==1">
+							<div>使用支付宝扫码支付</div>
+							<div>
+								<ul>
+									<li>可支持：</li>
+									<li>1:支付宝余额支付</li>
+									<li>2.支持二十多家主流银行的储蓄卡（即借记卡）和信用卡，无需开通网银，没有支付宝也可支付。</li>
+								</ul>
+							</div>
+						</div>
+						<div v-else class="right_cordeMeta">
+							<div>请使用微信扫一扫</div>
+							<div>扫描图中二维码支付</div>
+						</div>
+					</div>
+					<div style="margin-top: 20px;text-align: center;">
+						<el-button type="primary" plain @click="goPay" style="width:200px;">前往支付</el-button>
+					</div>
+				</div>
+			</div>
+			<div class="vipcright">
+					<div class="rightcontent2">
+						<div class="h2">开通珍心会员，快去联系TA们吧 <span  style="float: right;font-size: 20px;cursor: pointer;" class="el-icon-refresh"></span></div>
+						<div class="ranguser">
+							<div class="useritem">
+								<div class="user_left">
+									<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
+								</div>
+								<div class="user_right">
+									<div class="u_name">beenle</div>
+									<div class="u_tallorage">
+										<span>24岁</span><span>161cm</span>
+									</div>
+									<div class="u_mark">
+										我正在寻找广东湛江霞山区,年龄在26-31岁...
+									</div>
+								</div>
+							</div>
+							<div class="useritem">
+								<div class="user_left">
+									<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
+								</div>
+								<div class="user_right">
+									<div class="u_name">beenle</div>
+									<div class="u_tallorage">
+										<span>24岁</span><span>161cm</span>
+									</div>
+									<div class="u_mark">
+										我正在寻找广东湛江霞山区,年龄在26-31岁...
+									</div>
+								</div>
+							</div>
+							<div class="useritem">
+								<div class="user_left">
+									<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
+								</div>
+								<div class="user_right">
+									<div class="u_name">beenle</div>
+									<div class="u_tallorage">
+										<span>24岁</span><span>161cm</span>
+									</div>
+									<div class="u_mark">
+										我正在寻找广东湛江霞山区,年龄在26-31岁...
+									</div>
+								</div>
+							</div>
+							<div class="useritem">
+								<div class="user_left">
+									<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
+								</div>
+								<div class="user_right">
+									<div class="u_name">beenle</div>
+									<div class="u_tallorage">
+										<span>24岁</span><span>161cm</span>
+									</div>
+									<div class="u_mark">
+										我正在寻找广东湛江霞山区,年龄在26-31岁...
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+	import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
+	import https from "../utils/Https.js"
+	export default {
+		data() {
+			return {
+				isShowVip: 0,
+				vipMoney: 360,
+				vipMoneth: 3,
+				payType: 1
+			}
+		},
+		methods: {
+			ktvip: function(i) {
+				this.isShowVip = 1;
+				this.payType = 1;
+				if (i == 1) {
+					this.vipMoney = 338;
+					this.vipMoneth = 3;
+				};
+				if (i == 2) {
+					this.vipMoney = 368;
+					this.vipMoneth = 6;
+				};
+				if (i == 3) {
+					this.vipMoney = 388;
+					this.vipMoneth = 12;
+				};
+			},
+			closeVip: function() {
+				this.isShowVip = 0;
+			},
+			palypost: function(i) {
+				this.payType = i;
+			},
+			goPay: function() {
+				message(this,{
+					title:'支付成功',
+					contxt:"",
+					center:true
+				})
+				this.isShowVip = 0;
+			}
+		},
+		mounted() {
+			if(this.$route.query.hasOwnProperty('vipMoney')){
+				this.ktvip(this.$route.query.vipMoney)
+			}
+		}
+	}
+</script>
+<style scoped>
+	ul,
+	li {
+		list-style: none;
+	}
+
+	.vipModule {
+		width: 100%;
+		min-height: 100%;
+		background: url(../assets/img/vipbg.jpg) repeat-x;
+		background-size: cover;
+		padding-top: 80px;
+	}
+
+	.vipConten {
+		width: 1200px;
+		margin: auto;
+		padding-top: 2%;
+	}
+
+	.shadows {
+		position: fixed;
+		z-index: 10;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		width: 100%;
+		margin: auto;
+		background: rgba(0, 0, 0, .5);
+	}
+
+	.bigBoxvip {
+		overflow: hidden;
+		/* box-shadow: 0 0 5px rgba(0,0,0,.5);
+		background: #fff; */
+	}
+
+	.recharG {
+		width: 100%;
+		height: 200px;
+		display: flex;
+		justify-content: center;
+		justify-content: space-between;
+		padding-left: 20px;
+		background: #f3f3f3;
+		margin-top: 100px;
+	}
+
+	.recharG li {
+		width: 30%;
+		height: 300px;
+		margin-right: 10px;
+		list-style: none;
+	}
+
+	.h_th1 {
+		font-size: 30px;
+		padding: 10px;
+		color: #fff;
+	}
+
+	.threemonth {
+		width: 100%;
+		background: url(../assets/img/vipitem1.png) no-repeat;
+	}
+
+	.sixmonth {
+		background: url(../assets/img/vipitem2.png) no-repeat;
+	}
+
+	.oneyear {
+		background: url(../assets/img/vipitem3.png) no-repeat;
+
+	}
+
+	.threemonth,
+	.sixmonth,
+	.oneyear {
+		background-size: cover;
+	}
+
+	.slider {
+		transform: translateY(-70px);
+		transition: 0.5s ease-out;
+		cursor: pointer;
+		box-shadow: inset 0 0 50px rgba(247, 17, 81, 0.5);
+	}
+
+	.recharG .slider:hover {
+		transform: translateY(-100px);
+		transition: 0.1s ease-out;
+	}
+
+	.li_box {
+		width: 80%;
+		height: 80%;
+		transform: translateY(12%);
+		background: rgba(255, 255, 255, .8);
+		margin: auto;
+	}
+
+	.li_box .vip_h1 {
+		font-size: 25px;
+		text-align: center;
+		padding: 20px 0 10px;
+		color: red;
+	}
+
+	.li_box {
+		text-align: center;
+	}
+
+	.vip_h2 {
+		padding: 10px;
+		font-size: 18px;
+	}
+
+	.vip_content {
+		padding-top: 5%;
+		font-size: 22px;
+		color: #333;
+	}
+
+	.vip_ktbtn {
+		margin-top: 28%;
+	}
+
+	.showPay {
+		position: fixed;
+		z-index: 99;
+		width: 40%;
+		min-height: 60%;
+		background: #fff;
+		border-radius: 10px;
+		left: 0;
+		right: 0;
+		top: 20%;
+		margin: auto;
+	}
+
+	.showPhead {
+		position: relative;
+		height: 3em;
+		line-height: 3em;
+		text-align: center;
+		background: #f3f3f3;
+		border-radius: 10px 10px 0px 0px;
+		color: #999;
+	}
+
+	.closePay {
+		position: absolute;
+		right: 1em;
+		top: .5em;
+		width: 2em;
+		height: 2em;
+		line-height: 2em;
+		cursor: pointer;
+		font-size: 16px;
+	}
+
+	.fontbold,
+	.moeyred {
+		font-weight: bold;
+	}
+
+	.moeyred {
+		font-size: 24px;
+		color: red;
+	}
+
+	.closePay span {
+		font-size: 18px;
+	}
+
+	.showPcontext {
+		padding: 5px 20px;
+	}
+
+	.paytype {
+		display: flex;
+		margin-top: 2%;
+	}
+
+	.paytype li {
+		text-align: center;
+		width: 100px;
+		height: 40px;
+		line-height: 40px;
+		border: 1px solid #ddd;
+		margin-right: 10px;
+		cursor: pointer;
+	}
+
+	.paytype li.ative {
+		border: 2px solid #4887e7;
+	}
+
+	.payCode {
+		display: flex;
+		margin-top: 5%;
+	}
+
+	.zffs {
+		margin-top: 1%;
+	}
+
+	.left_qrcode {
+		width: 100px;
+		margin-right: 5%;
+	}
+
+	.left_qrcode img {
+		width: 100px;
+	}
+
+	.nowpay,
+	.Paymoney {
+		display: flex;
+		height: 40px;
+		align-items: center;
+	}
+
+	.Paymoney {
+		margin-left: 15%;
+	}
+
+	.hellowVip {
+		margin-top: 3%;
+	}
+
+	.flex {
+		display: flex;
+	}
+
+	.vipclfet {
+		flex: 0 0 75%;
+	}
+	.vipcright{
+		flex: 0 0 25%;
+		min-height: 400px;
+		margin-left: 4%;
+		margin-top:150px;
+	}
+
+	.vipqaunyi {
+		width: 100%;
+		background: #fff;
+		padding-bottom: 1px;
+		margin-bottom: 30px;
+	}
+
+	.qyh1 {
+		padding: 20px 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+	}
+
+	.borline {
+		position: absolute;
+		width: 38%;
+		height: 2px;
+		background: #ff8400;
+		top: calc(50% - 1px);
+	}
+
+	.borline.left {
+		left: 3%;
+	}
+
+	.borline.right {
+		right: 3%;
+	}
+
+	.qyh1txt {
+		position: relative;
+		font-size: 18px;
+		font-weight: bold;
+		color: red;
+	}
+
+	.qyh1txt:after,
+	.qyh1txt:before {
+		position: absolute;
+		content: "";
+		top: calc(50% - 5px);
+		display: block;
+		width: 10px;
+		height: 10px;
+		background: red;
+		transform: rotate(45deg);
+	}
+
+	.qyh1txt:before {
+		left: -30px;
+	}
+
+	.qyh1txt:after {
+		right: -30px;
+	}
+
+	.jiesuo {
+		display: flex;
+	}
+
+	.jiesuo li {
+		flex: 1;
+		margin: 0 10px;
+		text-align: center;
+	}
+
+	.jiesuo .img {
+		width: 79px;
+		height: 79px;
+		margin: auto;
+		margin-bottom: 15px;
+	}
+
+	.jiesuo .txt {
+		display: block;
+		padding-bottom: 10px;
+		font-weight: 700;
+		color: #666;
+		font-size: 12px;
+	}
+
+	.youxiang {
+		background: url(../assets/img/vip/vip1.jpg) no-repeat;
+		background-size: contain;
+	}
+
+	.xinxi {
+		background: url(../assets/img/vip/vip2.jpg) no-repeat;
+		background-size: contain;
+	}
+
+	.xunzhang {
+		background: url(../assets/img/vip/vip4.jpg) no-repeat;
+		background-size: contain;
+	}
+
+	.shaixuan {
+		background: url(../assets/img/vip/vip5.jpg) no-repeat;
+		background-size: contain;
+	}
+
+	.zhaopian {
+		background: url(../assets/img/vip/vip6.jpg) no-repeat;
+		background-size: contain;
+	}
+
+	.nfeibtn {
+		height: 120px;
+		text-align: center;
+		line-height: 120px;
+	}
+	.des{
+		 padding: 15px 22px;
+		margin: 41px 18px 30px;
+		border-radius: 4px;
+		border: 1px solid #ebebeb;
+		color: #747478;
+		font-size: 14px;
+		line-height: 20px;
+		background: #fff;
+	}
+	.des .title{
+		font-size: 16px;
+		font-weight: 700;
+		margin-bottom: 8px;
+	}
+	.safe{
+		margin-top: 23px;
+	}
+	.rightcontent2{
+		margin-top: 30px;
+		border-radius: 10px;
+		background: #fff;
+	}
+	.rightcontent2 .h2{
+		font-size: 16px;
+		font-weight: 600;
+		padding:10px 20px;
+		border-bottom: 1px solid #f3f3f3;
+	}
+	.ranguser{
+		min-height: 300px;
+		padding-bottom: 20px;
+	}
+	.useritem{
+		display: flex;
+		padding-left: 20px;
+		padding-right: 10px;
+		padding-top: 20px;
+		box-sizing: border-box;
+	}
+	.useritem .user_left{
+		flex: 0 0 75px;
+		height: 75px;
+		border-radius: 10px;
+		margin-right: 10px;
+		overflow: hidden;
+	}
+	.user_left img{
+		width: 100%;
+	}
+	.user_right{
+		flex: 1;
+	}
+	.u_name{
+		font-size: 14px;
+	}
+	.u_tallorage{
+		margin-top: 4px;
+		font-size: 12px;
+	}
+	.u_tallorage span{
+		font-size: 12px;
+	}
+	.u_mark{
+		margin-top: 4px;
+		font-size: 12px;
+	}
+</style>
