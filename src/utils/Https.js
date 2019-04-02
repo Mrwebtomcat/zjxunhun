@@ -20,9 +20,9 @@ let INTERFACE = {
 	/*
 	
 	*/
-	index:'/index/homeInfo',					//首页接口
-	addWsh:'/user/addWsh',					//工作生活
-	sendMsg:'/weservice/sendMsg',				//获取短信验证码
+	index:'index/homeInfo',					//首页接口
+	addWsh:'user/addWsh',					//工作生活
+	updateZotj:'user/updateZotj',				//更新择偶条件
 	bindAccount:'/weservice/bindAccount',		//绑定销售/技师
 	checkBind:'/weservice/checkBind',			//获取短信验证码
 	historyCount:'/weservice/historyCount',		//历史业绩提成统计

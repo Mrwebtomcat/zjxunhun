@@ -3,6 +3,7 @@
   <div class="module_editinfo">
 		<Header :isHeader="1" :ative="0" style="posistion:relative;z-index: 1000;"></Header>
 		<div class="followConten">
+			
 			<el-row class="selrow" :gutter="24" style="margin-left: 0;text-align: left;">
 				<el-col :span="6" style="margin-left: 0;">
 					<div class="right_mysel">
@@ -10,7 +11,7 @@
 							<img src="https://photo.zastatic.com/images/cms/banner/20181121/8311191311554389.png?scrop=1&crop=1&cpos=north&w=80&h=80" alt="">
 						</div>
 						<div class="user_name">
-							按时大撒大撒
+							我是可爱
 						</div>
 						<div class="user_name iconbox">
 							<span class="start"></span>
@@ -38,7 +39,8 @@
 							</div>
 						</div>
 						<div class="infoframe1" v-if="myinf_index==0">
-							<el-form ref="form" :model="form" label-width="80px">
+						 <el-form ref="form" :model="form" label-width="80px">
+								<!--	
 							  <el-form-item label="昵称:">
 								 <el-col :span="6">
 									<el-input v-model="form.name"></el-input>
@@ -49,49 +51,44 @@
 								<el-col :span="8">
 									<el-input v-model="form.phone"></el-input>
 								</el-col>
-							  </el-form-item>
+							  </el-form-item> -->
+							  <!-- 
+							   -->
 							  <div class="flex">
 								  <el-form-item label="月收入:">
-									<el-select v-model="form.region" placeholder="12000元">
-									  <el-option label="5000元" value="rmb5000"></el-option>
-									  <el-option label="9000元" value="rmb9000"></el-option>
+									<el-select v-model="form.n_money" placeholder="请选择月收入">
+									  <el-option v-for="(items,index) in autoData['2']" :key="index" :label="items['value']" :value="items['id']">
+									  </el-option>
 									</el-select>
 								 </el-form-item> 
 								 <el-form-item label="身高:">
-									<el-select v-model="form.tall" placeholder="170cm">
-									  <el-option label="170cm" value="tall170"></el-option>
-									  <el-option label="175cm" value="tall175"></el-option>
-									</el-select>
+										<el-input v-model="form.n_sg"> <i slot="suffix" class='idIcon' >(cm)</i></el-input>
 								 </el-form-item>
 							  </div>
 							  <div class="flex">
 								  <el-form-item label="工作地区:">
-									<el-select v-model="form.workcity" placeholder="请选择省份">
-									  <el-option label="北京" value="11"></el-option>
-									  <el-option label="海南" value="12"></el-option>
+									<el-select v-model="form.vc_province" @change="getCity" placeholder="请选择省份">
+										<el-option v-for="(items,index) in vc_province" :key="index" :label="items['name']" :value="items['id']"></el-option>
 									</el-select>
 								 </el-form-item> 
 								 <el-form-item label="" label-width="20px">
-									<el-select v-model="form.workarea" placeholder="请选择市区">
-									   <el-option label="深圳" value="11"></el-option>
-									 <el-option label="湛江" value="12"></el-option>
+									<el-select v-model="form.vc_city" @change="getArea"  placeholder="请选择城市">
+										<el-option v-for="(item,index) in vc_city" :key="index" :label="item['name']" :value="item['id']"></el-option>
 									</el-select>
+								 </el-form-item>
+								 <el-form-item label="" label-width="20px">
+										<el-select v-model="form.vc_area"  placeholder="请选择城区">
+											<el-option v-for="(item,index) in vc_area" :key="index" :label="item['name']" :value="item['id']"></el-option>
+										</el-select>
 								 </el-form-item>
 							  </div>
 							 <div class="flex">
-								  <el-form-item label="体重:">
-									<el-select v-model="form.weight" placeholder="请选择">
-									  <el-option label="30Kg" value="30"></el-option>
-									  <el-option label="50kg" value="50"></el-option>
-									  <el-option label="60kg" value="60"></el-option>
-									  <el-option label="70kg" value="70"></el-option>
-									  <el-option label="80kg" value="80"></el-option>
-									</el-select>
-								 </el-form-item> 
+								   <el-form-item label="体重:">
+								  		<el-input v-model="form.n_tz"> <i slot="suffix" class='idIcon' >(kg)</i></el-input>
+								  </el-form-item>
 								 <el-form-item label="星座:" label-width="80px">
-									<el-select v-model="form.xingzuo" placeholder="请选择">
-									   <el-option label="白羊座" value="baiyang"></el-option>
-									 <el-option label="金牛座" value="jinniu"></el-option>
+									<el-select v-model="form.vc_xingzuo" placeholder="请选择">
+									   <el-option v-for="(item,index) in xinzuo" :key="index" :label="item['name']" :value="item['val']" ></el-option>
 									</el-select>
 								 </el-form-item>
 							</div>
@@ -102,30 +99,23 @@
 									</el-select>
 								 </el-form-item> 
 								 <el-form-item label="有没有孩子:" label-width="100px">
-									<el-select v-model="form.child" placeholder="">
-									   <el-option label="没有孩子" value="1"></el-option>
-									 <el-option label="有孩子且住在一起" value="2"></el-option>
-									 <el-option label="有孩子且偶尔会一起住" value="3"></el-option>
-									 <el-option label="有孩子但不在身边" value="4"></el-option>
+									<el-select v-model="form.n_ischild" placeholder="请选择">
+									   <el-option v-for="(items,index) in autoData['3']" :key="index" :label="items['value']" :value="items['id']">
+									  </el-option>
 									</el-select>
 								 </el-form-item>
 							</div>
 							 <div class="flex">
 								 <el-form-item label="何时结婚:">
-										<el-select v-model="form.jiehun" placeholder="请选择">
-										  <el-option label="认同闪婚" value="1"></el-option>
-										  <el-option label="一年内" value="2"></el-option>
-										  <el-option label="两年内" value="3"></el-option>
-										  <el-option label="三年内" value="4"></el-option>
-										  <el-option label="时机成熟就结婚" value="5"></el-option>
+										<el-select v-model="form.n_jiehuntime" placeholder="请选择">
+										   <el-option v-for="(items,index) in autoData['4']" :key="index" :label="items['value']" :value="items['id']">
+										  </el-option>
 										</el-select>
 								 </el-form-item> 
 								 <el-form-item label="是否想要孩子:" label-width="120px">
-									<el-select v-model="form.haschild" placeholder="请选择">
-									   <el-option label="视情况而定" value="1"></el-option>
-									 <el-option label="想要孩子" value="2"></el-option>
-									 <el-option label="不想要孩子" value="3"></el-option>
-									 <el-option label="以后再告诉你" value="4"></el-option>
+									<el-select v-model="form.n_child" placeholder="请选择">
+									    <el-option v-for="(items,index) in autoData['5']" :key="index" :label="items['value']" :value="items['id']">
+									   </el-option>
 									</el-select>
 								 </el-form-item>
 								  
@@ -133,33 +123,34 @@
 							<div style="width:80%;">
 								<el-form-item label="兴趣爱好:">
 									<div>喜欢的一道菜，欣赏的一个名人，喜欢的一首歌，喜欢的一本书，喜欢做的事</div>
-									<el-input type="textarea" placeholder="说出你的兴趣爱好....." v-model="form.jieshao"></el-input>
+									<el-input type="textarea" placeholder="说出你的兴趣爱好....." v-model="form.vc_loveplay"></el-input>
 								</el-form-item>
 							</div>
 							<div style="width:80%;">
 								<el-form-item label="活动形式:">
 									<div>介绍一下自己，描述一下理想的伴侣，说说你对婚姻的期望</div>
-									<el-input type="textarea" placeholder="说出你的故事....." v-model="form.jieshao"></el-input>
+									<el-input type="textarea" placeholder="说出你的故事....." v-model="form.vc_descript"></el-input>
 								</el-form-item>
 							</div>
 							  
 							  <el-form-item>
-								<el-button type="primary" @click="onSubmit">保存修改</el-button>
+								<el-button type="primary" @click="updateInfo">保存修改</el-button>
 							  </el-form-item>
 							</el-form>
 						</div>
 						<div class="infoframe1" v-if="myinf_index==1" >
+							
 							<el-form ref="form" :model="form1" label-width="80px">
 							    <div class="flex">
 								  <el-form-item label="职业类别:">
-									<el-select v-model="form1.workcalss" placeholder="请选择">
+									<el-select v-model="form1.vc_worke" placeholder="请选择">
 									  <el-option v-for="(wokeritem,i) in worker"  :label="wokeritem.name" :value="wokeritem.val"  :key="i"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
 								 <div class="flex">
 								  <el-form-item label="买房情况:">
-									<el-select v-model="form1.hashours" placeholder="请选择">
+									<el-select v-model="form1.n_ishouse" placeholder="请选择">
 									  <el-option label="和家人住" value="1"></el-option>
 									  <el-option label="已购房" value="2"></el-option>
 									  <el-option label="租房" value="3"></el-option>
@@ -170,15 +161,15 @@
 								</div>
 								 <div class="flex">
 								  <el-form-item label="买车情况:">
-									<el-select v-model="form1.cart" placeholder="请选择">
-									  <el-option label="已购买" value="2"></el-option>
-									  <el-option label="未购买" value="3"></el-option>
+									<el-select v-model="form1.n_iscar" placeholder="请选择">
+									  <el-option label="已购买" value="1"></el-option>
+									  <el-option label="未购买" value="2"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
 								<div class="flex">
 								  <el-form-item label="是否吸烟:">
-									<el-select v-model="form1.smokec" placeholder="请选择">
+									<el-select v-model="form1.n_smoke" placeholder="请选择">
 									  <el-option label="不吸烟" value="1"></el-option>
 									  <el-option label="稍微抽一点烟" value="2"></el-option>
 									  <el-option label="烟抽得很多" value="3"></el-option>
@@ -188,7 +179,7 @@
 								</div>
 								<div class="flex">
 								  <el-form-item label="是否喝酒:">
-									<el-select v-model="form1.drinkhocl" placeholder="请选择">
+									<el-select v-model="form1.n_alcohol" placeholder="请选择">
 									  <el-option label="不喝酒" value="1"></el-option>
 									  <el-option label="稍微喝一点酒" value="2"></el-option>
 									  <el-option label="酒喝得很多" value="3"></el-option>
@@ -198,7 +189,7 @@
 								</div>
 								
 							  <el-form-item>
-								<el-button type="primary" @click="onSubmit">保存修改</el-button>
+								<el-button type="primary" @click="workUpdate">保存修改</el-button>
 							  </el-form-item>
 							</el-form>
 						</div>
@@ -231,36 +222,45 @@
 							</div>
 						</div>
 						<div class="infoframe1" v-if="myinf_index==3"  >
-							<el-form ref="form" :model="form1" label-width="80px">
+							<el-form ref="form" :model="form2" label-width="80px">
 							    <div class="flex">
 								  <el-form-item label="年龄:">
-									<el-select v-model="form2.age" placeholder="请选择">
+									<el-select v-model="form2.n_min_age" placeholder="请选择">
 									  <el-option v-for="(ageitem,i) in 90" v-if="ageitem>=18"  :label="ageitem" :value="ageitem"  :key="i"></el-option>
 									</el-select>
 								  </el-form-item> 
 								 <div style="line-height: 40px;margin-left: 25px;"> 至</div>
 								  <el-form-item label="" label-width="30px">
-									<el-select v-model="form2.agerange" placeholder="请选择">
+									<el-select v-model="form2.n_max_age" placeholder="请选择">
 									  <el-option v-for="(ageitem,i) in 90" v-if="ageitem>=18"  :label="ageitem" :value="ageitem"  :key="i"></el-option>
 									</el-select>
 								  </el-form-item> 
 								</div>
 								<div class="flex">
 								  <el-form-item label="身高:">
-									<el-select v-model="form2.tall" placeholder="请选择">
+									<el-select v-model="form2.n_min_sg" placeholder="请选择">
 									  <el-option v-for="(tallitem,i) in 200" v-if="tallitem>=150"  :label="tallitem" :value="tallitem"  :key="i"></el-option>
 									</el-select>
 								  </el-form-item> 
 								 <div style="line-height: 40px;margin-left: 25px;"> 至</div>
 								  <el-form-item label="" label-width="30px">
-									<el-select v-model="form2.tallrange" placeholder="请选择">
-									  <el-option v-for="(tallitem,i) in 200" v-if="tallitem>=150"  :label="tallitem" :value="tallitem"  :key="i"></el-option>
+									<el-select v-model="form2.n_max_sg" placeholder="请选择">
+									  <el-option v-for="(tallitem,i) in maxNums(200,150)" v-if="tallitem>=150" :label="tallitem" :value="tallitem"  :key="i"></el-option>
 									</el-select>
 								  </el-form-item> 
 								</div>
 								<div class="flex">
+								  <el-form-item label="体重(KG):">
+									<el-input v-model="form2.n_min_tz"><i slot="suffix" class='idIcon' >(kg)</i></el-input>
+								  </el-form-item>
+								  <div style="line-height: 40px;margin-left: 25px;"> 至</div>
+								   <el-form-item label-width="30px">
+									   <el-input v-model="form2.n_max_tz"><i slot="suffix" class='idIcon' >(kg)</i></el-input>
+								  </el-form-item>
+								</div>
+								<div class="flex">
 								  <el-form-item label="月收入">
-									<el-select v-model="form2.mincome" placeholder="请选择">
+									<el-select v-model="form2.n_money" placeholder="请选择">
 									  <el-option v-for="(moneyitem,i) in 20000" v-if="moneyitem%1000==0&&moneyitem>=2000"  :label="moneyitem" :value="moneyitem"  :key="i"></el-option>
 									</el-select>
 								  </el-form-item> 
@@ -273,21 +273,15 @@
 								</div>
 								 <div class="flex">
 								  <el-form-item label="学历:">
-									<el-select v-model="form2.xueli" placeholder="请选择">
-									  <el-option label="不限" value="1"></el-option>
-									  <el-option label="初中" value="2"></el-option>
-									  <el-option label="高中" value="3"></el-option>
-									  <el-option label="大专" value="4"></el-option>
-									  <el-option label="本科" value="5"></el-option>
-									  <el-option label="研究生" value="6"></el-option>
-									  <el-option label="博士" value="7"></el-option>
-									  <el-option label="硕士" value="8"></el-option>
+									<el-select v-model="form2.n_xueli" placeholder="请选择">
+									  <el-option v-for="(items,index) in autoData['1']" :key="index" :label="items['value']" :value="items['id']">
+									 </el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
 								 <div class="flex">
 								  <el-form-item label="婚姻:">
-									<el-select v-model="form2.hunyin" placeholder="请选择">
+									<el-select v-model="form2.n_hyzk" placeholder="请选择">
 									  <el-option label="不限" value="1"></el-option>
 									  <el-option label="未婚" value="3"></el-option>
 									  <el-option label="离异" value="3"></el-option>
@@ -295,40 +289,25 @@
 									</el-select>
 								 </el-form-item> 
 								</div>
-								<div class="flex">
-								  <el-form-item label="体型:">
-									<el-select v-model="form2.tixing1" placeholder="请选择">
-									  <el-option label="瘦长" value="1"></el-option>
-									  <el-option label="保密" value="2"></el-option>
-									  <el-option label="一般" value="3"></el-option>
-									  <el-option label="苗条" value="4"></el-option>
-									  <el-option label="高大美丽" value="4"></el-option>
-									  <el-option label="富线条美" value="4"></el-option>
-									  <el-option label="丰满" value="4"></el-option>
-									</el-select>
-								 </el-form-item> 
-								</div>
+								
 								<div class="flex">
 								  <el-form-item label="工作地区:">
-									<el-select v-model="form2.wokearea" placeholder="请选择">
-									  <el-option label="北京" value="1"></el-option>
-									  <el-option label="上海" value="2"></el-option>
-									  <el-option label="广东" value="3"></el-option>
-									  <el-option label="云南" value="4"></el-option>
+									<el-select v-model="form2.n_province" placeholder="请选择" @change="getCity">
+									  <el-option v-for="(items,index) in vc_province" :key="index" :label="items['name']" :value="items['id']">
+									  </el-option>
+									 
 									</el-select>
 								 </el-form-item> 
 								 <el-form-item label="" label-width="30px">
-											<el-select v-model="form2.wokearea" placeholder="请选择">
-											  <el-option label="北京" value="1"></el-option>
-											  <el-option label="上海" value="2"></el-option>
-											  <el-option label="广东" value="3"></el-option>
-											  <el-option label="云南" value="4"></el-option>
+											<el-select v-model="form2.n_city" placeholder="请选择">
+											  <el-option v-for="(items,index) in vc_city" :key="index" :label="items['name']" :value="items['id']">
+											 </el-option>
 											</el-select>
 								 </el-form-item> 
 								</div>
 								<div class="flex">
 								  <el-form-item label="有没有孩子:" label-width="100px">
-									<el-select v-model="form2.ischild" placeholder="请选择">
+									<el-select v-model="form2.n_ischild" placeholder="请选择">
 									  <el-option label="不限" value="1"></el-option>
 									  <el-option label="没有小孩" value="2"></el-option>
 									  <el-option label="有孩子且住一起" value="3"></el-option>
@@ -339,7 +318,7 @@
 								</div>
 								<div class="flex">
 								  <el-form-item label="是否想要孩子:" label-width="100px">
-									<el-select v-model="form2.havechild" placeholder="请选择">
+									<el-select v-model="form2.n_child" placeholder="请选择">
 									  <el-option label="不限" value="1"></el-option>
 									  <el-option label="视情况而定" value="2"></el-option>
 									  <el-option label="想要孩子" value="3"></el-option>
@@ -350,7 +329,7 @@
 								</div>
 								<div class="flex">
 								  <el-form-item label="是否可以吸烟:" label-width="100px">
-									<el-select v-model="form2.ismock" placeholder="请选择">
+									<el-select v-model="form2.n_smoke" placeholder="请选择">
 									  <el-option label="不限" value="1"></el-option>
 									  <el-option label="可以吸烟" value="2"></el-option>
 									  <el-option label="不要吸烟" value="3"></el-option>
@@ -359,7 +338,7 @@
 								</div>
 								<div class="flex">
 								  <el-form-item label="是否可以喝酒:" label-width="100px">
-									<el-select v-model="form2.alcohol" placeholder="请选择">
+									<el-select v-model="form2.n_alcohol" placeholder="请选择">
 									  <el-option label="不限" value="1"></el-option>
 									  <el-option label="可以喝酒" value="2"></el-option>
 									  <el-option label="不要喝酒" value="3"></el-option>
@@ -368,14 +347,14 @@
 								</div>
 								<div class="flex">
 								  <el-form-item label="有没有照片:" label-width="100px">
-									<el-select v-model="form2.isphonto" placeholder="请选择">
+									<el-select v-model="form2.n_isphoto" placeholder="请选择">
 									  <el-option label="不限" value="1"></el-option>
 									  <el-option label="有" value="2"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
 							  <el-form-item>
-								<el-button type="primary" @click="onSubmit">保存修改</el-button>
+								<el-button type="primary" @click="updatezh">保存修改</el-button>
 							  </el-form-item>
 							</el-form>
 						</div>
@@ -490,15 +469,30 @@
 				qxindex:0,
 				mzArr:mingzu['mz'],//名族
 				worker:mingzu['zhiye'],//职业
+				xinzuo:mingzu['xingzuo'],
 				isShowMesages:1,
 				dialogImageUrl: '',
 				dialogVisible: false,
+				vc_province:'',//省
+				vc_city:"",
+				vc_area:"",
+				vc_province1:'',//择偶时候的省
 				form:{},
 				form1:{},
 				form2:{},
 				qxradio:1,//权限单选
 				qxyy:1,//关闭原因
 				pbid:""
+			}
+		},
+		computed:{
+			autoData(){
+				return this.$store.state.getpCode;
+			},
+			maxNums(){
+				return (prams1,prams2)=>{
+						return prams1>prams2?prams1:prams2
+				}
 			}
 		},
 		methods:{
@@ -535,6 +529,171 @@
 				console.log(this.dialogImageUrl,222)
 				//this.dialogVisible = true;
 			},
+			// 获取省份
+			getProvice: function(n) {
+				connetAction.ajaxPost(https['tree'], "")
+					.then(rd => {
+						//console.log(rd)
+							this.vc_province = rd.data;
+							this.vc_province1 = rd.data;
+						if (rd.status != 0) {
+			
+						}
+					})
+					.catch(res => {
+						console.log(res, "res")
+					})
+			},
+			//获取城市
+			getCity: function(pid) {
+				connetAction.ajaxPost(https['tree'], {
+						pid,
+						type: 2
+					})
+					.then(rd => {
+						// console.log(rd)
+						this.vc_city = rd.data;
+					})
+					.catch(res => {
+						console.log(res, "res")
+					})
+			},
+			//获取地区
+			getArea: function(pid) {
+				connetAction.ajaxPost(https['tree'], {
+						pid,
+						type: 3
+					})
+					.then(rd => {
+						// console.log(rd)
+						this.vc_area = rd.data;
+					})
+					.catch(res => {
+						console.log(res, "res")
+					})
+			},
+			addWsh:function(){ //基本工作
+				let data = {
+					id:5,
+					vc_worke:'会计',
+					n_ishouse:1,
+					n_iscar:1,
+					n_smoke:1,
+					n_alcohol:1
+				}
+				connetAction.ajaxPost(https['addWsh'],data)
+				.then((res)=>{
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			updateInfo:function(){
+				
+				let data = {
+					id:localStorage.openid,
+					n_money:this.form.n_money,
+					n_sg:this.form.n_sg,
+					vc_province:this.form.vc_province,
+					vc_city:this.form.vc_city,
+					vc_area:this.form.vc_area,
+					n_tz:this.form.n_tz,
+					vc_xinzuo:this.form.vc_xinzuo,
+					vc_mz:this.form.vc_mz,
+					n_ischild:this.form.n_ischild,
+					n_jiehuntime:this.form.n_jiehuntime,
+					n_child:this.form.n_child,
+					vc_loveplay:this.form.vc_loveplay,
+					vc_descript:this.form.vc_descript
+				}
+				console.log(data,333)
+				connetAction.ajaxPost(https['updateInfo'],data)
+				.then((res)=>{
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			toastip:function(str,type){
+				this.$message({
+				  message:str ,
+				  type: type||'warning'
+				});
+			},
+			workUpdate:function(){
+				let data = {
+					id:localStorage.openid,
+					vc_worke:this.form1.vc_worke,
+					n_ishouse:this.form1.n_ishouse,
+					n_iscar:this.form1.n_iscar,
+					n_smoke:this.form1.n_smoke,
+					n_alcohol:this.form1.n_alcohol,
+				}
+				if(!data['vc_worke']){
+					this.toastip('请选择职业类别后再操作')
+					return false;
+				}
+				if(!data['n_ishouse']){
+					this.toastip('请选择买房情况后再操作')
+					return false;
+				}
+				if(!data['n_iscar']){
+					this.toastip('请选择买车情况后再操作')
+					return false;
+				}
+				if(!data['n_smoke']){
+					this.toastip('请选择是否吸烟后再操作')
+					return false;
+				}
+				if(!data['n_alcohol']){
+					this.toastip('请选择是否喝酒后再操作')
+					return false;
+				}
+				console.log(data,333)
+				
+				connetAction.ajaxPost(https['addWsh'],data)
+				.then((res)=>{
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			updatezh:function(){
+				let data = null;data=this.form2;
+				data.id = localStorage.openid;
+// 				if(!data['vc_worke']){
+// 					this.toastip('请选择职业类别后再操作')
+// 					return false;
+// 				}
+// 				if(!data['n_ishouse']){
+// 					this.toastip('请选择买房情况后再操作')
+// 					return false;
+// 				}
+// 				if(!data['n_iscar']){
+// 					this.toastip('请选择买车情况后再操作')
+// 					return false;
+// 				}
+// 				if(!data['n_smoke']){
+// 					this.toastip('请选择是否吸烟后再操作')
+// 					return false;
+// 				}
+// 				if(!data['n_alcohol']){
+// 					this.toastip('请选择是否喝酒后再操作')
+// 					return false;
+// 				}
+				console.log(data,333)
+				
+				connetAction.ajaxPost(https['updateZotj'],data)
+				.then((res)=>{
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
 			chanTile(){
 				let str = "";
 				switch (this.myinf_index){
@@ -566,6 +725,8 @@
 			}
 		},
 		mounted(){
+			console.log(this.autoData)
+			this.getProvice();
 		}
 	}
 	

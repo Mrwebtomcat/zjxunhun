@@ -58,9 +58,10 @@ export default {
   	},
 	itemFn(i){
 		this.isNav = 0;
-// 		if(i==1){
-// 			this.$router.push('./vip')
-// 		}
+		if(i==4){
+			localStorage.removeItem('openid');
+			window.location.reload();
+		}
 	}
   }
 }
@@ -82,7 +83,7 @@ export default {
 		position: fixed;
 		left: 0;
 		top: 0;
-		z-index: 999;
+		z-index: 99;
 	}
 	.trans{
 		background: transparent !important;

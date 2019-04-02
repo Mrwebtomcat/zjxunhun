@@ -172,6 +172,13 @@ indexRouter.beforeEach(function(to, from, next) {
 			document.title = meta.title;
 		}
 	}
+		// 判断是否登录
+// 	if(!localStorage.openid){
+// 		if(to.fullPath!="/"){
+// 			next('/')
+// 			return false;
+// 		}
+// 	}
 	document.body.scrollTop = 0;
 	next();
 })

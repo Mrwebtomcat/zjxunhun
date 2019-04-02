@@ -14,7 +14,7 @@
 						<div class="lo_left_info">密码：</div>
 						<input class="le_info_input" type="password" v-model="psw" value="" @keyup.enter="goLogin"/>
 					</div>
-					<div class="fogetpsw">
+					<div class="fogetpsw" @click="forgetPsw">
 						忘记密码？
 					</div>
 					<div class="lobtnbox">
@@ -80,6 +80,9 @@ export default {
 		}
 	},
 	methods:{
+		forgetPsw:function(){
+			this.$router.push('./getPsw')
+		},
 		gotoreg:function(){
 			let that = this;
 			that.$router.push('./register')
@@ -125,10 +128,21 @@ export default {
 				if(rd.status!=0){
 					// message(that,{contxt:rd.message})
 					///setKey('sessionid',rd.data);
-					localStorage.sessionid = rd.data
-					that.$router.push('./home');
+					localStorage.openid = rd.data
+					  that.$message({
+						  showClose: true,
+						  duration:1900,
+						  message: rd.message,
+						  type: 'success'
+					  });
+					setTimeout(function(){
+						that.$router.push('./home');
+					},2000);
+					if(localStorage.exitid){
+						localStorage.removeItem('exitid')
+					}
 				}else{
-					localStorage.sessionid = rd.data
+					//localStorage.sessionid = rd.data
 					message(that,{contxt:rd.message});
 					// setKey('sessionid',rd.data);
 				}
