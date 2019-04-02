@@ -49,8 +49,11 @@
 						<el-input v-model="form.n_againpsw" placeholder="请再次输入新密码"></el-input>
 					</div>
 				</div>
-				<div class="btn" v-if="ativeindex<=2">
-					<el-button type="primary" @click="postPhone">下一步</el-button>
+				<div class="btn" v-if="ativeindex==1">
+					<el-button type="primary" @click="postPhone(1)">下一步</el-button>
+				</div>
+				<div class="btn" v-if="ativeindex==2">
+					<el-button type="primary" @click="postPhone(2)">下一步</el-button>
 				</div>
 				<div class="btn"  v-if="ativeindex==3">
 					<el-button type="primary" @click="changOk">确认修改</el-button>
@@ -74,6 +77,7 @@
 <script>
 	import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
 	import https from "../utils/Https.js"
+import { setTimeout } from 'timers';
 	export default{
 		data(){
 			return{
@@ -88,13 +92,23 @@
 		},
 		methods:{
 			postPhone:function(ints){
-				this.ativeindex++;
-				if(this.ativeindex==1){
-					this.getUserPost();
+				if(ints==1){
+					if(this.form['vc_userphone']!=""){
+						if(regPhone(this.form['vc_userphone'])){
+							this.getUserPost();
+							return false;
+						}
+						
+						this.taostip('手机号码不正确')
+						
+					}else{
+						this.taostip('手机号码不能为空')
+					}
 					return false;
 				}
-				if(this.ativeindex==2){
-					this.yanzma();
+				if(ints==2){
+					// this.ativeindex = 3;
+					this.isMyphone();
 					return false;
 				}
 				
@@ -112,15 +126,40 @@
 			doLink:function(url){
 				this.$router.push(url)
 			},
-			getUserPost:function(){
-				this.minutes = 60;
+			//校验是否是本人操作
+			isMyphone:function(){
 				let data = {
+					code:this.form.n_yanzhengma,
 					vc_userphone:this.form['vc_userphone']
 				}
-				this.yanzma();
-				return false;
-				connetAction.ajaxGet(https['jiaoyan'],data)
+				if(data['code']==""){
+					this.taostip('验证码不能为空')
+				}
+				connetAction.ajaxPost(https['checkPhone'],data)
+					.then((res)=>{
+						if(res.status==1){
+							this.ativeindex = 3;
+						}else{
+							this.taostip("请确认是你的账号，再操作")
+						}
+					})
+					.catch((res)=>{
+						
+					})
+			},
+			getUserPost:function(){
+				this.minutes = 60;
+				let that=this,data = {
+					type:2,
+					vc_userphone:this.form['vc_userphone']
+				}
+				
+				connetAction.ajaxPost(https['getSmsCode'],data)
 				.then((res)=>{
+					if(res.status==1){
+						this.ativeindex = 2;
+						this.yanzma();
+					}
 					
 				})
 				.catch((res)=>{
@@ -129,9 +168,7 @@
 			},
 			yanzma:function(){
 				let timer = null;
-				let data = {
-					vc_userphone:this.form['vc_userphone']
-				}
+			
 				let that  = this;
 				this.isgopsw = 1;
 				timer = setInterval(function(){
@@ -142,16 +179,48 @@
 					}
 				},1000)
 				return false;
-				connetAction.ajaxGet(https['jiaoyan'],data)
+				
+			},
+			taostip:function(str,type){
+				this.$message({
+					showClose: true,
+					message: str,
+					type: type||'warning'
+				});
+			},
+			changOk:function(){
+				if(this.form.n_againpsw.length<6){
+					taostip("新密码长度不能小于6位");
+					return false;
+				}
+				if(this.form.n_againpsw==""){
+					taostip("新密码不能为空");
+					return false;
+				}
+				if(this.form.newpsw!=this.form.n_againpsw){
+					taostip("两次输入的密码不一致");
+					return false;
+				}
+				let that,data = {
+					vc_password:this.form.n_againpsw,
+					vc_userphone:this.form['vc_userphone']
+				}
+				
+				connetAction.ajaxPost(https['forgotPassWord'],data)
 				.then((res)=>{
+					if(res.status==1){
+						taostip("新密码修改成功",'success');
+						setTimeout(function(){
+							that.router.push("/")
+						},2000)
+					}else{
+						taostip("新密码修改成功",res.message);
+					}
 					
 				})
 				.catch((res)=>{
 					
 				})
-			},
-			changOk:function(){
-				alert("修改成功")
 			}
 		}
 	}

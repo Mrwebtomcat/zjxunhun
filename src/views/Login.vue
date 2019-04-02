@@ -7,12 +7,12 @@
 					<div class="hd_txt">登陆金梦情缘</div>
 					<div class="lo_input">
 						<div class="lo_left_info">账号：</div>
-						<input class="le_info_input" type="text" v-model="user" value="" @keyup.enter="goLogin" />
+						<input class="le_info_input" placeholder="请输入手机号码" type="text" v-model="user" value="" @keyup.enter="goLogin" />
 					</div>
 					
 					<div class="lo_input">
 						<div class="lo_left_info">密码：</div>
-						<input class="le_info_input" type="password" v-model="psw" value="" @keyup.enter="goLogin"/>
+						<input class="le_info_input" type="password" placeholder="请输入密码" v-model="psw" value="" @keyup.enter="goLogin"/>
 					</div>
 					<div class="fogetpsw" @click="forgetPsw">
 						忘记密码？
