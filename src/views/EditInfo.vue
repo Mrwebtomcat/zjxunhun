@@ -87,14 +87,14 @@
 								  		<el-input v-model="form.n_tz"> <i slot="suffix" class='idIcon' >(kg)</i></el-input>
 								  </el-form-item>
 								 <el-form-item label="星座:" label-width="80px">
-									<el-select v-model="form.vc_xingzuo" placeholder="请选择">
+									<el-select v-model="form.vc_xinzuo" placeholder="请选择">
 									   <el-option v-for="(item,index) in xinzuo" :key="index" :label="item['name']" :value="item['val']" ></el-option>
 									</el-select>
 								 </el-form-item>
 							</div>
 							<div class="flex">
 								  <el-form-item label="民族:">
-									<el-select v-model="form.mz" placeholder="请选择">
+									<el-select v-model="form.vc_mz" placeholder="请选择">
 										<el-option v-for="(item,index) in mzArr" :key="index" :label="item.name" :value="item.val"></el-option>
 									</el-select>
 								 </el-form-item> 
@@ -319,11 +319,7 @@
 								<div class="flex">
 								  <el-form-item label="是否想要孩子:" label-width="100px">
 									<el-select v-model="form2.n_child" placeholder="请选择">
-									  <el-option label="不限" value="1"></el-option>
-									  <el-option label="视情况而定" value="2"></el-option>
-									  <el-option label="想要孩子" value="3"></el-option>
-									  <el-option label="不想要孩子" value="4"></el-option>
-									  <el-option label="以后再告诉你" value="5"></el-option>
+									  <el-option v-for="(item,index) in autoData['5']" :key="index" :label="item['value']" :value="item['id']"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
@@ -424,7 +420,20 @@
 						</div>
 						
 						<div class="infoframe1" v-if="myinf_index==6"  >
-							密码修改
+							<el-form ref="form" :model="form5" label-width="80px">
+							    <div class="flex">
+								  <el-form-item label="原密码:">
+									<el-input v-model="form5.vc_ordpassword" type="text" placeholder="请输入原密码"></el-input>
+								  </el-form-item> 
+								 <div style="line-height: 40px;margin-left: 25px;"></div>
+								  <el-form-item label="新密码:">
+										<el-input type="text" v-model="form5.vc_newpassword" placeholder="请输入新密码"></el-input>
+								  </el-form-item> 
+								</div>
+								 <el-form-item>
+									<el-button type="primary" @click="changPsw">确认修改</el-button>
+								</el-form-item>
+							</el-form>	
 						</div>
 						
 						
@@ -616,6 +625,22 @@
 					
 				})
 			},
+			changPsw:function(){
+				let data = {
+					id:localStorage.openid,
+					n_money:this.form5.vc_ordpassword,
+					n_sg:this.form5.vc_newpassword,
+				}
+				console.log(data,333)
+				return false;
+				connetAction.ajaxPost(https['updateInfo'],data)
+				.then((res)=>{
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
 			toastip:function(str,type){
 				this.$message({
 				  message:str ,
@@ -688,7 +713,18 @@
 				
 				connetAction.ajaxPost(https['updateZotj'],data)
 				.then((res)=>{
+					this.toastip(res.message)
+				})
+				.catch((res)=>{
 					
+				})
+			},
+			getInfos:function(){
+				let data = {id:localStorage.openid};
+				
+				connetAction.ajaxPost(https['getInfo'],data)
+				.then((res)=>{
+					this.toastip(res.message)
 				})
 				.catch((res)=>{
 					
@@ -727,6 +763,7 @@
 		mounted(){
 			console.log(this.autoData)
 			this.getProvice();
+			this.getInfos();
 		}
 	}
 	
