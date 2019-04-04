@@ -15,6 +15,7 @@ Vue.use(ElementUI)
 Vue.use(Header)
 Vue.use(preview)
 Vue.use(ChatPannel)
+Vue.use(Shadow)
 
 Vue.config.productionTip = false
 new Vue({

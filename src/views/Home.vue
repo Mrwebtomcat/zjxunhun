@@ -3,7 +3,7 @@
 	<div class="xunhun">
 		<Header :isHeader="1"></Header>
 		<div class="xh_main">
-			<div class="vip_notice" @click="goToVip">
+			<div class="vip_notice" @click="goToVip" v-if="vip==0">
 				<img src="../assets/img/vip.png" alt="">
 			</div>
 			<div class="changeseach">
@@ -92,7 +92,7 @@
 							</div>
 						</div>
 						<div class="userboxs">
-							<div class="useritem" @click.stop="showDetail('小小与')">
+							<!-- <div class="useritem" @click.stop="showDetail('小小与')">
 								<el-row :gutter="24">
 									<el-col :span="10">
 										<img src="https://photo.zastatic.com/images/photo/354163/1416651642/3997368673413261.jpg?scrop=1&crop=1&cpos=north&w=150&h=150"
@@ -113,20 +113,27 @@
 										</div>
 									</el-col>
 								</el-row>
-							</div>
-							<div class="useritem" @click.stop="showDetail('小小鱼')">
+							</div> -->
+							<div v-for="(items,index) in userdata['tjList']" :key="index" class="useritem" @click.stop="showDetail(items['vc_nickname'])">
 								<el-row :gutter="24">
 									<el-col :span="10">
-										<img src="https://photo.zastatic.com/images/photo/354163/1416651642/3997368673413261.jpg?scrop=1&crop=1&cpos=north&w=150&h=150"
+										<img v-if="items['vc_img']&&items['vc_img']!=''" style="width:150px;height:150px;" :src="items['vc_img']"
+										 alt="">
+										<img v-else style="width:150px;height:150px;" src="../assets/img/8311191311554389.png"
 										 alt="">
 									</el-col>
 									<el-col :span="14">
-										<div class="uiname">小小鱼</div>
-										<div class="uiinfo">20岁|湛江|157cm|客户经理</div>
-										<div class="umakers">
-											我正在寻找广东湛江赤坎区,年龄在18-30岁,月薪在5000元以上的男性
+										<div class="uiname">{{items['vc_nickname']}}</div>
+										<div class="uiinfo">
+											{{`${items['n_age']}岁 | ${items['vc_city']} | ${items.vc_worke}`}}
+
+											<!-- 湛江|157cm|客户经理 -->
 										</div>
-										<div class="sayhellow" @click.stop="dazh('小小鱼')">
+										<div class="umakers">
+											{{items['vc_descript']==""?'努力寻找另一半....':items['vc_descript']}}
+											
+										</div>
+										<div class="sayhellow" @click.stop="dazh(items['vc_nickname'])">
 											<el-button size="small">打招呼</el-button>
 										</div>
 									</el-col>
@@ -142,7 +149,7 @@
 						<div class="notice_info">
 							<div class="vipuserinfo">
 								<div class="box">
-									<img src="https://photo.zastatic.com/images/photo/468716/1874862312/525887448369577.png?scrop=1&crop=1&cpos=north&w=150&h=150"
+									<img style="width:100px;height:100px;" src="../assets/img/8311191311554389.png"
 									 alt="">
 									<div class="icon_vip">
 										<span class="start" @click="dolink('./vip')"></span>
@@ -151,8 +158,8 @@
 									</div>
 								</div>
 								<div class="box">
-									<div class="lac1">昵称拉拉啦</div>
-									<div class="lac1" style="padding-top:4%;">ID：12321542512</div>
+									<div class="lac1">{{userdata['userlist']['vc_nickname']}}</div>
+									<div class="lac1" style="padding-top:4%;"><!--ID：12321542512--></div>
 									<div class="lac1" style="padding-top:3%;">
 										<span>30%</span>
 										<span @click="dolink('./editinfo')">个人资料</span>
@@ -160,23 +167,24 @@
 									</div>
 								</div>
 							</div>
-							<el-row :gutter="24" style="margin-right: 0;">
+							<el-row :gutter="24" style="margin-right: 0;width:90%;margin:auto;">
 								<el-col :span="8">
 									<div @click="dolink('./browse')">
-										<img src="../assets/img/view.1064335.png" alt="">
-										<div class="ninfo_text">10人浏览</div>
+										<img v-if=" userdata['userlist']['vc_img']&&userdata['userlist']['vc_img']!='' " src="../assets/img/view.1064335.png" alt="">
+										<img v-else src="../assets/img/view.1064335.png" alt="">
+										<div class="ninfo_text">{{userdata['userlist']['n_show']}}人浏览</div>
 									</div>
 								</el-col>
 								<el-col :span="8">
 									<div @click="dolink('./information')">
 										<img src="../assets/img/mail.12ec3d1.png" alt="">
-										<div class="ninfo_text">11条未读信息</div>
+										<div class="ninfo_text">{{userdata['userlist']['n_message']}}条未读信息</div>
 									</div>
 								</el-col>
 								<el-col :span="8">
 									<div @click="gotfollw">
 										<img src="../assets/img/focus.f2668b2.png" alt="">
-										<div class="ninfo_text">10人关注我</div>
+										<div class="ninfo_text">{{userdata['userlist']['n_gz']}}人关注我</div>
 									</div>
 								</el-col>
 							</el-row>
@@ -230,7 +238,8 @@
 				</el-row>
 			</div>
 		</div>
-		<Shadow></Shadow>
+		<Shadow :isShadow="vip" @shadowcall="callclose">
+		</Shadow>
 	</div>
 </template>
 
@@ -242,12 +251,13 @@
 	export default {
 		data() {
 			return {
-				vip: "",
+				vip: 0,
 				form: {},
 				provice: [], //省份
 				city: [], //城市
 				Area: [], //地区
-				autoData: [],
+				autoData: [],//默认的数据编码
+				userdata:[],//用户数据
 				isShowSlec: 0,
 				wokelist:mingzu['zhiye']
 			}
@@ -261,6 +271,9 @@
 			...mapMutations(['changInfo','setpCode']),
 			goToVip() {
 				this.$router.push('./vip')
+			},
+			callclose() {
+				this.vip  = 0
 			},
 			gotfollw() {
 				this.$router.push('./follow')
@@ -344,12 +357,14 @@
 			//用户信息
 			getuerList:function(){
 				let data = {
-					oc_usercode:1
+					oc_usercode:localStorage.openid
 				}
-				connetAction.ajaxPost(https['getCode'], data)
+				connetAction.ajaxPost(https['index'], data)
 					.then(rd => {
 						if(rd.status==1){
-							console.log("请求成功")
+							this.userdata = rd.data;
+							console.log(this.userdata ,42)
+							this.vip =this.userdata['userlist']['n_isvip'];
 						}
 					})
 					.catch(res => {
@@ -361,6 +376,7 @@
 			this.getProvice();
 			this.autoCode();
 			this.getuerList();
+			
 		}
 	}
 </script>
