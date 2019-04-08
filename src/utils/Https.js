@@ -23,9 +23,12 @@ let INTERFACE = {
 	index:'index/homeInfo',					//首页接口
 	addWsh:'user/addWsh',					//工作生活
 	updateZotj:'user/updateZotj',				//更新择偶条件
-	bindAccount:'/weservice/bindAccount',		//绑定销售/技师
-	checkBind:'/weservice/checkBind',			//获取短信验证码
-	historyCount:'/weservice/historyCount',		//历史业绩提成统计
+	updateInfo:'user/updateInfo',		//更新个人资料
+	getInfo:'user/getInfo',		//获取个人资料
+	quanxian:'user/quanxian',		//权限 params{id：n_isinfo:'是否显示',n_yuanying:'原因'}
+	souSuo:'base/souSuo',			//昵称搜索   参数 用户昵称 params{vc_nickname}
+	naneSousuo:'base/nameSouSuo',
+	huiyuan:'Huiyuan/index',			//查询VIP会员列表 params{id:会员id}
 	salesBusiness:'/weservice/salesBusiness',	//销售业绩流水
 	masterBusiness:'/weservice/masterBusiness'	//技师业绩流水
 }

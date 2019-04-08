@@ -1,17 +1,17 @@
-<!-- vip 充值 -->
+<!-- 星级 充值 -->
 <template>
 	<div class="vipModule">
 		<Header :isHeader="1" :ative="3"></Header>
 		<div class="vipConten flex">
 			<div class="vipclfet">
-				<div class="h_th1">会员充值</div>
+				<div class="h_th1">星级充值</div>
 				<div class="bigBoxvip">
 					<div class="recharG">
 						<li class="threemonth slider">
 							<div class="li_box">
-								<div class="vip_h1">购买会员3个月</div>
+								<div class="vip_h1">购买星级3个月</div>
 								<div class="vip_h2">1.06元/天</div>
-								<div class="vip_content">会员价338元</div>
+								<div class="vip_content">星级价338元</div>
 								<div class="vip_ktbtn">
 									<el-button type="primary" plain @click="ktvip(1)">立即开通</el-button>
 								</div>
@@ -19,9 +19,9 @@
 						</li>
 						<li class="threemonth slider">
 							<div class="li_box">
-								<div class="vip_h1">购买会员6个月</div>
+								<div class="vip_h1">购买星级6个月</div>
 								<div class="vip_h2">1.06元/天</div>
-								<div class="vip_content">会员价368元</div>
+								<div class="vip_content">星级价368元</div>
 								<div class="vip_ktbtn">
 									<el-button type="primary" plain @click="ktvip(2)">立即开通</el-button>
 								</div>
@@ -29,9 +29,9 @@
 						</li>
 						<li class="threemonth slider">
 							<div class="li_box">
-								<div class="vip_h1">购买会员12个月</div>
+								<div class="vip_h1">购买星级12个月</div>
 								<div class="vip_h2">1.06元/天</div>
-								<div class="vip_content">会员价388元</div>
+								<div class="vip_content">星级价388元</div>
 								<div class="vip_ktbtn">
 									<el-button type="primary" plain @click="ktvip(3)">立即开通</el-button>
 								</div>
@@ -42,7 +42,7 @@
 				<div class="vipqaunyi">
 					<div class="qyh1">
 						<div class="borline left"></div>
-						<div class="qyh1txt">会员权益</div>
+						<div class="qyh1txt">星级权益</div>
 						<div class="borline right"></div>
 					</div>
 					<div class="jiesuo">
@@ -54,7 +54,7 @@
 							<div class="img xinxi"></div> <span class="txt">解锁消息发送</span>
 						</li>
 						<li>
-							<div class="img xunzhang"></div><span class="txt">尊贵会员勋章</span>
+							<div class="img xunzhang"></div><span class="txt">尊贵星级勋章</span>
 						</li>
 						<li>
 							<div class="img shaixuan"></div><span class="txt">更多精准筛选条件</span>
@@ -81,11 +81,11 @@
 			</div>
 			<div class="shadows" v-if="isShowVip==1"></div>
 			<div class="showPay" v-if="isShowVip==1">
-				<div class="showPhead">会员充值 <div class="closePay" @click="closeVip"><span>X</span></div>
+				<div class="showPhead">星级充值 <div class="closePay" @click="closeVip"><span>X</span></div>
 				</div>
 				<div class="showPcontext">
-					<div class="hellowVip">你好，<span class="fontbold">会员1919+75545</span></div>
-					<div class="nowpay">立即充值：<span class="fontbold">会员{{vipMoneth}}个月</span>
+					<div class="hellowVip">你好，<span class="fontbold">星级1919+75545</span></div>
+					<div class="nowpay">立即充值：<span class="fontbold">星级{{vipMoneth}}个月</span>
 						<div class="Paymoney">应支付：<span class="moeyred">{{vipMoney}}元</span></div>
 					</div>
 					<div class="zffs">支付方式：</div>
@@ -121,7 +121,7 @@
 			</div>
 			<div class="vipcright">
 					<div class="rightcontent2">
-						<div class="h2">开通金梦情缘会员，联系TA们吧 <span  style="float: right;font-size: 20px;cursor: pointer;" class="el-icon-refresh"></span></div>
+						<div class="h2">开通金梦情缘星级，联系TA们吧 <span  style="float: right;font-size: 20px;cursor: pointer;" class="el-icon-refresh"></span></div>
 						<div class="ranguser">
 							<div class="useritem">
 								<div class="user_left">

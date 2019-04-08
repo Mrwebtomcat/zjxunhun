@@ -1,8 +1,8 @@
 <template>
-	<div class="public_shadows" v-if="xianshi!=1">
+	<div class="public_shadows" v-if="xianshi==0">
 		 <div class="infobox">
-			 <img src="../assets/img/dialog_auth_img.af97c77.png" alt="">
-			 <div class="close" @click="close"></div>
+			 <img @click.stop="dolink(linkUrl)" src="../assets/img/dialog_auth_img.af97c77.png" alt="">
+			 <div class="close" @click.stop="close"></div>
 		 </div>
 	</div>
 </template>
@@ -17,15 +17,22 @@ export default {
   props: {
     xianshi: {
 		type:[Number,String,Boolean],
-		default:0
+		default:1
 	}, 
 	shadowcall:{
 		type:Function
+	},
+	linkUrl:{
+		type:[String],
+		default:""
 	}
   },
   methods: {
 	  close:function(){
 		  this.shadowcall&&this.shadowcall();
+	  },
+	  dolink:function(url){
+		  this.$router.push(url)
 	  }
   }
 }
@@ -51,6 +58,9 @@ export default {
 		width: 420px;
 		min-height: 300px;
 		padding-bottom: 30px;
+	}
+	.infobox img{
+		cursor: pointer;
 	}
 	.close{
 		width: 30px;

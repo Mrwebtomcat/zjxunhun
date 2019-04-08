@@ -18,17 +18,8 @@
 					</el-radio-group>
 			  </el-form-item>
 			  <el-form-item label="你的身高:">
-				  <el-col :span="18" style="padding-left:0;">
-					 <el-slider
-					  :min="120"
-					  :max="200"
-					  v-model="form.vc_sg"
-					  :formatTooltip="formatTooltip"
-					  >
-					</el-slider>
-				  </el-col>
-				  <el-col :span="4">
-					  {{form.vc_sg+" / cm"}}
+				  <el-col :span="8" style="padding-left:0;">
+				  	<el-input v-model="form.vc_sg" placeholder="请输入你的身高"> <i slot="suffix" class='idIcon' >(cm)</i> </el-input>
 				  </el-col>
 			  </el-form-item>
 			   <el-form-item label="出生日期 :">
@@ -127,6 +118,7 @@
 </template>
 
 <script>
+import {mapMutations,mapGetters} from 'vuex';
 import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
 import https from "../utils/Https.js"
 export default {
@@ -157,11 +149,16 @@ export default {
 				n_huntype:0,
 				vc_userphone:'',
 				code:'',
-				vc_password:''
+				vc_password:'',
+				provice:[],
+			  provincearr:[],
+			  citysarrs:[],
+				areaarrs:[]
 			}
 		}
 	},
 	methods: {
+		...mapMutations(['setPosition']),
 		onSubmit() {
 			let that = this,data=this.form;
 			
@@ -243,7 +240,7 @@ export default {
 			.then(rd=>{
 				if(rd.status==1){
 					this.isloading = false;
-					that.toast(rd.message)
+					that.toast(rd.message,'success')
 					setTimeout(function(){
 						that.$router.push('./')
 					},2000)
@@ -268,48 +265,65 @@ export default {
 			this.form.vc_sg = val;
 			return val + 'cm'
 		},
-		toast:function(str){
+		toast:function(str,type){
 			this.$message({
 			  message: str,
-			  type: 'error'
+			  type: type||'error'
 			});
 		},
 		// 获取省份
-		getProvice:function(){
-			connetAction.ajaxPost(https['tree'],"")
-			.then(rd=>{
-				//console.log(rd)
-				this.provice = rd.data;
-				if(rd.status!=0){
-					
+		getProvice: function() {
+				this.provincearr = [];
+				this.citysarrs = [];
+				this.areaarrs = [];
+				connetAction.ajaxPost(https['tree'], "")
+					.then(rd => {
+						//console.log(rd)
+						if (rd.status != 0) {   
+							var provice =rd.data;
+							for(var i=0;i<provice.length;i++){
+								if(provice[i]['type']==1){
+									this.provincearr.push(provice[i]);
+								}
+								if(provice[i]['type']==2){
+									this.citysarrs.push(provice[i]);
+								}
+								if(provice[i]['type']==3){
+									this.areaarrs.push(provice[i]);
+								}
+							}
+							this.provice = this.provincearr;
+							this.setPosition({vc_province:this.provincearr,vc_city:this.citysarrs,vc_area:this.areaarrs})
+						}
+
+					})
+					.catch(res => {
+						console.log(res, "res")
+					})
+			},
+			//获取城市
+			getCity: function(pid) {
+				this.city = [];
+				this.Area = [];
+				this.form.vc_area = "";
+				this.form.vc_city = "";
+				for(var i=0;i<this.citysarrs.length;i++){
+					if(this.citysarrs[i]['pid']==pid){
+						this.city.push(this.citysarrs[i])
+					}
 				}
-			})
-			.catch(res=>{
-				console.log(res,"res")
-			})
-		},
-		//获取城市
-		getCity:function(pid){
-			connetAction.ajaxPost(https['tree'],{pid,type:2})
-			.then(rd=>{
-				// console.log(rd)
-				this.city = rd.data;
-			})
-			.catch(res=>{
-				console.log(res,"res")
-			})
-		},
-		//获取地区
-		getArea:function(pid){
-			connetAction.ajaxPost(https['tree'],{pid,type:3})
-			.then(rd=>{
-				// console.log(rd)
-				this.Area = rd.data;
-			})
-			.catch(res=>{
-				console.log(res,"res")
-			})
-		},
+				console.log(this.city.push,333)
+			},
+			//获取地区
+			getArea: function(pid) {
+				this.form.vc_area = "";
+				this.Area = [];
+				for(var i=0;i<this.areaarrs.length;i++){
+					if(this.areaarrs[i]['pid']==pid){
+						this.Area.push(this.areaarrs[i]);
+					}	
+				}
+			},
 		// 发送验证码
 		getSms:function(){
 			let timer=null,that=this,data = {
@@ -317,6 +331,14 @@ export default {
 				vc_userphone:this.form.vc_userphone
 			}
 			if(this.mincode<60){
+				return false;
+			}
+			if(!data.vc_userphone||data.vc_userphone==""||data.vc_userphone==null){
+					that.toast("手机号码不能为空",'warning')
+					return false;
+			}
+			if(!regPhone(data.vc_userphone)){
+				message(this,{contxt:"手机格式不正确"})
 				return false;
 			}
 			this.ispostCode = 0;
@@ -330,17 +352,17 @@ export default {
 					
 				}
 			},1000)
-			if(!regPhone(data.vc_userphone)){
-				message(this,{contxt:"手机格式不正确"})
-				return false;
-			}
+		
 			connetAction.ajaxPost(https['getSmsCode'],data)
 			.then(rd=>{
-				that.toast(data.message)
+				if(rd.status==1){
+
+					that.toast("验证码发送成功,请用手机查看",'success')
+				}
 			})
 			.catch(res=>{
-				console.log(res,"res")
-				that.toast(data.message)
+				// console.log(res,"res")
+				that.toast('发送验证码失败')
 			})
 		},
 		// 默认请求系统编码
@@ -355,8 +377,10 @@ export default {
 			})
 		}
 	},
+	created(){
+			this.getProvice();
+	},
 	mounted() {
-		this.getProvice();
 		this.autoCode();
 	}
 }

@@ -9,86 +9,77 @@
 					<div class="searchid_input">
 						<el-input
 							size="small"
-							placeholder="请输ID精准搜索"
+							placeholder="请输入昵称搜索"
 							v-model="idinpyt"
 							clearable>
 							 <i slot="suffix" class='el-icon-search idIcon' @click='searchidFn'></i>
 						</el-input>
 					</div>
 				</div>
-				<div class="li">
+				<!-- <div class="li">
 					<span class="fontw">会员专区:</span>
 					<el-tag>高学历</el-tag>
 					<el-tag type="success">90后</el-tag>
 					<el-tag type="info">同生缘</el-tag>
-				</div>
+				</div> -->
 				<div class="li">
 					<span class="fontw">基础条件:</span>
 					<div class="w5  ml3" >
-						 <el-select v-model="form.sex" size="small" placeholder="女">
-							  <el-option label="男" value="1"></el-option>
-							  <el-option label="女" value="2"></el-option>
-						</el-select>
-					</div>
-					<div class="ml1" style="width:8%;">
-						 <el-select v-model="form.age" size="small" placeholder="年龄">
-							  <el-option label="18" value="1"></el-option>
-							  <el-option label="19" value="2"></el-option>
-						</el-select>
-					</div>
-					<span class="ml1">至</span>
-					<div class="ml1" style="width:8%;">
-						 <el-select v-model="form.maxage" size="small" placeholder="年龄">
-							  <el-option label="18" value="1"></el-option>
-							  <el-option label="19" value="2"></el-option>
-						</el-select>
-					</div>
-					<div class="ml1" style="width:8%;">
-						 <el-select v-model="form.province" size="small" placeholder="省">
-							  <el-option label="广东" value="1"></el-option>
-							  <el-option label="湖南" value="2"></el-option>
-						</el-select>
-					</div>
-					<div class="ml1" style="width:8%;">
-						 <el-select v-model="form.area" size="small" placeholder="市">
-							  <el-option label="广州" value="1"></el-option>
-							  <el-option label="湛江" value="2"></el-option>
-						</el-select>
-					</div>
-					<div class="ml1" style="width:8%;">
-						 <el-select v-model="form.city" size="small" placeholder="区">
-							  <el-option label="赤坎区" value="1"></el-option>
-							  <el-option label="霞山区" value="2"></el-option>
-						</el-select>
-					</div>
-					
-					<div  class="ml1" style="width:8%;">
-						 <el-select v-model="form.tall" size="small" placeholder="身高">
-							  <el-option label="170" value="1"></el-option>
-							  <el-option label="180" value="2"></el-option>
-						</el-select>
-					</div>
-					<div class="ml1">至</div>
-					<div class="ml1" style="width:8%;">
-						 <el-select v-model="form.maxtall" size="small" placeholder="高范围">
-							  <el-option label="18" value="1"></el-option>
-							  <el-option label="19" value="2"></el-option>
+						 <el-select v-model="form.n_sex" size="small" placeholder="性别">
+							  <el-option v-for="(items,index) in ['男','女']" :key="index" :label="items" :value="index+1"></el-option>
 						</el-select>
 					</div>
 					<div class="ml1" style="width:10%;">
-						 <el-select v-model="form.workm" size="small" placeholder="薪资水平">
-							  <el-option label="3000-5000" value="1"></el-option>
-							  <el-option label="5000-6000" value="2"></el-option>
+						<el-input v-model="form.n_min_age" size="small" placeholder="请输入年龄">
+							 <!-- <i slot="suffix" class='idIcon'>岁</i> -->
+						</el-input>
+					</div>
+					<span class="ml1">至</span>
+					<div class="ml1" style="width:10%;">
+						<el-input v-model="form.n_max_age" size="small" placeholder="请输入年龄">
+							 <!-- <i slot="suffix" class='idIcon' >岁</i> -->
+						</el-input>
+					</div>
+					<div  class="ml1" style="width:8%;">
+						<el-input v-model="form.n_min_sg" size="small" placeholder="请输入身高">
+							 <i slot="suffix" class='idIcon' >cm</i>
+						</el-input>
+					</div>
+					<div class="ml1">至</div>
+					<div class="ml1" style="width:8%;">
+						<el-input v-model="form.n_max_sg" size="small" placeholder="请输入身高">
+							 <i slot="suffix" class='idIcon' >cm</i>
+						</el-input>
+					</div>
+					<div class="ml1" style="width:8%;">
+						 <el-select v-model="form.vc_province" size="small" placeholder="请选择" @change="getCity">
+							<el-option v-for="(items,index) in vc_province" :key="index" :label="items['name']" :value="items['id']">
+							</el-option>
+						</el-select>
+					</div>
+					<div class="ml1" style="width:8%;">
+						 <el-select v-model="form.vc_city" size="small" @change="getArea"  placeholder="请选择城市">
+							<el-option v-for="(item,index) in vc_city" :key="index" :label="item['name']" :value="item['id']"></el-option>
+						</el-select>
+					</div>
+					<div class="ml1" style="width:8%;">
+						 <el-select v-model="form.vc_area" size="small" placeholder="请选择城区">
+							<el-option v-for="(item,index) in vc_area" :key="index" :label="item['name']" :value="item['id']"></el-option>
+						</el-select>
+					</div>
+					
+					<div class="ml1" style="width:10%;">
+						 <el-select v-model="form.n_money" size="small" placeholder="薪资水平">
+							<el-option v-for="(items,index) in autoData['2']" :key="index" :label="items['value']" :value="items['code']">
+							</el-option>
 						</el-select>
 					</div>
 				</div>
 				<div class="li">
 					<span class="fontw">高级搜索:</span>
-					<div class="ml3" style="width:8%;">
-						 <el-select v-model="form.sex" size="small" placeholder="职业">
-							  <el-option label="医生" value="1"></el-option>
-							  <el-option label="科研人员" value="2"></el-option>
-							  <el-option label="外贸" value="2"></el-option>
+					<div class="ml3" style="width:12%;">
+						 <el-select v-model="form.vc_worke" :disabled="vip" size="small" placeholder="职业" >
+							<el-option v-for="(wokeritem,i) in worker"  :label="wokeritem.name" :value="wokeritem.val"  :key="i"></el-option>
 						</el-select>
 					</div>
 					<!-- <div class="ml1" style="width:8%;">
@@ -98,39 +89,34 @@
 						</el-select>
 					</div> -->
 					<div class="ml1" style="width:10%;">
-						 <el-select v-model="form.hours" size="small" placeholder="住房情况">
-							  <el-option label="租房" value="1"></el-option>
-							  <el-option label="有房" value="2"></el-option>
+						 <el-select v-model="form.n_ishouse" :disabled="vip" size="small" placeholder="住房情况">
+							 <el-option v-for="(items,index) in ['和家人住','已购房','租房','打算婚后购房','在单位宿舍住']" :key="index" :label="items" :value="index+1"></el-option>
 						</el-select>
 					</div>
 					<div class="ml1" style="width:9%;">
-						 <el-select v-model="form.cart" size="small" placeholder="买车情况">
-							  <el-option label="是" value="1"></el-option>
-							  <el-option label="否" value="2"></el-option>
+						 <el-select v-model="form.n_iscar" :disabled="vip" size="small" placeholder="买车情况">
+							    <el-option v-for="(items,index) in ['已购买','未购买']" :key="index" :label="items" :value="index+1"></el-option>
 						</el-select>
 					</div>
 					<div class="ml1" style="width:9%;">
-						 <el-select v-model="form.marry" size="small" placeholder="婚姻情况">
-							  <el-option label="未婚" value="1"></el-option>
-							  <el-option label="丧偶" value="2"></el-option>
+						 <el-select v-model="form.n_hyzk" :disabled="vip" size="small" placeholder="婚姻情况">
+							 <el-option v-for="(items,index) in ['不限','未婚','离异','丧偶']" :key="index" :label="items" :value="index+1"></el-option>
 						</el-select>
 					</div>
-					<div class="ml1" style="width:10%;">
-						 <el-select v-model="form.childrend" size="small" placeholder="有没有孩子">
-							  <el-option label="有" value="1"></el-option>
-							  <el-option label="没有" value="2"></el-option>
+					<div class="ml1" style="width:14%;">
+						 <el-select v-model="form.n_ischild" :disabled="vip" size="small" placeholder="有没有孩子">
+							  <el-option v-for="(items,index) in ['没有小孩','有孩子且住一起','有孩子且偶尔住一起','有孩子但不在身边']" :key="index" :label="items" :value="index+1"></el-option>
 						</el-select>
 					</div>
 					
 					<div  class="ml1" style="width:8%;">
-						 <el-select v-model="form.consterlation" size="small" placeholder="星座">
-							  <el-option label="白羊座" value="1"></el-option>
-							  <el-option label="魔蝎座" value="2"></el-option>
+						 <el-select v-model="form.vc_xinzuo" :disabled="vip" size="small" placeholder="星座">
+							  <el-option v-for="(item,index) in xinzuo" :key="index" :label="item['name']" :value="item['val']" ></el-option>
 						</el-select>
 					</div>
 					
 				</div>
-				<div class="searchbtn"><el-button>高级搜索</el-button></div>
+				<div class="searchbtn"><el-button @click="gjSearch">高级搜索</el-button></div>
 			 </div>
 			 <div class="changeseach">
 				  <ul class="searchul">
@@ -188,10 +174,12 @@
 <script>
 // @ is an alias to /src
 import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
+import mingzu from '../json/mz.json'
+import https from "../utils/Https.js"
 export default {
  data(){
 	 return{
-		 vip:"",
+		 vip:false,
 		 form:{},
 		 img:"https://photo.zastatic.com/images/photo/381783/1527130186/18602580078900397.png?scrop=1&crop=1&cpos=north&w=184&h=184",
 		 searchList:[
@@ -202,7 +190,14 @@ export default {
 			 {imgSrc:'https://photo.zastatic.com/images/photo/383333/1533329108/9079873433504577.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'}
 		 ],
 		 isShowSlec:0,
-		 idinpyt:''
+		 idinpyt:'',
+		 vc_province:{},
+		 vc_city:"",
+		 vc_area:'',
+		 autoData:{},
+		 vc_worke:'',
+		 worker:mingzu['zhiye'],//职业
+		 xinzuo:mingzu['xingzuo'],
 	 }
  },
  methods: {
@@ -224,17 +219,105 @@ export default {
 		this.isShowSlec = !this.isShowSlec;
 	},
 	searchidFn:function(){
+		
 		if(this.idinpyt==""){
 			message(this,{
 				title:'',
-				contxt:'用户id不能为空',
+				contxt:'用户昵称不能为空',
 				center:true,
 				btntxt:'确定'
 			})
 		}
+		connetAction.ajaxPost(https['nameSousuo'], {vc_nickname:this.idinpyt})
+					.then(rd => {
+						if(rd.status==1){
+							console.log(rd.datam,44444)
+						}
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
 		
+	},
+	//默认数据
+	autoCode: function() {
+				connetAction.ajaxPost(https['getCode'], "")
+					.then(rd => {
+						this.autoData = rd.data;
+						this.gzArr = 	this.autoData['2'];
+							
+						// 获得资料模板数据
+						// this.setpCode(rd.data);
+						//console.log(this.autoData)
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+	},
+	// 获取省份
+	getProvice: function(n) {
+		connetAction.ajaxPost(https['tree'], "")
+			.then(rd => {
+				//console.log(rd)
+					this.vc_province = rd.data;
+				if (rd.status != 0) {
+	
+				}
+			})
+			.catch(res => {
+				console.log(res, "res")
+			})
+	},
+	//获取城市
+	getCity: function(pid) {
+		connetAction.ajaxPost(https['tree'], {
+				pid,
+				type: 2
+			})
+			.then(rd => {
+				console.log(rd,'日期')
+				this.vc_city = rd.data;
+			})
+			.catch(res => {
+				console.log(res, "res")
+			})
+	},
+	//获取地区
+	getArea: function(pid) {
+		connetAction.ajaxPost(https['tree'], {
+				pid,
+				type: 3
+			})
+			.then(rd => {
+				// console.log(rd)
+				this.vc_area = rd.data;
+			})
+			.catch(res => {
+				console.log(res, "res")
+			})
+	},
+	gjSearch:function(page){
+		let data = null;
+		data = this.form;
+		data.page = 1;
+		data.pageNum =20;
+		data.vc_xinzuo = "白羊座";
+		// page&&page!="" ? data.page = page : data.page = "1";
+		connetAction.ajaxPost(https['souSuo'], data)
+			.then(rd => {
+				// console.log(rd)
+				this.vc_area = rd.data;
+			})
+			.catch(res => {
+				console.log(res, "res")
+			})
 	}
  },
+ created(){
+	 this.getProvice();
+	 this.autoCode();
+	 
+ }
 }
 </script>
 <style scoped>
@@ -282,6 +365,9 @@ export default {
 		cursor: pointer;
 		padding:10px 2em;
 		line-height: 6px;
+	}
+	.idIcon{
+		font-size: 14px !important;
 	}
 	.w5{
 		width:6%;

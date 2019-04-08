@@ -3,8 +3,8 @@
 	<div class="xunhun">
 		<Header :isHeader="1"></Header>
 		<div class="xh_main">
-			<div class="vip_notice" @click="goToVip" v-if="vip==0">
-				<img src="../assets/img/vip.png" alt="">
+			<div class="vip_notice" @click="goToVip" >
+				<img src="../assets/img/vip.png"  alt="">
 			</div>
 			<div class="changeseach">
 				<el-row :gutter="24" style="margin-left: 0;">
@@ -114,7 +114,7 @@
 									</el-col>
 								</el-row>
 							</div> -->
-							<div v-for="(items,index) in userdata['tjList']" :key="index" class="useritem" @click.stop="showDetail(items['vc_nickname'])">
+							<div v-for="(items,index) in userdata['tjList']" :key="index" class="useritem" @click.stop="showDetail(items['id']?items['id']:'')">
 								<el-row :gutter="24">
 									<el-col :span="10">
 										<img v-if="items['vc_img']&&items['vc_img']!=''" style="width:150px;height:150px;" :src="items['vc_img']"
@@ -123,9 +123,9 @@
 										 alt="">
 									</el-col>
 									<el-col :span="14">
-										<div class="uiname">{{items['vc_nickname']}}</div>
+										<div class="uiname">{{items['vc_nickname']?items['vc_nickname']:''}}</div>
 										<div class="uiinfo">
-											{{`${items['n_age']}岁 | ${items['vc_city']} | ${items.vc_worke}`}}
+											{{`${items['n_age']}岁 | ${items['vc_city']} ${items.vc_worke?'|'+items.vc_worke:''}`}}
 
 											<!-- 湛江|157cm|客户经理 -->
 										</div>
@@ -133,7 +133,7 @@
 											{{items['vc_descript']==""?'努力寻找另一半....':items['vc_descript']}}
 											
 										</div>
-										<div class="sayhellow" @click.stop="dazh(items['vc_nickname'])">
+										<div class="sayhellow" @click.stop="dazh(items['vc_nickname']?items['vc_nickname']:'')">
 											<el-button size="small">打招呼</el-button>
 										</div>
 									</el-col>
@@ -152,13 +152,13 @@
 									<img style="width:100px;height:100px;" src="../assets/img/8311191311554389.png"
 									 alt="">
 									<div class="icon_vip">
-										<span class="start" @click="dolink('./vip')"></span>
-										<span class="vip" @click="dolink('./vip')"></span>
-										<span class="card" @click="dolink('./idcard')"></span>
+										<span :class="userdata['userlist']['n_isstar']?'start atctive':'start'" @click="dolink('./start')"></span>
+										<span :class="userdata['userlist']['n_isvip']?'vip active':'vip'" @click="dolink('./vip')"></span>
+										<span :class="userdata['userlist']['n_issm']?'card active':'card'" @click="dolink('./idcard')"></span>
 									</div>
 								</div>
 								<div class="box">
-									<div class="lac1">{{userdata['userlist']['vc_nickname']}}</div>
+									<div class="lac1">{{userdata['userlist']['vc_nickname']?userdata['userlist']['vc_nickname']:''}}</div>
 									<div class="lac1" style="padding-top:4%;"><!--ID：12321542512--></div>
 									<div class="lac1" style="padding-top:3%;">
 										<span>30%</span>
@@ -170,7 +170,7 @@
 							<el-row :gutter="24" style="margin-right: 0;width:90%;margin:auto;">
 								<el-col :span="8">
 									<div @click="dolink('./browse')">
-										<img v-if=" userdata['userlist']['vc_img']&&userdata['userlist']['vc_img']!='' " src="../assets/img/view.1064335.png" alt="">
+										<img v-if="userdata['userlist']['vc_img']&&userdata['userlist']['vc_img']!='' " src="../assets/img/view.1064335.png" alt="">
 										<img v-else src="../assets/img/view.1064335.png" alt="">
 										<div class="ninfo_text">{{userdata['userlist']['n_show']}}人浏览</div>
 									</div>
@@ -191,7 +191,7 @@
 						</div>
 
 						<div class="perseon">
-							<div class="xhfwtitle">寻婚服务</div>
+							<div class="xhfwtitle">金梦情缘服务</div>
 							<div class="xhyw">
 								<ul>
 									<li @click="dolink('./vip')">
@@ -199,7 +199,7 @@
 											<img src="https://i.zhenai.com/pc/portal/myZhenai/images/zhenxin.67ffa14.png" alt="">
 										</div>
 										<div class="fwcontext">
-											<div class="fwheader">寻婚会员</div>
+											<div class="fwheader">金梦情缘会员</div>
 											<div class="body">解锁消息发送，无限量免费查看，更多精准筛选条件</div>
 										</div>
 									</li>
@@ -238,7 +238,7 @@
 				</el-row>
 			</div>
 		</div>
-		<Shadow :isShadow="vip" @shadowcall="callclose">
+		<Shadow :xianshi="n_issm" :linkUrl="'./idcard'" :shadowcall="callclose">
 		</Shadow>
 	</div>
 </template>
@@ -252,14 +252,21 @@
 		data() {
 			return {
 				vip: 0,
-				form: {},
+				form: {
+					vc_city:'',
+					vc_area:''
+				},
 				provice: [], //省份
 				city: [], //城市
 				Area: [], //地区
 				autoData: [],//默认的数据编码
-				userdata:[],//用户数据
+				userdata:{userlist:{vc_nickname:''}},//用户数据
 				isShowSlec: 0,
-				wokelist:mingzu['zhiye']
+				wokelist:mingzu['zhiye'],
+				n_issm:0,
+				provincearr:[],
+				citysarrs:[],
+				areaarrs:[]
 			}
 		},
 		computed:{
@@ -268,12 +275,12 @@
 			}
 		},
 		methods: {
-			...mapMutations(['changInfo','setpCode']),
+			...mapMutations(['changInfo','setpCode','setPosition']),
 			goToVip() {
 				this.$router.push('./vip')
 			},
 			callclose() {
-				this.vip  = 0
+				this.n_issm=1;
 			},
 			gotfollw() {
 				this.$router.push('./follow')
@@ -302,50 +309,72 @@
 			},
 			// 获取省份
 			getProvice: function() {
-				connetAction.ajaxPost(https['tree'], "")
-					.then(rd => {
-						//console.log(rd)
-						this.provice = rd.data;
-						if (rd.status != 0) {
+				if(!localStorage.posPAC){
+					connetAction.ajaxPost(https['tree'], "")
+						.then(rd => {
+							//console.log(rd)
+							if (rd.status != 0) {
+								var provice = rd.data;
+								for(var i=0;i<provice.length;i++){
+									if(provice[i]['type']==1){
+										this.provincearr.push(provice[i]);
+									}
+									if(provice[i]['type']==2){
+										this.citysarrs.push(provice[i]);
+									}
+									if(provice[i]['type']==3){
+										this.areaarrs.push(provice[i]);
+									}
+								}
+								this.provice = this.provincearr;
+								// 存储三级联动数据
+								this.setPosition({vc_province:this.provincearr,vc_city:this.citysarrs,vc_area:this.areaarrs});
+								
+								localStorage.posPAC = JSON.stringify({vc_province:this.provincearr,vc_city:this.citysarrs,vc_area:this.areaarrs})
+								
+							}
 
-						}
-					})
-					.catch(res => {
-						console.log(res, "res")
-					})
+						})
+						.catch(res => {
+							console.log(res, "res")
+						})
+				}else{
+					this.provice = this.provincearr = localStorage.posPAC.vc_province;
+					this.citysarrs = localStorage.posPAC.vc_city;
+					this.areaarrs = localStorage.posPAC.vc_area;
+				}
 			},
 			//获取城市
 			getCity: function(pid) {
-				connetAction.ajaxPost(https['tree'], {
-						pid,
-						type: 2
-					})
-					.then(rd => {
-						// console.log(rd)
-						this.city = rd.data;
-					})
-					.catch(res => {
-						console.log(res, "res")
-					})
+				this.city = [];
+				this.Area = [];
+				this.form.vc_area = "";
+				this.form.vc_city = "";
+
+				for(var i=0;i<this.citysarrs.length;i++){
+					if(this.citysarrs[i]['pid']==pid){
+						this.city.push(this.citysarrs[i])
+					}
+				}
+				
 			},
 			//获取地区
 			getArea: function(pid) {
-				connetAction.ajaxPost(https['tree'], {
-						pid,
-						type: 3
-					})
-					.then(rd => {
-						// console.log(rd)
-						this.Area = rd.data;
-					})
-					.catch(res => {
-						console.log(res, "res")
-					})
+				this.form.vc_area = "";
+				this.Area = [];
+				for(var i=0;i<this.areaarrs.length;i++){
+					if(this.areaarrs[i]['pid']==pid){
+						this.Area.push(this.areaarrs[i]);
+					}	
+				}
 			},
 			autoCode: function() {
 				connetAction.ajaxPost(https['getCode'], "")
 					.then(rd => {
 						this.autoData = rd.data;
+						if(!this.autoData.tiaoJian){
+								this.isShowSlec = 1;		
+						}
 						// 获得资料模板数据
 						this.setpCode(rd.data);
 						//console.log(this.autoData)
@@ -363,19 +392,44 @@
 					.then(rd => {
 						if(rd.status==1){
 							this.userdata = rd.data;
-							console.log(this.userdata ,42)
 							this.vip =this.userdata['userlist']['n_isvip'];
+							this.n_issm =this.userdata['userlist']['n_issm'];
+							console.log(this.userdata,3333)
 						}
 					})
 					.catch(res => {
 						// console.log(res,"res")
 					})
+			},
+			listAreaArr:function(id){
+				var arr = [];
+				var str = "";
+				connetAction.ajaxPost(https['tree'], {
+						pid:id,
+						type:3
+					})
+					.then(rd => {
+						// console.log(rd)
+						arr = rd.data;
+						
+					})
+					.catch(res => {
+						console.log(res, "res")
+					})
+				
+				console.log(1)
+				return str
+				
+				
 			}
+		},
+
+		created(){
+			this.getuerList();
 		},
 		mounted() {
 			this.getProvice();
 			this.autoCode();
-			this.getuerList();
 			
 		}
 	}
@@ -584,13 +638,22 @@
 	.start {
 		background: url(../assets/img/start1.png) no-repeat;
 	}
+	.start.active{
+		background: url(../assets/img/start2.png) no-repeat;
+	}
 
 	.vip {
 		background: url(../assets/img/vip1.png) no-repeat;
 	}
+	.vip.active{
+		background: url(../assets/img/vip2.png) no-repeat;
+	}
 
 	.card {
 		background: url(../assets/img/card1.png) no-repeat;
+	}
+	.card.active{
+		background: url(../assets/img/card2.png) no-repeat;
 	}
 
 	.selrow {

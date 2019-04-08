@@ -13,13 +13,14 @@
 							<div class="userheader">
 								<div class="myheaderlogo"></div>
 								<div class="infoworks">
-									<div class="name">小小鱼 
+									<div class="name" style="margin-top:25px;">小小鱼 
 										<span class="card_type start"></span>
 										<span class="card_type card"></span>
 										<span class="card_type vip"></span>
 									 <span class="userfollow">关注</span>
 									</div>
-									<div class="user_id mt10">ID：1761685425</div>
+									<!-- ID：1761685425 -->
+									<div class="user_id mt10"></div>
 									<div class="workesage mt10">湛江 | 22岁 | 高中及以下 | 未婚 | 160cm | 3001-5000元</div>
 									<div class="phoneto">
 										<div class="ctrl prve"></div>
@@ -188,6 +189,9 @@
   </div>
 </template>
 <script>
+import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
+import mingzu from '../json/mz.json'
+import https from "../utils/Https.js"
 	export default{
 		data(){
 			return{
@@ -211,7 +215,24 @@
 			},
 			checkVip:function(i){
 				this.GMative = i;
+			},
+			huiyuanInfo(){
+				connetAction.ajaxPost(https['huiyuan'], {id:5})
+				.then(rd => {
+					this.autoData = rd.data;
+					this.gzArr = 	this.autoData['2'];
+						
+					// 获得资料模板数据
+					// this.setpCode(rd.data);
+					//console.log(this.autoData)
+				})
+				.catch(res => {
+					// console.log(res,"res")
+				})
 			}
+		},
+		created(){
+			this.huiyuanInfo();
 		}
 	}
 	

@@ -9,14 +9,15 @@
 					<div class="right_mysel">
 						<div class="headeicon">
 							<img src="https://photo.zastatic.com/images/cms/banner/20181121/8311191311554389.png?scrop=1&crop=1&cpos=north&w=80&h=80" alt="">
+							<div class="changimngbtn">修改头像</div>
 						</div>
 						<div class="user_name">
-							我是可爱
+							{{autoInfo['vc_nickname']}}
 						</div>
 						<div class="user_name iconbox">
-							<span class="start"></span>
-							<span class="vip"></span>
-							<span class="card"></span>
+							<span :class="autoInfo['n_isstar']==1?'start active':'start'"></span>
+							<span :class="autoInfo['n_isvip']==1?'vip active':'vip'"></span>
+							<span :class="autoInfo['n_issm']==1?'card active':'card'"></span>
 						</div>
 						<div class="pannel_info">
 							<el-collapse v-model="activeName" accordion  @change="change1">
@@ -24,8 +25,8 @@
 								<div v-for="(itmes,index) in pannelList['myinfo_nav']"  :class="itmes.active==1?'tiemsmy ative':'tiemsmy'"  :key="index" @click="changeItems(index)">{{itmes.contxt}}</div>
 							  </el-collapse-item>
 							  <el-collapse-item title="系统设置" name="2">
-								<div class="tiemsmy" :class="qxindex==5?'tiemsmy ative':'tiemsmy'"  @click="changeItems(5,1)">权限设置</div>
-								<div class="tiemsmy" :class="qxindex==6?'tiemsmy ative':'tiemsmy'"  @click="changeItems(6,1)">密码设置</div>
+								<div class="tiemsmy" :class="qxindex==5?'tiemsmy ative':'tiemsmy'"  @click="changeItems(6,1)">权限设置</div>
+								<div class="tiemsmy" :class="qxindex==6?'tiemsmy ative':'tiemsmy'"  @click="changeItems(7,1)">密码设置</div>
 							  </el-collapse-item>
 							</el-collapse>
 						</div>
@@ -39,7 +40,7 @@
 							</div>
 						</div>
 						<div class="infoframe1" v-if="myinf_index==0">
-						 <el-form ref="form" :model="form" label-width="80px">
+						 <el-form ref="form" :model="formm" label-width="80px">
 								<!--	
 							  <el-form-item label="昵称:">
 								 <el-col :span="6">
@@ -56,50 +57,50 @@
 							   -->
 							  <div class="flex">
 								  <el-form-item label="月收入:">
-									<el-select v-model="form.n_money" placeholder="请选择月收入">
-									  <el-option v-for="(items,index) in autoData['2']" :key="index" :label="items['value']" :value="items['id']">
+									<el-select v-model="formm.n_money" placeholder="请选择月收入">
+									  <el-option v-for="(items,index) in autoData['2']" :key="index" :label="items['value']" :value="items['code']">
 									  </el-option>
 									</el-select>
 								 </el-form-item> 
 								 <el-form-item label="身高:">
-										<el-input v-model="form.n_sg"> <i slot="suffix" class='idIcon' >(cm)</i></el-input>
+										<el-input v-model="formm.n_sg"> <i slot="suffix" class='idIcon' >(cm)</i></el-input>
 								 </el-form-item>
 							  </div>
 							  <div class="flex">
 								  <el-form-item label="工作地区:">
-									<el-select v-model="form.vc_province" @change="getCity" placeholder="请选择省份">
+									<el-select v-model="formm.vc_province" @change="getCity" placeholder="请选择省份">
 										<el-option v-for="(items,index) in vc_province" :key="index" :label="items['name']" :value="items['id']"></el-option>
 									</el-select>
 								 </el-form-item> 
 								 <el-form-item label="" label-width="20px">
-									<el-select v-model="form.vc_city" @change="getArea"  placeholder="请选择城市">
+									<el-select v-model="formm.vc_city" @change="getArea"  placeholder="请选择城市">
 										<el-option v-for="(item,index) in vc_city" :key="index" :label="item['name']" :value="item['id']"></el-option>
 									</el-select>
 								 </el-form-item>
 								 <el-form-item label="" label-width="20px">
-										<el-select v-model="form.vc_area"  placeholder="请选择城区">
+										<el-select v-model="formm.vc_area"  placeholder="请选择城区">
 											<el-option v-for="(item,index) in vc_area" :key="index" :label="item['name']" :value="item['id']"></el-option>
 										</el-select>
 								 </el-form-item>
 							  </div>
 							 <div class="flex">
 								   <el-form-item label="体重:">
-								  		<el-input v-model="form.n_tz"> <i slot="suffix" class='idIcon' >(kg)</i></el-input>
+								  		<el-input v-model="formm.n_tz"> <i slot="suffix" class='idIcon' >(kg)</i></el-input>
 								  </el-form-item>
 								 <el-form-item label="星座:" label-width="80px">
-									<el-select v-model="form.vc_xinzuo" placeholder="请选择">
+									<el-select v-model="formm.vc_xinzuo" placeholder="请选择">
 									   <el-option v-for="(item,index) in xinzuo" :key="index" :label="item['name']" :value="item['val']" ></el-option>
 									</el-select>
 								 </el-form-item>
 							</div>
 							<div class="flex">
 								  <el-form-item label="民族:">
-									<el-select v-model="form.vc_mz" placeholder="请选择">
+									<el-select v-model="formm.vc_mz" placeholder="请选择">
 										<el-option v-for="(item,index) in mzArr" :key="index" :label="item.name" :value="item.val"></el-option>
 									</el-select>
 								 </el-form-item> 
 								 <el-form-item label="有没有孩子:" label-width="100px">
-									<el-select v-model="form.n_ischild" placeholder="请选择">
+									<el-select v-model="formm.n_ischild" placeholder="请选择">
 									   <el-option v-for="(items,index) in autoData['3']" :key="index" :label="items['value']" :value="items['id']">
 									  </el-option>
 									</el-select>
@@ -107,14 +108,14 @@
 							</div>
 							 <div class="flex">
 								 <el-form-item label="何时结婚:">
-										<el-select v-model="form.n_jiehuntime" placeholder="请选择">
+										<el-select v-model="formm.n_jiehuntime" placeholder="请选择">
 										   <el-option v-for="(items,index) in autoData['4']" :key="index" :label="items['value']" :value="items['id']">
 										  </el-option>
 										</el-select>
 								 </el-form-item> 
 								 <el-form-item label="是否想要孩子:" label-width="120px">
-									<el-select v-model="form.n_child" placeholder="请选择">
-									    <el-option v-for="(items,index) in autoData['5']" :key="index" :label="items['value']" :value="items['id']">
+									<el-select v-model="formm.n_child" placeholder="请选择">
+									    <el-option v-for="(items,index) in autoData['5']" :key="index" :label="items['value']" :value="items['code']">
 									   </el-option>
 									</el-select>
 								 </el-form-item>
@@ -123,13 +124,13 @@
 							<div style="width:80%;">
 								<el-form-item label="兴趣爱好:">
 									<div>喜欢的一道菜，欣赏的一个名人，喜欢的一首歌，喜欢的一本书，喜欢做的事</div>
-									<el-input type="textarea" placeholder="说出你的兴趣爱好....." v-model="form.vc_loveplay"></el-input>
+									<el-input type="textarea" placeholder="说出你的兴趣爱好....." v-model="formm.vc_loveplay"></el-input>
 								</el-form-item>
 							</div>
 							<div style="width:80%;">
 								<el-form-item label="活动形式:">
 									<div>介绍一下自己，描述一下理想的伴侣，说说你对婚姻的期望</div>
-									<el-input type="textarea" placeholder="说出你的故事....." v-model="form.vc_descript"></el-input>
+									<el-input type="textarea" placeholder="说出你的故事....." v-model="formm.vc_descript"></el-input>
 								</el-form-item>
 							</div>
 							  
@@ -140,7 +141,7 @@
 						</div>
 						<div class="infoframe1" v-if="myinf_index==1" >
 							
-							<el-form ref="form" :model="form1" label-width="80px">
+							<el-form ref="form1" :model="form1" label-width="80px">
 							    <div class="flex">
 								  <el-form-item label="职业类别:">
 									<el-select v-model="form1.vc_worke" placeholder="请选择">
@@ -151,39 +152,28 @@
 								 <div class="flex">
 								  <el-form-item label="买房情况:">
 									<el-select v-model="form1.n_ishouse" placeholder="请选择">
-									  <el-option label="和家人住" value="1"></el-option>
-									  <el-option label="已购房" value="2"></el-option>
-									  <el-option label="租房" value="3"></el-option>
-									  <el-option label="打算婚后购房" value="4"></el-option>
-									  <el-option label="在单位宿舍住" value="5"></el-option>
+									  <el-option v-for="(items,index) in ['和家人住','已购房','租房','打算婚后购房','在单位宿舍住']" :key="index" :label="items" :value="index+1"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
 								 <div class="flex">
 								  <el-form-item label="买车情况:">
 									<el-select v-model="form1.n_iscar" placeholder="请选择">
-									  <el-option label="已购买" value="1"></el-option>
-									  <el-option label="未购买" value="2"></el-option>
+									  <el-option v-for="(items,index) in ['已购买','未购买']" :key="index" :label="items" :value="index+1"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
 								<div class="flex">
 								  <el-form-item label="是否吸烟:">
 									<el-select v-model="form1.n_smoke" placeholder="请选择">
-									  <el-option label="不吸烟" value="1"></el-option>
-									  <el-option label="稍微抽一点烟" value="2"></el-option>
-									  <el-option label="烟抽得很多" value="3"></el-option>
-									  <el-option label="社交场合会抽烟" value="4"></el-option>
+									  <el-option v-for="(items,index) in ['不吸烟','稍微抽一点烟','烟抽得很多','社交场合会抽烟']" :key="index" :label="items" :value="index+1"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
 								<div class="flex">
 								  <el-form-item label="是否喝酒:">
 									<el-select v-model="form1.n_alcohol" placeholder="请选择">
-									  <el-option label="不喝酒" value="1"></el-option>
-									  <el-option label="稍微喝一点酒" value="2"></el-option>
-									  <el-option label="酒喝得很多" value="3"></el-option>
-									  <el-option label="社交场合会喝酒" value="4"></el-option>
+									  <el-option v-for="(items,index) in ['不喝酒','稍微抽一点酒','酒喝得很多','社交场合会喝酒']" :key="index" :label="items" :value="index+1"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
@@ -222,31 +212,29 @@
 							</div>
 						</div>
 						<div class="infoframe1" v-if="myinf_index==3"  >
-							<el-form ref="form" :model="form2" label-width="80px">
+							<el-form  :model="form2" label-width="80px">
 							    <div class="flex">
 								  <el-form-item label="年龄:">
-									<el-select v-model="form2.n_min_age" placeholder="请选择">
-									  <el-option v-for="(ageitem,i) in 90" v-if="ageitem>=18"  :label="ageitem" :value="ageitem"  :key="i"></el-option>
-									</el-select>
+										<el-input v-model="form2.n_min_age" placeholder="请输入年龄">
+											<i slot="suffix">(岁)</i>
+										</el-input>
 								  </el-form-item> 
 								 <div style="line-height: 40px;margin-left: 25px;"> 至</div>
 								  <el-form-item label="" label-width="30px">
-									<el-select v-model="form2.n_max_age" placeholder="请选择">
-									  <el-option v-for="(ageitem,i) in 90" v-if="ageitem>=18"  :label="ageitem" :value="ageitem"  :key="i"></el-option>
-									</el-select>
+											<el-input v-model="form2.n_max_age" placeholder="请输入年龄">
+											<i slot="suffix">(岁)</i>
+										</el-input>
 								  </el-form-item> 
 								</div>
 								<div class="flex">
 								  <el-form-item label="身高:">
-									<el-select v-model="form2.n_min_sg" placeholder="请选择">
-									  <el-option v-for="(tallitem,i) in 200" v-if="tallitem>=150"  :label="tallitem" :value="tallitem"  :key="i"></el-option>
-									</el-select>
+										<el-input v-model="form2.n_min_sg" placeholder="请输入身高">
+											<i slot="suffix">(cm)</i>
+										</el-input>
 								  </el-form-item> 
 								 <div style="line-height: 40px;margin-left: 25px;"> 至</div>
 								  <el-form-item label="" label-width="30px">
-									<el-select v-model="form2.n_max_sg" placeholder="请选择">
-									  <el-option v-for="(tallitem,i) in maxNums(200,150)" v-if="tallitem>=150" :label="tallitem" :value="tallitem"  :key="i"></el-option>
-									</el-select>
+										<el-input v-model="form2.n_max_sg" placeholder="请输入身高">	<i slot="suffix">(cm)</i></el-input>
 								  </el-form-item> 
 								</div>
 								<div class="flex">
@@ -261,15 +249,16 @@
 								<div class="flex">
 								  <el-form-item label="月收入">
 									<el-select v-model="form2.n_money" placeholder="请选择">
-									  <el-option v-for="(moneyitem,i) in 20000" v-if="moneyitem%1000==0&&moneyitem>=2000"  :label="moneyitem" :value="moneyitem"  :key="i"></el-option>
+										  <el-option v-for="(items,index) in autoData['2']" :key="index" :label="items['value']" :value="items['code']">
+									  </el-option>
 									</el-select>
 								  </el-form-item> 
-								 <div style="line-height: 40px;margin-left: 25px;"> 至</div>
-								  <el-form-item label="" label-width="30px">
-									<el-select v-model="form2.mincomerange" placeholder="请选择">
-									  <el-option v-for="(moneyrange,i) in 20000" v-if="moneyrange%1000==0&&moneyrange>=2000"  :label="moneyrange" :value="moneyrange"  :key="i"></el-option>
-									</el-select>
-								  </el-form-item> 
+									<!-- <div style="line-height: 40px;margin-left: 25px;"> 至</div>
+									<el-form-item label="" label-width="30px">
+										<el-select v-model="form2.mincomerange" placeholder="请选择">
+											<el-option v-for="(itemsrang,i) in 20000" v-if="itemsrang%1000==0&&itemsrang>=2000"  :label="itemsrang" :value="itemsrang"  :key="i"></el-option>
+										</el-select>
+								  </el-form-item>  -->
 								</div>
 								 <div class="flex">
 								  <el-form-item label="学历:">
@@ -282,10 +271,8 @@
 								 <div class="flex">
 								  <el-form-item label="婚姻:">
 									<el-select v-model="form2.n_hyzk" placeholder="请选择">
-									  <el-option label="不限" value="1"></el-option>
-									  <el-option label="未婚" value="3"></el-option>
-									  <el-option label="离异" value="3"></el-option>
-									  <el-option label="丧偶" value="3"></el-option>
+									  <el-option v-for="(items,index) in ['不限','未婚','离异','丧偶']" :key="index" :label="items" :value="index+1"></el-option>
+									 
 									</el-select>
 								 </el-form-item> 
 								</div>
@@ -300,7 +287,7 @@
 								 </el-form-item> 
 								 <el-form-item label="" label-width="30px">
 											<el-select v-model="form2.n_city" placeholder="请选择">
-											  <el-option v-for="(items,index) in vc_city" :key="index" :label="items['name']" :value="items['id']">
+											  <el-option v-for="(itemss,index) in vc_city" :label="itemss['name']" :value="itemss['id']"  :key="index">
 											 </el-option>
 											</el-select>
 								 </el-form-item> 
@@ -308,11 +295,7 @@
 								<div class="flex">
 								  <el-form-item label="有没有孩子:" label-width="100px">
 									<el-select v-model="form2.n_ischild" placeholder="请选择">
-									  <el-option label="不限" value="1"></el-option>
-									  <el-option label="没有小孩" value="2"></el-option>
-									  <el-option label="有孩子且住一起" value="3"></el-option>
-									  <el-option label="有孩子且偶尔住一起" value="4"></el-option>
-									  <el-option label="有孩子但不在身边" value="5"></el-option>
+									  <el-option v-for="(items,index) in ['没有小孩','有孩子且住一起','有孩子且偶尔住一起','有孩子但不在身边']" :key="index" :label="items" :value="index+1"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
@@ -326,26 +309,21 @@
 								<div class="flex">
 								  <el-form-item label="是否可以吸烟:" label-width="100px">
 									<el-select v-model="form2.n_smoke" placeholder="请选择">
-									  <el-option label="不限" value="1"></el-option>
-									  <el-option label="可以吸烟" value="2"></el-option>
-									  <el-option label="不要吸烟" value="3"></el-option>
+									  <el-option v-for="(items,index) in ['不限','可以吸烟','不要吸烟']" :key="index" :label="items" :value="index+1"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
 								<div class="flex">
 								  <el-form-item label="是否可以喝酒:" label-width="100px">
 									<el-select v-model="form2.n_alcohol" placeholder="请选择">
-									  <el-option label="不限" value="1"></el-option>
-									  <el-option label="可以喝酒" value="2"></el-option>
-									  <el-option label="不要喝酒" value="3"></el-option>
+									  <el-option v-for="(items,index) in ['不限','可以喝酒','不要喝酒']" :key="index" :label="items" :value="index+1"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
 								<div class="flex">
 								  <el-form-item label="有没有照片:" label-width="100px">
 									<el-select v-model="form2.n_isphoto" placeholder="请选择">
-									  <el-option label="不限" value="1"></el-option>
-									  <el-option label="有" value="2"></el-option>
+									  <el-option v-for="(items,index) in ['不限','没有','有']" :key="index" :label="items" :value="index+1"></el-option>
 									</el-select>
 								 </el-form-item> 
 								</div>
@@ -367,60 +345,80 @@
 								</li>
 							</div>
 						</div>
-						<!-- 权限设置 -->
 						<div class="infoframe1" v-if="myinf_index==5"  >
+							<el-form ref="form5" :model="form5" label-width="80px">
+							    <div style="width:50%;">
+										<el-form-item label="手机号码:">
+										<el-input v-model="form5.vc_ordpassword" type="text" placeholder="请输入手机号码"></el-input>
+										</el-form-item> 
+									<div  style="line-height: 40px;margin-left: 25px;"></div>
+										<el-form-item label="验证码:">
+											<div class="flex">
+														<el-input type="text" v-model="form5.code" placeholder="请输验证码"></el-input>
+														<div style="margin-left:10%;">
+															<el-button type="primary" size="small" @click="posCode">发送验证码</el-button>
+														</div>
+											</div>
+										</el-form-item> 
+									</div>
+									<el-form-item>
+										<el-button type="primary" @click="changPsw">确认修改</el-button>
+									</el-form-item>
+							</el-form>	
+						</div>
+						<!-- 权限设置 -->
+						<div class="infoframe1" v-if="myinf_index==6"  >
 							<div class="llhead">
 								浏览资料权限
 							</div>
-							<div class="llbody">
-								<div class="radiosBox">
-								 <el-radio-group v-model="qxradio">
-									 <div class="radiosll">
-									<el-radio :label="1"> 所有会员可见</el-radio>
+								<div class="llbody">
+									<div class="radiosBox">
+									<el-radio-group v-model="qxradio">
+										<div class="radiosll">
+										<el-radio :label="1"> 所有会员可见</el-radio>
+										</div>
+										<div class="radiosll">
+											<el-radio :label="2">所有会员不可见</el-radio>
+										</div>
+										</el-radio-group>
+										<div v-if="qxradio==2" class="radiosll">
+											<p>请选择关闭的原因</p>
+											<div class="radiosll">
+												<li>
+												<el-radio-group v-model="qxyy">
+													<el-radio :label="1">我已找到正在交往的对象</el-radio>
+												</el-radio-group>
+											</li>
+												<li> 
+												
+												<el-radio-group v-model="qxyy">
+													<el-radio :label="2">我已找到真爱，即将踏上红毯</el-radio>
+												</el-radio-group>
+											</li>
+												<li>
+												<el-radio-group v-model="qxyy">
+													<el-radio :label="3">我最近忙，无法及时回复邮件</el-radio>
+												</el-radio-group>
+											</li>
+											</div>
+										</div>
+										
 									</div>
-									<div class="radiosll">
-										<el-radio :label="2">所有会员不可见</el-radio>
+									
+									<div class="radiosl1" style="padding-left: 10px;">
+										<el-radio-group v-model="qxradio">
+											<el-radio :label="3">部分会员不可见</el-radio>
+										</el-radio-group>
 									</div>
-								  </el-radio-group>
-								  <div v-if="qxradio==2" class="radiosll">
-								  	<p>请选择关闭的原因</p>
-								  	<div class="radiosll">
-								  		<li>
-											<el-radio-group v-model="qxyy">
-												<el-radio :label="1">我已找到正在交往的对象</el-radio>
-											</el-radio-group>
-										</li>
-								  		<li> 
-											
-											<el-radio-group v-model="qxyy">
-												<el-radio :label="2">我已找到真爱，即将踏上红毯</el-radio>
-											</el-radio-group>
-										</li>
-								  		<li>
-											<el-radio-group v-model="qxyy">
-												<el-radio :label="3">我最近忙，无法及时回复邮件</el-radio>
-											</el-radio-group>
-										</li>
-								  	</div>
-								  </div>
-								  
-								</div>
-								
-								 <div class="radiosl1" style="padding-left: 10px;">
-								   <el-radio-group v-model="qxradio">
-										<el-radio :label="3">部分会员不可见</el-radio>
-									</el-radio-group>
-								</div>
-								 <div v-if="qxradio==3" class="radiosl1" style="padding-left: 10px;padding-top: 10px;display: flex; width: 50%;">
-									<el-input v-model="pbid" placeholder="请输入ID"></el-input>
-									<el-button>屏蔽该ID</el-button>
-								 </div>
-								
+									<div v-if="qxradio==3" class="radiosl1" style="padding-left: 10px;padding-top: 10px;display: flex; width: 50%;">
+										<el-input v-model="pbid" placeholder="请输入ID"></el-input>
+										<el-button>屏蔽该ID</el-button>
+									</div>
 							</div>
 						</div>
 						
-						<div class="infoframe1" v-if="myinf_index==6"  >
-							<el-form ref="form" :model="form5" label-width="80px">
+						<div class="infoframe1" v-if="myinf_index==7"  >
+							<el-form ref="form7" :model="form7" label-width="80px">
 							    <div class="flex">
 								  <el-form-item label="原密码:">
 									<el-input v-model="form5.vc_ordpassword" type="text" placeholder="请输入原密码"></el-input>
@@ -454,6 +452,7 @@
 				myinf_index:0,
 				activeName:"1",
 				arrIndex:0,
+				gzArr:[],
 				imgdata:"1",//判断Img数据
 				pannelList:{ //左侧菜单
 					myinfo_nav:[
@@ -472,6 +471,9 @@
 						},{
 							contxt:'我的认证',
 							active:0
+						},{
+							contxt:'修改手机号码',
+							active:0
 						}
 					]
 				},
@@ -486,18 +488,31 @@
 				vc_city:"",
 				vc_area:"",
 				vc_province1:'',//择偶时候的省
-				form:{},
-				form1:{},
+				formm:{n_money:'',n_sg:"",vc_province:"",vc_city:"",vc_area:"",n_tz:"",vc_xinzuo:"",vc_mz:"",n_ischild:"",n_jiehuntime:"",vc_loveplay:"",vc_descript:""},
+				form1:{
+						vc_worke:1,
+						n_ishouse:1,
+						n_iscar:2,
+						n_smoke:1,
+						n_alcohol:1
+				},
 				form2:{},
+				form5:{},
+				form6:{},
 				qxradio:1,//权限单选
 				qxyy:1,//关闭原因
-				pbid:""
+				pbid:"",
+				autoInfo:{vc_nickname:''},
+				autoData:{},
+				provincearr:[],
+			  citysarrs:[],
+				areaarrs:[]
 			}
 		},
 		computed:{
-			autoData(){
-				return this.$store.state.getpCode;
-			},
+			// autoData(){
+			// 	return this.$store.state.getpCode;
+			// },
 			maxNums(){
 				return (prams1,prams2)=>{
 						return prams1>prams2?prams1:prams2
@@ -509,7 +524,6 @@
 				this.myinf_index = index;
 			},
 			changeItems:function(index,type){
-				
 				for (var i=0;i<this.pannelList['myinfo_nav'].length;i++) {
 					this.pannelList['myinfo_nav'][i]['active'] = 0;
 				}
@@ -519,6 +533,24 @@
 				}else{
 					this.qxindex = index;
 				}
+				//菜单选中信重新赋值
+				switch (Number(index)) {
+					case 0:
+							this.setformmval();
+							console.log(this.formm.n_money,"	this.formm.n_money")
+						break;
+					case 1:
+							this.form1.vc_worke = Number(this.autoInfo.vc_worke);
+							this.form1.n_ishouse = Number(this.autoInfo.n_ishouse);
+							this.form1.n_iscar = 	Number(this.autoInfo.n_iscar);
+							this.form1.n_smoke = Number(this.autoInfo.n_smoke);
+							this.form1.n_alcohol = Number(this.autoInfo.n_alcohol);
+						break;
+					case 3:
+							this.setform2();
+						break;
+			
+				}
 				this.myinf_index = index;
 			},
 			onSubmit:function(ints){
@@ -527,6 +559,7 @@
 			doLink:function(url){
 				this.$router.push(url)
 			},
+			// 左侧菜单切换
 			change1:function(prams){
 				this.arrIndex = prams - 1;
 			},
@@ -540,35 +573,51 @@
 			},
 			// 获取省份
 			getProvice: function(n) {
-				connetAction.ajaxPost(https['tree'], "")
-					.then(rd => {
-						//console.log(rd)
-							this.vc_province = rd.data;
-							this.vc_province1 = rd.data;
-						if (rd.status != 0) {
-			
+				this.provincearr=[];
+			  this.citysarrs=[];
+				this.areaarrs=[];
+				if(localStorage.posPAC){
+					this.provice =JSON.parse(localStorage.posPAC);
+					for(var i=0;i<this.provice.length;i++){
+						if(this.provice[i]['type']==1){
+							this.provincearr.push(this.provice[i]);
 						}
-					})
-					.catch(res => {
-						console.log(res, "res")
-					})
+						if(this.provice[i]['type']==2){
+							this.citysarrs.push(this.provice[i]);
+						}
+						if(this.provice[i]['type']==3){
+							this.areaarrs.push(this.provice[i]);
+						}
+					}
+				}
+			
 			},
 			//获取城市
 			getCity: function(pid) {
-				connetAction.ajaxPost(https['tree'], {
-						pid,
-						type: 2
-					})
-					.then(rd => {
-						// console.log(rd)
-						this.vc_city = rd.data;
-					})
-					.catch(res => {
-						console.log(res, "res")
-					})
+				this.formm.vc_city = "";
+				this.formm.vc_area ="";
+				var flag = 0;
+				if(arguments.length>0){
+					for(var i=0;i<arguments.length;i++){
+							if(arguments[i]['istype']){
+								flag = 1;
+							}
+					}
+				}
+				if(flag==0){
+					this.form2.n_city = "";
+				};
+				
+				for(var i=0;i<this.citysarrs.length;i++){
+					if(this.citysarrs[i]['pid']==pid){
+						this.city.push(this.citysarrs[i])
+					}
+				}
+			
 			},
 			//获取地区
 			getArea: function(pid) {
+				this.formm.vc_area ="";
 				connetAction.ajaxPost(https['tree'], {
 						pid,
 						type: 3
@@ -599,27 +648,28 @@
 				})
 			},
 			updateInfo:function(){
-				
 				let data = {
 					id:localStorage.openid,
-					n_money:this.form.n_money,
-					n_sg:this.form.n_sg,
-					vc_province:this.form.vc_province,
-					vc_city:this.form.vc_city,
-					vc_area:this.form.vc_area,
-					n_tz:this.form.n_tz,
-					vc_xinzuo:this.form.vc_xinzuo,
-					vc_mz:this.form.vc_mz,
-					n_ischild:this.form.n_ischild,
-					n_jiehuntime:this.form.n_jiehuntime,
-					n_child:this.form.n_child,
-					vc_loveplay:this.form.vc_loveplay,
-					vc_descript:this.form.vc_descript
+					n_money:this.formm.n_money,
+					n_sg:this.formm.n_sg,
+					vc_province:this.formm.vc_province,
+					vc_city:this.formm.vc_city,
+					vc_area:this.formm.vc_area,
+					n_tz:this.formm.n_tz,
+					vc_xinzuo:this.formm.vc_xinzuo,
+					vc_mz:this.formm.vc_mz,
+					n_ischild:this.formm.n_ischild,
+					n_jiehuntime:this.formm.n_jiehuntime,
+					n_child:this.formm.n_child,
+					vc_loveplay:this.formm.vc_loveplay,
+					vc_descript:this.formm.vc_descript
 				}
-				console.log(data,333)
+				// console.log(data,333)
 				connetAction.ajaxPost(https['updateInfo'],data)
 				.then((res)=>{
-					
+					if(res.status==1){
+							
+					}
 				})
 				.catch((res)=>{
 					
@@ -628,8 +678,8 @@
 			changPsw:function(){
 				let data = {
 					id:localStorage.openid,
-					n_money:this.form5.vc_ordpassword,
-					n_sg:this.form5.vc_newpassword,
+					n_money:this.form6.vc_ordpassword,
+					n_sg:this.form6.vc_newpassword,
 				}
 				console.log(data,333)
 				return false;
@@ -640,6 +690,20 @@
 				.catch((res)=>{
 					
 				})
+			},
+			autoCode: function() {
+				connetAction.ajaxPost(https['getCode'], "")
+					.then(rd => {
+						this.autoData = rd.data;
+						this.gzArr = 	this.autoData['2'];
+							
+						// 获得资料模板数据
+						// this.setpCode(rd.data);
+						//console.log(this.autoData)
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
 			},
 			toastip:function(str,type){
 				this.$message({
@@ -724,11 +788,55 @@
 				
 				connetAction.ajaxPost(https['getInfo'],data)
 				.then((res)=>{
-					this.toastip(res.message)
+					if(res.status==1){
+							 this.autoInfo = res.data;
+							// 初始化基本数据
+							 this.setformmval();
+							// 工作
+							// this.toastip(res.message,"success");
+					}else{
+						this.toastip(res.message)
+					}	
+					
 				})
 				.catch((res)=>{
 					
 				})
+			},
+			setformmval:function(){
+					this.formm.n_money = Number(this.autoInfo.n_money);
+					this.formm.n_sg = Number(this.autoInfo.n_sg);
+					this.formm.vc_province = 	Number(this.autoInfo.vc_province);
+					this.getCity(this.autoInfo.vc_province);
+					this.formm.vc_city = Number(this.autoInfo.vc_city);
+					this.getArea(this.autoInfo.vc_city);
+					this.formm.vc_area = Number(this.autoInfo.vc_area);
+					this.formm.n_tz = Number(this.autoInfo.n_tz);
+					this.formm.vc_xinzuo = Number(this.autoInfo.vc_xinzuo);
+					this.formm.vc_mz = Number(this.autoInfo.vc_mz);
+					this.formm.n_ischild = Number(this.autoInfo.n_ischild);
+					this.formm.n_child = Number(this.autoInfo.n_child);
+					this.formm.n_jiehuntime = Number(this.autoInfo.n_jiehuntime);
+					this.formm.vc_loveplay = this.autoInfo.vc_loveplay;
+					this.formm.vc_descript = this.autoInfo.vc_descript;
+			},
+			setform2:function(){
+					// this.form2.n_min_age = Number(this.autoInfo.tiaojian.n_min_age);
+					// this.form2.n_max_age = Number(this.autoInfo.tiaojian.n_max_age);
+					// this.form2.n_min_sg = 	Number(this.autoInfo.tiaojian.n_min_sg);
+					// this.form2.n_max_sg = Number(this.autoInfo.tiaojian.n_max_sg);
+					// this.form2.n_min_tz = Number(this.autoInfo.tiaojian.n_min_tz);
+					// this.form2.n_max_tz = Number(this.autoInfo.tiaojian.n_max_tz);
+					// this.form2.n_money = Number(this.autoInfo.tiaojian.n_money);
+					// alert(this.autoInfo.tiaojian.mincomerange)
+					// this.form2.mincomerange = Number(this.autoInfo.tiaojian.mincomerange);
+					// this.form2.n_xueli = Number(this.autoInfo.tiaojian.n_xueli);
+					// this.form2.n_hyzk = Number(this.autoInfo.tiaojian.n_hyzk);
+					// this.getArea(this.autoInfo.tiaojian.n_city);
+					// this.autoInfo.tiaojian.n_city
+					this.form2 = this.autoInfo.tiaojian;
+					this.getCity(this.autoInfo.tiaojian.n_province,{istype:1});
+					this.form2.n_city =  this.autoInfo.tiaojian.n_city;
 			},
 			chanTile(){
 				let str = "";
@@ -749,9 +857,12 @@
 						str = "我的认证"
 						break;
 					case 5:
-						str = "权限设置"
+						str = "修改手机号码"
 						break;
 					case 6:
+						str = "权限设置"
+						break;
+					case 7:
 						str = "密码设置"
 						break;	
 					default:
@@ -760,10 +871,13 @@
 				return str;
 			}
 		},
+		created(){
+				this.autoCode();
+		},
 		mounted(){
-			console.log(this.autoData)
 			this.getProvice();
 			this.getInfos();
+			
 		}
 	}
 	
@@ -952,14 +1066,34 @@
 		border: 1px solid  transparent;
 	}
 	.headeicon{
+		position: relative;
 		width: 80px;
 		height: 80px;
+		border-radius: 50%;
 		margin:30px auto 10px;
+		overflow: hidden;
 	}
 	.headeicon img{
 		width: 100%;
 		height: 100%;
-		border-radius: 50%;
+
+	}
+	.changimngbtn{
+		display: none;
+		position: absolute;
+		bottom: 0px;
+		width: 100%;
+		left: 0;
+		height: 80px;
+		line-height: 80px;
+		background: rgba(0,0,0,.5);
+		text-align: center;
+		font-size: 12px;
+		color: #fff;
+		cursor: pointer;
+	}
+	.headeicon:hover .changimngbtn{
+		display: block;
 	}
 	.user_name{
 		text-align: center;
@@ -980,11 +1114,20 @@
 	.user_name .start{
 		background: url(../assets/img/start1.png) no-repeat;
 	}
+	.user_name .start.active{
+		background: url(../assets/img/start2.png) no-repeat;
+	}
 	.user_name .vip{
 		background: url(../assets/img/vip1.png) no-repeat;
 	}
+	.user_name .vip.active{
+		background: url(../assets/img/vip2.png) no-repeat;
+	}
 	.user_name .card{
 		background: url(../assets/img/card1.png) no-repeat;
+	}
+	.user_name .card.active{
+		background: url(../assets/img/card2.png) no-repeat;
 	}
 	.myulitem{
 		padding-top: 1em;

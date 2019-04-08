@@ -8,6 +8,8 @@ import Register from './views/Register.vue'
 import Home from './views/Home.vue'
 // VIP充值
 import Vip from './views/Vip.vue'
+//星级充值
+import Start from './views/Start.vue'
 //关注
 import Follow from './views/Follow.vue'
 //信息通知
@@ -131,14 +133,14 @@ export default indexRouter = new Router({
 				title: "完善资料"
 			}
 		},
-// 		{
-// 			path: '/Home',
-// 			name: 'home',
-// 			component: Home,
-// 			meta: {
-// 				title: "我的寻婚",
-// 			}
-// 		},
+		{
+			path: '/Start',
+			name: 'start',
+			component: Start,
+			meta: {
+				title: "星级充值",
+			}
+		},
 		{
 			path: '/Vip',
 			name: 'vip',
