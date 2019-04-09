@@ -13,7 +13,7 @@
 							<div class="userheader">
 								<div class="myheaderlogo"></div>
 								<div class="infoworks">
-									<div class="name" style="margin-top:25px;">小小鱼 
+									<div class="name" style="margin-top:25px;">{{autoInfo['vc_nickname']}}
 										<span class="card_type start"></span>
 										<span class="card_type card"></span>
 										<span class="card_type vip"></span>
@@ -197,7 +197,47 @@ import https from "../utils/Https.js"
 			return{
 				isShowVip:0,
 				isShowMesages:1,
-				GMative:1
+				GMative:1,
+				userData:{
+					album: [],
+					dt_addtime: "2019-02-14 07:02:52",
+					dt_updatetime: "2019-03-22 07:03:12",
+					id: 3,
+					n_age: 18,
+					n_alcohol: 0,
+					n_child: 0,
+					n_huntype: 1,
+					n_info: 30,
+					n_iscar: 0,
+					n_ischild: 0,
+					n_ishouse: 0,
+					n_issm: 0,
+					n_isstar: 0,
+					n_isvip: 0,
+					n_jiehuntime: 0,
+					n_money: 2,
+					n_sex: 2,
+					n_sfzh: 0,
+					n_sg: 0,
+					n_smoke: 0,
+					n_tz: 0,
+					n_xueli: 1,
+					oc_usercode: "3",
+					tiaojian: null,
+					vc_area: 690,
+					vc_city: 75,
+					vc_descript: "",
+					vc_img: null,
+					vc_loveplay: "",
+					vc_mz: null,
+					vc_nickname: "丽梓",
+					vc_province: 5,
+					vc_username: null,
+					vc_userphone: "13702889930",
+					vc_worke: null,
+					vc_xinzuo: null
+					
+				}
 			}
 		},
 		methods:{
@@ -216,6 +256,12 @@ import https from "../utils/Https.js"
 			checkVip:function(i){
 				this.GMative = i;
 			},
+			toastip:function(str,type){
+				this.$message({
+				  message:str ,
+				  type: type||'warning'
+				});
+			},
 			huiyuanInfo(){
 				connetAction.ajaxPost(https['huiyuan'], {id:5})
 				.then(rd => {
@@ -229,10 +275,35 @@ import https from "../utils/Https.js"
 				.catch(res => {
 					// console.log(res,"res")
 				})
-			}
+			},
+			getInfos:function(){
+				let data = {id:this.$route.query.id};
+				if(!data.id){
+					return false;
+				}
+				
+				connetAction.ajaxPost(https['getInfo'],data)
+				.then((res)=>{
+					if(res.status==1){
+							 this.autoInfo = res.data;
+							// 初始化基本数据
+							
+					}else{
+						this.toastip(res.message)
+					}	
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
 		},
 		created(){
 			this.huiyuanInfo();
+			
+		},
+		mounted(){
+			this.getInfos();
 		}
 	}
 	

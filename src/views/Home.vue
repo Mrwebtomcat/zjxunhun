@@ -114,7 +114,7 @@
 									</el-col>
 								</el-row>
 							</div> -->
-							<div v-for="(items,index) in userdata['tjList']" :key="index" class="useritem" @click.stop="showDetail(items['id']?items['id']:'')">
+							<div v-for="(items,index) in userdata['tjList']" :key="index" class="useritem" @click.stop="showDetail(items['vc_nickname'],items['id']?items['id']:'')">
 								<el-row :gutter="24">
 									<el-col :span="10">
 										<img v-if="items['vc_img']&&items['vc_img']!=''" style="width:150px;height:150px;" :src="items['vc_img']"
@@ -125,7 +125,7 @@
 									<el-col :span="14">
 										<div class="uiname">{{items['vc_nickname']?items['vc_nickname']:''}}</div>
 										<div class="uiinfo">
-											{{`${items['n_age']}岁 | ${items['vc_city']} ${items.vc_worke?'|'+items.vc_worke:''}`}}
+											{{`${items['n_age']}岁 | ${listAreaArr(items['vc_city'])} ${items.vc_worke?'|'+items.vc_worke:''}`}}
 
 											<!-- 湛江|157cm|客户经理 -->
 										</div>
@@ -288,11 +288,12 @@
 			dolink(url) {
 				this.$router.push(url)
 			},
-			showDetail(str) {
+			showDetail(str,id) {
 				this.$router.push({
 					name: "userinfo",
+					query:{id},
 					params: {
-						detailname: str
+						detailname: '正在浏览'+str+'用户的详情信息'
 					}
 				})
 			},
@@ -309,6 +310,9 @@
 			},
 			// 获取省份
 			getProvice: function() {
+				this.provincearr =[];
+					this.citysarrs = [];
+					this.areaarrs =[];
 				if(!localStorage.posPAC){
 					connetAction.ajaxPost(https['tree'], "")
 						.then(rd => {
@@ -336,12 +340,13 @@
 
 						})
 						.catch(res => {
-							console.log(res, "res")
+							// console.log(res, "res")
 						})
 				}else{
-					this.provice = this.provincearr = localStorage.posPAC.vc_province;
-					this.citysarrs = localStorage.posPAC.vc_city;
-					this.areaarrs = localStorage.posPAC.vc_area;
+					let provdata = JSON.parse(localStorage.posPAC);
+					this.provice = this.provincearr =provdata.vc_province;
+					this.citysarrs = provdata.vc_city;
+					this.areaarrs = provdata.vc_area;
 				}
 			},
 			//获取城市
@@ -394,7 +399,7 @@
 							this.userdata = rd.data;
 							this.vip =this.userdata['userlist']['n_isvip'];
 							this.n_issm =this.userdata['userlist']['n_issm'];
-							console.log(this.userdata,3333)
+							// console.log(this.userdata,3333)
 						}
 					})
 					.catch(res => {
@@ -402,23 +407,14 @@
 					})
 			},
 			listAreaArr:function(id){
-				var arr = [];
 				var str = "";
-				connetAction.ajaxPost(https['tree'], {
-						pid:id,
-						type:3
-					})
-					.then(rd => {
-						// console.log(rd)
-						arr = rd.data;
-						
-					})
-					.catch(res => {
-						console.log(res, "res")
-					})
-				
-				console.log(1)
-				return str
+				for(var i=0;i<this.areaarrs.length;i++){
+					if(this.areaarrs[i]['pid']==id){
+						str = this.areaarrs[i]['name'];
+					}
+				}
+				// console.log(str)
+				return str;
 				
 				
 			}

@@ -198,6 +198,9 @@ export default {
 		 vc_worke:'',
 		 worker:mingzu['zhiye'],//职业
 		 xinzuo:mingzu['xingzuo'],
+		 provincearr:[],
+		 citysarrs:[],
+		 areaarrs:[]
 	 }
  },
  methods: {
@@ -256,45 +259,40 @@ export default {
 	},
 	// 获取省份
 	getProvice: function(n) {
-		connetAction.ajaxPost(https['tree'], "")
-			.then(rd => {
-				//console.log(rd)
-					this.vc_province = rd.data;
-				if (rd.status != 0) {
-	
-				}
-			})
-			.catch(res => {
-				console.log(res, "res")
-			})
+		this.provincearr=[];
+		this.citysarrs=[];
+		this.areaarrs=[];
+		if(localStorage.posPAC){
+			var data =  JSON.parse(localStorage.posPAC);
+			this.vc_province = this.provincearr = data.vc_province;
+			this.citysarrs = data.vc_city;
+			this.areaarrs = data.vc_area;
+		}
+
 	},
 	//获取城市
 	getCity: function(pid) {
-		connetAction.ajaxPost(https['tree'], {
-				pid,
-				type: 2
-			})
-			.then(rd => {
-				console.log(rd,'日期')
-				this.vc_city = rd.data;
-			})
-			.catch(res => {
-				console.log(res, "res")
-			})
+		this.vc_city = [];
+		this.form.vc_city = "";
+		this.form.vc_area = "";
+
+		for(var i=0;i<this.citysarrs.length;i++){
+			if(this.citysarrs[i]['pid']==pid){
+				this.vc_city.push(this.citysarrs[i])
+			}
+		}
+		
 	},
 	//获取地区
 	getArea: function(pid) {
-		connetAction.ajaxPost(https['tree'], {
-				pid,
-				type: 3
-			})
-			.then(rd => {
-				// console.log(rd)
-				this.vc_area = rd.data;
-			})
-			.catch(res => {
-				console.log(res, "res")
-			})
+		this.vc_area = [];
+		this.form.vc_area = "";
+		for(var i=0;i<this.areaarrs.length;i++){
+			if(this.areaarrs[i]['pid']==pid){
+				this.vc_area.push(this.areaarrs[i])
+			}
+		}
+		
 	},
 	gjSearch:function(page){
 		let data = null;

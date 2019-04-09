@@ -496,13 +496,13 @@
 						n_smoke:1,
 						n_alcohol:1
 				},
-				form2:{},
+				form2:{n_city:'',n_province:''},
 				form5:{},
 				form6:{},
 				qxradio:1,//权限单选
 				qxyy:1,//关闭原因
 				pbid:"",
-				autoInfo:{vc_nickname:''},
+				autoInfo:{vc_nickname:'',n_min_age:''},
 				autoData:{},
 				provincearr:[],
 			  citysarrs:[],
@@ -577,18 +577,10 @@
 			  this.citysarrs=[];
 				this.areaarrs=[];
 				if(localStorage.posPAC){
-					this.provice =JSON.parse(localStorage.posPAC);
-					for(var i=0;i<this.provice.length;i++){
-						if(this.provice[i]['type']==1){
-							this.provincearr.push(this.provice[i]);
-						}
-						if(this.provice[i]['type']==2){
-							this.citysarrs.push(this.provice[i]);
-						}
-						if(this.provice[i]['type']==3){
-							this.areaarrs.push(this.provice[i]);
-						}
-					}
+					var data =  JSON.parse(localStorage.posPAC);
+					this.vc_province = this.provincearr = data.vc_province;
+					this.citysarrs = data.vc_city;
+					this.areaarrs = data.vc_area;
 				}
 			
 			},
@@ -596,6 +588,7 @@
 			getCity: function(pid) {
 				this.formm.vc_city = "";
 				this.formm.vc_area ="";
+				this.vc_city = [];
 				var flag = 0;
 				if(arguments.length>0){
 					for(var i=0;i<arguments.length;i++){
@@ -610,7 +603,7 @@
 				
 				for(var i=0;i<this.citysarrs.length;i++){
 					if(this.citysarrs[i]['pid']==pid){
-						this.city.push(this.citysarrs[i])
+						this.vc_city.push(this.citysarrs[i])
 					}
 				}
 			
@@ -618,17 +611,24 @@
 			//获取地区
 			getArea: function(pid) {
 				this.formm.vc_area ="";
-				connetAction.ajaxPost(https['tree'], {
-						pid,
-						type: 3
-					})
-					.then(rd => {
-						// console.log(rd)
-						this.vc_area = rd.data;
-					})
-					.catch(res => {
-						console.log(res, "res")
-					})
+				this.vc_area = [];
+				for(var i=0;i<this.areaarrs.length;i++){
+					if(this.areaarrs[i]['pid']==pid){
+						this.vc_area.push(this.areaarrs[i])
+					}
+				}
+				console.log(this.vc_area)
+				// connetAction.ajaxPost(https['tree'], {
+				// 		pid,
+				// 		type: 3
+				// 	})
+				// 	.then(rd => {
+				// 		// console.log(rd)
+				// 		this.vc_area = rd.data;
+				// 	})
+				// 	.catch(res => {
+				// 		console.log(res, "res")
+				// 	})
 			},
 			addWsh:function(){ //基本工作
 				let data = {
@@ -834,9 +834,11 @@
 					// this.form2.n_hyzk = Number(this.autoInfo.tiaojian.n_hyzk);
 					// this.getArea(this.autoInfo.tiaojian.n_city);
 					// this.autoInfo.tiaojian.n_city
-					this.form2 = this.autoInfo.tiaojian;
-					this.getCity(this.autoInfo.tiaojian.n_province,{istype:1});
-					this.form2.n_city =  this.autoInfo.tiaojian.n_city;
+					if(this.autoInfo.tiaojian){
+						this.form2 = this.autoInfo.tiaojian;
+						this.form2.n_city =  this.autoInfo.tiaojian.n_city;
+						this.getCity(this.autoInfo.tiaojian.n_province,{istype:1});
+					}
 			},
 			chanTile(){
 				let str = "";
@@ -873,10 +875,11 @@
 		},
 		created(){
 				this.autoCode();
+				this.getInfos();
 		},
 		mounted(){
 			this.getProvice();
-			this.getInfos();
+			
 			
 		}
 	}
