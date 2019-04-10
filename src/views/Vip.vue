@@ -7,17 +7,17 @@
 				<div class="h_th1">会员充值</div>
 				<div class="bigBoxvip">
 					<div class="recharG">
-						<li class="threemonth slider">
+						<li v-for="(items,index) in vipList" :key="index" class="threemonth slider">
 							<div class="li_box">
-								<div class="vip_h1">购买会员3个月</div>
-								<div class="vip_h2">1.06元/天</div>
-								<div class="vip_content">会员价338元</div>
+								<div class="vip_h1">购买会员{{items.n_time}}个月</div>
+								<div class="vip_h2">{{items.vc_daymoney}}元/天</div>
+								<div class="vip_content">会员价{{items['n_money']}}元</div>
 								<div class="vip_ktbtn">
-									<el-button type="primary" plain @click="ktvip(1)">立即开通</el-button>
+									<el-button type="primary" plain @click="ktvip(index)">立即开通</el-button>
 								</div>
 							</div>
 						</li>
-						<li class="threemonth slider">
+						<!-- <li class="threemonth slider">
 							<div class="li_box">
 								<div class="vip_h1">购买会员6个月</div>
 								<div class="vip_h2">1.06元/天</div>
@@ -36,7 +36,7 @@
 									<el-button type="primary" plain @click="ktvip(3)">立即开通</el-button>
 								</div>
 							</div>
-						</li>
+						</li> -->
 					</div>
 				</div>
 				<div class="vipqaunyi">
@@ -64,7 +64,7 @@
 						</li>
 					</div>
 					<div class="nfeibtn">
-						<el-button @click="ktvip(2)">立即开通 <span>388元/年</span></el-button>
+						<el-button @click="ktvip(vipList.length-2)">立即开通 <span>{{vipList[vipList.length-2]['n_money']}}元/年</span></el-button>
 					</div>
 					<div class="des" >
 						<p class="title">服务说明</p>
@@ -84,7 +84,7 @@
 				<div class="showPhead">会员充值 <div class="closePay" @click="closeVip"><span>X</span></div>
 				</div>
 				<div class="showPcontext">
-					<div class="hellowVip">你好，<span class="fontbold">会员1919+75545</span></div>
+					<div class="hellowVip">你好，<span class="fontbold">会员 {{userData['vc_nickname']}}</span></div>
 					<div class="nowpay">立即充值：<span class="fontbold">会员{{vipMoneth}}个月</span>
 						<div class="Paymoney">应支付：<span class="moeyred">{{vipMoney}}元</span></div>
 					</div>
@@ -123,62 +123,24 @@
 					<div class="rightcontent2">
 						<div class="h2">开通金梦情缘会员，联系TA们吧 <span  style="float: right;font-size: 20px;cursor: pointer;" class="el-icon-refresh"></span></div>
 						<div class="ranguser">
-							<div class="useritem">
+							<div v-if="tjUser['tjList'].length>0"  v-for="(items,index) in tjUser['tjList']" :key="index" class="useritem" @click="goChat">
 								<div class="user_left">
-									<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
+									<img :src="items['vc_img']&&items['vc_img']!=''?items['vc_img']:'https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100'" alt="">
 								</div>
 								<div class="user_right">
-									<div class="u_name">beenle</div>
+									<div class="u_name">{{items['vc_nickname']}}</div>
 									<div class="u_tallorage">
-										<span>24岁</span><span>161cm</span>
+										<span>{{items['n_age']}}岁</span><span>161cm</span>
 									</div>
 									<div class="u_mark">
-										我正在寻找广东湛江霞山区,年龄在26-31岁...
+										我正在{{diliArray[Number(items['vc_city'])-2].name}}，寻找年龄在{{items['n_age']}}岁-{{items['n_age']+5}}岁的...
 									</div>
 								</div>
 							</div>
-							<div class="useritem">
-								<div class="user_left">
-									<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
-								</div>
-								<div class="user_right">
-									<div class="u_name">beenle</div>
-									<div class="u_tallorage">
-										<span>24岁</span><span>161cm</span>
-									</div>
-									<div class="u_mark">
-										我正在寻找广东湛江霞山区,年龄在26-31岁...
-									</div>
-								</div>
+							<div v-else>
+								暂无发现更多的消息
 							</div>
-							<div class="useritem">
-								<div class="user_left">
-									<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
-								</div>
-								<div class="user_right">
-									<div class="u_name">beenle</div>
-									<div class="u_tallorage">
-										<span>24岁</span><span>161cm</span>
-									</div>
-									<div class="u_mark">
-										我正在寻找广东湛江霞山区,年龄在26-31岁...
-									</div>
-								</div>
-							</div>
-							<div class="useritem">
-								<div class="user_left">
-									<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
-								</div>
-								<div class="user_right">
-									<div class="u_name">beenle</div>
-									<div class="u_tallorage">
-										<span>24岁</span><span>161cm</span>
-									</div>
-									<div class="u_mark">
-										我正在寻找广东湛江霞山区,年龄在26-31岁...
-									</div>
-								</div>
-							</div>
+							
 						</div>
 					</div>
 			</div>
@@ -194,25 +156,20 @@
 				isShowVip: 0,
 				vipMoney: 360,
 				vipMoneth: 3,
-				payType: 1
+				payType: 1,
+				vipList:[{n_money:''}],
+				userData:[],
+				tjUser:[],
+				diliArray:""
 			}
 		},
 		methods: {
 			ktvip: function(i) {
 				this.isShowVip = 1;
 				this.payType = 1;
-				if (i == 1) {
-					this.vipMoney = 338;
-					this.vipMoneth = 3;
-				};
-				if (i == 2) {
-					this.vipMoney = 368;
-					this.vipMoneth = 6;
-				};
-				if (i == 3) {
-					this.vipMoney = 388;
-					this.vipMoneth = 12;
-				};
+				this.vipMoney = this.vipList[i].n_money;
+				this.vipMoneth = this.vipList[i].n_time;
+				
 			},
 			closeVip: function() {
 				this.isShowVip = 0;
@@ -227,12 +184,77 @@
 					center:true
 				})
 				this.isShowVip = 0;
+			},
+			goChat: function() {
+				if(!this.userData['n_isvip']){
+					message(this,{
+						title:`不是会员暂时不能与${this.userData['n_sex']==1?'她':'他'}发起消息`,
+						contxt:"",
+						center:true
+					})
+				}
+				
+			},
+			//用户信息
+			getInfos:function(){
+				let data = {id:localStorage.openid};
+				if(!data.id){
+					return false;
+				}
+				
+				connetAction.ajaxPost(https['getInfo'],data)
+				.then((res)=>{
+					if(res.status==1){
+							 this.userData = res.data;
+							// 初始化基本数据
+							
+					}else{
+						// this.toastip(res.message)
+					}	
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			//用户信息
+			getuerList:function(){
+				let data = {
+					oc_usercode:localStorage.openid
+				}
+				connetAction.ajaxPost(https['index'], data)
+					.then(rd => {
+						if(rd.status==1){
+							this.tjUser = rd.data;
+						}
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
+			huiyuanInfo(){
+				connetAction.ajaxPost(https['huiyuan'], {id:5})
+				.then(rd => {
+					this.vipList = rd.data;
+					if(this.$route.query.hasOwnProperty('vipMoney')){
+						this.ktvip(Number(this.$route.query.vipMoney)-1)
+					}
+					//console.log(this.vipList,333)
+				})
+				.catch(res => {
+					// console.log(res,"res")
+				})
 			}
 		},
+		created() {
+			this.getuerList();
+			this.getInfos();
+			this.huiyuanInfo();
+			this.diliArray = JSON.parse(localStorage.posPAC);
+		},
 		mounted() {
-			if(this.$route.query.hasOwnProperty('vipMoney')){
-				this.ktvip(this.$route.query.vipMoney)
-			}
+			
+			
 		}
 	}
 </script>
@@ -339,10 +361,10 @@
 	}
 
 	.li_box .vip_h1 {
-		font-size: 25px;
+		font-size: 23px;
 		text-align: center;
 		padding: 20px 0 10px;
-		color: red;
+		color: crimson;
 	}
 
 	.li_box {
@@ -356,8 +378,8 @@
 
 	.vip_content {
 		padding-top: 5%;
-		font-size: 22px;
-		color: #333;
+		font-size: 20px;
+		color: red;
 	}
 
 	.vip_ktbtn {
@@ -634,6 +656,7 @@
 		padding-right: 10px;
 		padding-top: 20px;
 		box-sizing: border-box;
+		cursor: pointer;
 	}
 	.useritem .user_left{
 		flex: 0 0 75px;

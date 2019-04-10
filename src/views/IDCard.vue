@@ -89,23 +89,26 @@
 							<div class="notice_info">
 								<div class="vipuserinfo">
 									<div class="box">
-											<img src="https://photo.zastatic.com/images/photo/479940/1919757993/24788310680142720.jpeg" alt="">
+										<img v-if="autoInfo['vc_img']" :src="autoInfo['vc_nickname']" alt="">
+										<img v-else src="https://photo.zastatic.com/images/photo/479940/1919757993/24788310680142720.jpeg" alt="">
 									</div>
 									<div class="box">
-											<div class="lac1">昵称拉拉啦</div>
-											<div class="lac1" style="padding-top:4%;">ID：12321542512</div>
+											<div class="lac1">{{autoInfo['vc_nickname']}}</div>
+											<div class="lac1" style="padding-top:4%;">
+												<div class="icon_vip">
+													<span :class="autoInfo['n_isstar']?'start active':'start'" @click="dolink('/start')"></span>
+													<span :class="autoInfo['n_isvip']?'vip active':'vip'" @click="dolink('/vip')"></span>
+													<span :class="autoInfo['n_issm']?'card active':'card'" @click="dolink('/idcard')"></span>
+												</div>
+											</div>
 											<div class="lac1" style="padding-top:3%;">
 												 <span>30%</span>
-												 <span>个人资料</span>
-												 <span>充值</span>
+												 <span @click="dolink('/editinfo')">个人资料</span>
+												 <span @click="dolink('/vip')">充值</span>
 											</div>
 									</div>
 								</div>
-								<div class="icon_vip">
-									<span class="start"></span>
-									<span class="vip"></span>
-									<span class="card"></span>
-								</div>
+								
 							</div>
 							
 							<div class="perseon">
@@ -173,7 +176,8 @@
 <script>
 // @ is an alias to /src
 import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
-
+import mingzu from '../json/mz.json'
+import https from "../utils/Https.js"
 export default {
  data(){
 	 return{
@@ -184,9 +188,13 @@ export default {
 			 phone:"",
 			 yzm:""
 		 },
+		 autoInfo:{vc_nickname:'',n_issm: 0,n_isstar: 0,n_isvip: 0},
 		 isShowSlec:0,
 		 renzheng:0
 	 }
+ },
+ created() {
+ 	this.getInfos();
  },
  methods: {
  	goToVip() {
@@ -211,6 +219,23 @@ export default {
  	},
 	goSearch(){
 		this.isShowSlec = !this.isShowSlec;
+	},
+	getInfos:function(){
+		let data = {id:localStorage.openid};
+		
+		connetAction.ajaxPost(https['getInfo'],data)
+		.then((res)=>{
+			if(res.status==1){
+					 this.autoInfo = res.data;
+					
+			}else{
+				this.toastip(res.message)
+			}	
+			
+		})
+		.catch((res)=>{
+			
+		})
 	},
 	onSubmit(){
 		console.log(this.form)

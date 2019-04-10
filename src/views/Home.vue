@@ -11,7 +11,7 @@
 					<el-col :span="17" class="uerlistbg">
 						<div class="seachbox">
 
-							<div class="selcinev" v-if="isShowSlec==1">
+							<div class="selcinev" v-if="isShowSlec!=1">
 								<!--  <el-col :span="3" style="text-align: left;">
 													 <el-select v-model="form.previce" placeholder="北京">
 														  <el-option label="广东" value="shanghai"></el-option>
@@ -81,13 +81,18 @@
 										每日推荐
 									</el-col>
 									<el-col :span="16" style="text-align: left;">
-										广东湛江麻章区 | 18-20岁的女士
+										<span v-if="userdata['tiaoJian']&&userdata['tiaoJian']!=''">
+											广东湛江麻章区 | 18-20岁的女士
+										</span>
+										<span style="cursor: pointer;color: red;" v-else  @click="dolink('./editinfo')">
+											择偶条件未完善请点击完善您的择偶条件，以下推荐用户系统默认推荐
+										</span>
 									</el-col>
-									<el-col :span="4">
+									<!-- <el-col :span="4">
 										<div class="slecdx" @click="goSearch">
 											修改择偶条件
 										</div>
-									</el-col>
+									</el-col> -->
 								</el-row>
 							</div>
 						</div>
@@ -125,8 +130,8 @@
 									<el-col :span="14">
 										<div class="uiname">{{items['vc_nickname']?items['vc_nickname']:''}}</div>
 										<div class="uiinfo">
-											{{`${items['n_age']}岁 | ${listAreaArr(items['vc_city'])} ${items.vc_worke?'|'+items.vc_worke:''}`}}
-
+											{{`${items['n_age']}岁 | ${bigdata[Number(items['vc_city'])-2]['name']} ${items.vc_worke?'|'+items.vc_worke:''}`}}
+												{{items['vc_city']}}
 											<!-- 湛江|157cm|客户经理 -->
 										</div>
 										<div class="umakers">
@@ -266,7 +271,8 @@
 				n_issm:0,
 				provincearr:[],
 				citysarrs:[],
-				areaarrs:[]
+				areaarrs:[],
+				bigdata:[]
 			}
 		},
 		computed:{
@@ -310,31 +316,19 @@
 			},
 			// 获取省份
 			getProvice: function() {
-				this.provincearr =[];
-					this.citysarrs = [];
-					this.areaarrs =[];
 				if(!localStorage.posPAC){
 					connetAction.ajaxPost(https['tree'], "")
 						.then(rd => {
 							//console.log(rd)
 							if (rd.status != 0) {
-								var provice = rd.data;
-								for(var i=0;i<provice.length;i++){
-									if(provice[i]['type']==1){
-										this.provincearr.push(provice[i]);
-									}
-									if(provice[i]['type']==2){
-										this.citysarrs.push(provice[i]);
-									}
-									if(provice[i]['type']==3){
-										this.areaarrs.push(provice[i]);
-									}
-								}
+								this.bigdata = rd.data;
+								this.procesPCA(rd.data);
 								this.provice = this.provincearr;
 								// 存储三级联动数据
 								this.setPosition({vc_province:this.provincearr,vc_city:this.citysarrs,vc_area:this.areaarrs});
 								
-								localStorage.posPAC = JSON.stringify({vc_province:this.provincearr,vc_city:this.citysarrs,vc_area:this.areaarrs})
+								// localStorage.posPAC = JSON.stringify({vc_province:this.provincearr,vc_city:this.citysarrs,vc_area:this.areaarrs})
+								localStorage.posPAC = JSON.stringify(this.bigdata)
 								
 							}
 
@@ -343,10 +337,26 @@
 							// console.log(res, "res")
 						})
 				}else{
-					let provdata = JSON.parse(localStorage.posPAC);
-					this.provice = this.provincearr =provdata.vc_province;
-					this.citysarrs = provdata.vc_city;
-					this.areaarrs = provdata.vc_area;
+					this.bigdata = JSON.parse(localStorage.posPAC);
+					this.procesPCA(this.bigdata);
+					this.provice = this.provincearr;
+				}
+			},
+			procesPCA:function(data){
+				this.provincearr =[];
+				this.citysarrs = [];
+				this.areaarrs =[];
+				
+				for(var i=0;i<data.length;i++){
+					if(data[i]['type']==1){
+						this.provincearr.push(data[i]);
+					}
+					if(data[i]['type']==2){
+						this.citysarrs.push(data[i]);
+					}
+					if(data[i]['type']==3){
+						this.areaarrs.push(data[i]);
+					}
 				}
 			},
 			//获取城市

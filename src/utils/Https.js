@@ -27,7 +27,7 @@ let INTERFACE = {
 	getInfo:'user/getInfo',		//获取个人资料
 	quanxian:'user/quanxian',		//权限 params{id：n_isinfo:'是否显示',n_yuanying:'原因'}
 	souSuo:'base/souSuo',			//昵称搜索   参数 用户昵称 params{vc_nickname}
-	naneSousuo:'base/nameSouSuo',
+	nameSousuo:'base/nameSouSuo',
 	huiyuan:'Huiyuan/index',			//查询VIP会员列表 params{id:会员id}
 	salesBusiness:'/weservice/salesBusiness',	//销售业绩流水
 	masterBusiness:'/weservice/masterBusiness'	//技师业绩流水

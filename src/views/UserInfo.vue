@@ -11,38 +11,44 @@
 					<div class="letcontent">
 						<div class="lef_con_top">
 							<div class="userheader">
-								<div class="myheaderlogo"></div>
+								<div class="myheaderlogo" :style="userData['vc_img']?`background:url(${userData.vc_img}) no-repeat;background-size:cover;`:'background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAAAAACreq1xAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAHhSURBVFjD7ZhLa8MwEIQnQVjYFxsK+f+/L6XgXCRk9tBDQ5tKuyPZCekD6xKitb6MXrsTH17x2HZ8MG8H7sD/CXQNz6SIReA69P4RwHkRAIAIguume4HpIjffRJaxovLAs80ciq6Bi+QKz1L2BVAi3eVZtN4wbwUq860TCTAtVmSxBzFgFCsiRKINTMEeRUI2MJJ5wZb4xOQQ2DA7aAITF2KGN07ZvmAbgeaJeuKmeJo2nJnEnnhsOjbMDtrAns3YDtpAPxCBdh0ga9hvChGgLXEghYrt8mScHMeKCj02o0p0JzaGAv1JIQ4jG1I72KdiHYeJV/qac5j6eJv7hqq9qXob73vERQCHrkfdLTW4Lw9M6eOzobXYOXh4AKmJyIEpXou6OLk+WXOJxH2laJUiZhNNhenNViESzO02gN99ptKC5Tz1KTN5X1rUK6jelLmFBzlrxVkDzqEBB0AuClEBtvIAiSWx3JTUzANCeX1KhU3r90ksJBbAuRmm/3wOXDNhVUAOjCtYgGLgj5V4tUm2ihkwySqaMqcjjW5o97uvbBcz4OolLOz273/n8OeA43pC5u2y9OVf4rrL7PLSkudD73tELA0XxqGD4k3KBOuvDyVv/p/zxEQc9pe6O3AH/gTwHa7ie7sz6ui1AAAAAElFTkSuQmCC) no-repeat;background-size:cover;' "></div>
 								<div class="infoworks">
-									<div class="name" style="margin-top:25px;">{{autoInfo['vc_nickname']}}
-										<span class="card_type start"></span>
-										<span class="card_type card"></span>
-										<span class="card_type vip"></span>
+									<div class="name" style="margin-top:25px;">{{userData['vc_nickname']}}
+										<span :class="userData['n_isstar']?'card_type start active':'card_type start'"></span>
+										<span :class="userData['n_issm']?'card_type card active':'card_type card'"></span>
+										<span :class="userData['n_isvip']?'card_type vip active':'card_type vip'"></span>
 									 <span class="userfollow">关注</span>
 									</div>
 									<!-- ID：1761685425 -->
 									<div class="user_id mt10"></div>
-									<div class="workesage mt10">湛江 | 22岁 | 高中及以下 | 未婚 | 160cm | 3001-5000元</div>
+									<div class="workesage mt10">
+									{{bigAreaData[Number(userData['vc_province'])-2].name}} {{bigAreaData[Number(userData['vc_city'])-2].name}} | {{userData['n_age']}}岁 | {{autoCode[1][Number(userData['n_xueli'])-1].value}} | {{userData['n_huntype']==1?'未婚':userData['n_huntype']==2?'离异':'丧偶'}} | {{userData['n_sg']}}cm | 
+										{{autoCode[2][Number(userData['n_money'])-1].value}}元
+									</div>
 									<div class="phoneto">
-										<div class="ctrl prve"></div>
+										<div class="ctrl prve" v-if="userData['album'].length>0"></div>
 										<div class="photoWrapper">
-											<ul>
-												<li>
-													<img preview="1" preview-text="描述文字1" src="https://photo.zastatic.com/images/photo/448999/1795993224/23076152760215462.png?scrop=1&crop=1&cpos=north&w=110&h=110" alt="">
+											<ul v-if="userData['album'].length>0">
+												<li v-for="(items,index) in userData['album']">
+													<img preview="1" preview-text="..." :src="items" alt="">
 												</li>
-												<li>
+												<!-- <li>
 													<img preview="1" preview-text="描述文字2"  src="https://photo.zastatic.com/images/photo/448999/1795993224/23076152760215462.png?scrop=1&crop=1&cpos=north&w=110&h=110" alt="">
-												</li>
+												</li> -->
 											</ul>
+											<div v-else class="noImgs">
+												她没有上传更多的照片
+											</div>
 											
 										</div>
-										<div class="ctrl next"></div>
+										<div class="ctrl next" v-if="userData['album'].length>0"></div>
 										<!-- 她没有更多照片了 -->
 									</div>
 								</div>
 							</div>
 							<div class="user_bottom">
-								<div class="hellow">打招呼</div>
-								<div class="messages">发信息</div>
+								<div class="hellow" @click="dzh(userData['n_isstar'])">打招呼</div>
+								<div class="messages" @click="fxx(userData['n_isvip'])">发信息</div>
 								<div class="hongniang" @click="doLink('./hongniang')">红娘牵线</div>
 							</div>
 						</div>
@@ -51,14 +57,16 @@
 								<span>内心独白</span>
 							</div>
 							<div class="planemsg">
-								我个子不高，但是我身材凹凸有致，平时喜欢健身看书听音乐唱歌，我会说英语略懂法语，生活中朋友们对我的评价是可爱又迷人的小傻瓜，我希望能遇见一个共同追求幸福生活的他，一起去网吧偷耳机，追随他到天涯海角...
+								<!-- 我个子不高，但是我身材凹凸有致，平时喜欢健身看书听音乐唱歌，我会说英语略懂法语，生活中朋友们对我的评价是可爱又迷人的小傻瓜，我希望能遇见一个共同追求幸福生活的他，一起去网吧偷耳机，追随他到天涯海角... -->
+								{{!userData['vc_descript']||userData['vc_descript']==""?'暂无任何描述':userData['vc_descript']}}
 							</div>
 							<div class="details_header">
 								<span>个人兴趣</span>
 							</div>
 							<div class="planemsg">
 								<el-tag>
-									喜欢看书，喜欢大海，喜欢美食
+									<!-- 喜欢看书，喜欢大海，喜欢美食 -->
+									{{!userData['vc_loveplay']||userData['vc_loveplay']==""?'暂无任何描述':userData['vc_loveplay']}}
 								</el-tag>
 								<!-- <el-tag type="success">籍贯:四川泸州</el-tag>
 								<el-tag type="info">体型:苗条</el-tag>
@@ -72,10 +80,10 @@
 								<span>个人资料</span>
 							</div>
 							<div class="planemsg">
-								<el-tag>汉族</el-tag>
-								<el-tag type="success">籍贯:四川泸州</el-tag>
+								<el-tag v-if="userData['vc_mz']">{{mingzu[Number(userData['vc_mz'])-1].value}}</el-tag>
+								<el-tag type="success">籍贯:{{bigAreaData[Number(userData['vc_province'])-2].name}} {{bigAreaData[Number(userData['vc_city'])-2].name}} </el-tag>
 								<el-tag type="info">体型:苗条</el-tag>
-								<el-tag type="warning">不吸烟社交场合会喝酒</el-tag>
+								<el-tag type="warning" v-if="userData['n_smoke']">{{userData['n_smoke']}}不吸烟社交场合会喝酒</el-tag>
 								<el-tag type="danger">租房未买车</el-tag>
 								<el-tag type="danger">是否想要孩子:视情况而定</el-tag>
 								<el-tag type="danger">何时结婚:时机成熟就结婚</el-tag>
@@ -97,23 +105,12 @@
 						<div class="rightcontent1">
 							<div class="jmqy_box">
 							</div>
-							<div :class="GMative==3?'product_item ative':'product_item'">
-							 <div class="produc_month cf84">12个月</div> 
-							 <div class="produc_day cf84">日均1.1元</div>
-							 <div class="produc_money cf84"><span>热卖</span> ￥388</div> 
-							 <div :class="GMative==3?'produc_check el-icon-circle-check ative':'produc_check el-icon-circle-check'" @click="checkVip(3)"></div>
-							</div>
-							<div :class="GMative==2?'product_item ative':'product_item'">
-							 <div class="produc_month cf84">6个月</div> 
-							 <div class="produc_day cf84">日均1.1元</div>
-							 <div class="produc_money cf84"><span>热卖</span> ￥388</div> 
-							 <div :class="GMative==2?'produc_check el-icon-circle-check ative':'produc_check el-icon-circle-check'" @click="checkVip(2)"></div>
-							</div>
-							<div :class="GMative==1?'product_item ative':'product_item'">
-							 <div class="produc_month cf84">3个月</div> 
-							 <div class="produc_day cf84">日均1.1元</div>
-							 <div class="produc_money cf84"><span>热卖</span> ￥388</div> 
-							 <div :class="GMative==1?'produc_check el-icon-circle-check ative':'produc_check el-icon-circle-check'" @click="checkVip(1)"></div>
+							
+							<div v-for="(items,index) in vipList" :key="index" :class="GMative==items['id']?'product_item ative':'product_item'">
+							 <div class="produc_month cf84">{{items['n_time']}}个月</div> 
+							 <div class="produc_day cf84">日均{{items['vc_daymoney']}}元</div>
+							 <div class="produc_money cf84"><span>热卖</span> ￥{{items['n_money']}}</div> 
+							 <div :class="GMative==items['id']?'produc_check el-icon-circle-check ative':'produc_check el-icon-circle-check'" @click="checkVip(items['id'])"></div>
 							</div>
 							<div style="text-align: center;">
 								<el-button @click="doLink({name:'vip',query:{vipMoney:GMative}})">立即购买</el-button>
@@ -198,6 +195,9 @@ import https from "../utils/Https.js"
 				isShowVip:0,
 				isShowMesages:1,
 				GMative:1,
+				mingzu:mingzu,
+				bigAreaData:[],
+				vipList:[],
 				userData:{
 					album: [],
 					dt_addtime: "2019-02-14 07:02:52",
@@ -240,6 +240,11 @@ import https from "../utils/Https.js"
 				}
 			}
 		},
+		computed:{
+			autoCode(){
+				return this.$store.state.getpCode
+			}
+		},
 		methods:{
 			ktvip:function(){
 				this.isShowVip = 1;
@@ -256,26 +261,39 @@ import https from "../utils/Https.js"
 			checkVip:function(i){
 				this.GMative = i;
 			},
+			// 提示语封装
 			toastip:function(str,type){
 				this.$message({
 				  message:str ,
 				  type: type||'warning'
 				});
 			},
+			// 打招呼
+			dzh:function(str,type){
+				this.$message({
+				  message:str ,
+				  type: type||'warning'
+				});
+			},
+			// 发信息
+			fxx:function(str,type){
+				this.$message({
+				  message:str ,
+				  type: type||'warning'
+				});
+			},
+			// 会员列表
 			huiyuanInfo(){
 				connetAction.ajaxPost(https['huiyuan'], {id:5})
 				.then(rd => {
-					this.autoData = rd.data;
-					this.gzArr = 	this.autoData['2'];
-						
-					// 获得资料模板数据
-					// this.setpCode(rd.data);
-					//console.log(this.autoData)
+					this.vipList = rd.data.reverse();
+					console.log(this.vipList,333)
 				})
 				.catch(res => {
 					// console.log(res,"res")
 				})
 			},
+			//用户信息
 			getInfos:function(){
 				let data = {id:this.$route.query.id};
 				if(!data.id){
@@ -285,7 +303,7 @@ import https from "../utils/Https.js"
 				connetAction.ajaxPost(https['getInfo'],data)
 				.then((res)=>{
 					if(res.status==1){
-							 this.autoInfo = res.data;
+							 this.userData = res.data;
 							// 初始化基本数据
 							
 					}else{
@@ -300,10 +318,13 @@ import https from "../utils/Https.js"
 		},
 		created(){
 			this.huiyuanInfo();
-			
+			if(localStorage.posPAC){
+				this.bigAreaData = JSON.parse(localStorage.posPAC);
+			}
 		},
 		mounted(){
 			this.getInfos();
+			console.log(this.autoCode)
 		}
 	}
 	
@@ -410,6 +431,20 @@ import https from "../utils/Https.js"
 	}
 	.card{
 		background: url(../assets/img/card1.png) no-repeat;
+	}
+	.start.active{
+		background: url(../assets/img/start2.png) no-repeat;
+	}
+	.vip.active{
+		background: url(../assets/img/vip2.png) no-repeat;
+	}
+	.card.active{
+		background: url(../assets/img/card2.png) no-repeat;
+	}
+	.noImgs{
+		height: 100%;
+		display: flex;
+		align-items: center;
 	}
 	.phoneto{
 		height: 100px;
