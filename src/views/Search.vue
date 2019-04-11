@@ -299,7 +299,7 @@ export default {
 		data = this.form;
 		data.page = 1;
 		data.pageNum =20;
-		data.vc_xinzuo = "白羊座";
+		data.vc_xinzuo = "";
 		// page&&page!="" ? data.page = page : data.page = "1";
 		connetAction.ajaxPost(https['souSuo'], data)
 			.then(rd => {

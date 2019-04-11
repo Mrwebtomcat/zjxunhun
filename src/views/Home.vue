@@ -82,7 +82,17 @@
 									</el-col>
 									<el-col :span="16" style="text-align: left;">
 										<span v-if="userdata['tiaoJian']&&userdata['tiaoJian']!=''">
-											广东湛江麻章区 | 18-20岁的女士
+											<!-- citysarrs:[],
+											areaarrs:[],
+											provincearr -->
+											{{userdata['tiaoJian']?(provincearr[Number(userdata['tiaoJian']['n_province'])-2]?provincearr[Number(userdata['tiaoJian']['n_province'])-2]['name']:''):''}}
+											{{userdata['tiaoJian']?(citysarrs[Number(userdata['tiaoJian']['n_city'])-2]?citysarrs[Number(userdata['tiaoJian']['n_city'])-2]['name']:''):''}}
+											| {{userdata['tiaoJian']?userdata['tiaoJian']['n_min_age']:''}}
+											-
+											{{userdata['tiaoJian']?userdata['tiaoJian']['n_max_age']:''}}岁的{{userdata['userlist']?(userdata['userlist']['n_sex']==1?'女士':'男士'):''}}
+											{{userdata['tiaoJian']?autoData['1'][userdata['tiaoJian']['n_xueli']-2]['value']:''}}
+											<!-- {{userdata['tiaoJian']}}
+											广东湛江麻章区 | 18-20岁的女士 -->
 										</span>
 										<span style="cursor: pointer;color: red;" v-else  @click="dolink('./editinfo')">
 											择偶条件未完善请点击完善您的择偶条件，以下推荐用户系统默认推荐
@@ -97,54 +107,37 @@
 							</div>
 						</div>
 						<div class="userboxs">
-							<!-- <div class="useritem" @click.stop="showDetail('小小与')">
-								<el-row :gutter="24">
-									<el-col :span="10">
-										<img src="https://photo.zastatic.com/images/photo/354163/1416651642/3997368673413261.jpg?scrop=1&crop=1&cpos=north&w=150&h=150"
-										 alt="">
-									</el-col>
-									<el-col :span="14">
-										<div class="itemcontents">
-											<div class="uiname">小小与</div>
-											<div class="uiinfo">20岁|湛江|157cm|客户经理</div>
-											<div class="umakers">
-												我正在寻找广东湛江赤坎区,年龄在18-30岁,月薪在5000元以上的男性
-												我正在寻找广东湛江赤坎区,年龄在18-30岁,月薪在5000元以上的男性
-												我正在寻找广东湛江赤坎区,年龄在18-30岁,月薪在5000元以上的男性
+							<div v-if="userdata['tjList']&&userdata['tjList'].length>0">
+								<div v-for="(items,index) in userdata['tjList']" :key="index" class="useritem" @click.stop="showDetail(items['vc_nickname'],items['id']?items['id']:'')">
+									<el-row :gutter="24">
+										<el-col :span="10">
+											<img v-if="items['vc_img']&&items['vc_img']!=''" style="width:150px;height:150px;" :src="items['vc_img']"
+											 alt="">
+											<img v-else style="width:150px;height:150px;" src="../assets/img/8311191311554389.png"
+											 alt="">
+										</el-col>
+										<el-col :span="14">
+											<div class="uiname">{{items['vc_nickname']?items['vc_nickname']:''}}</div>
+											<div class="uiinfo">
+												{{`${items['n_age']}岁 | ${bigdata[Number(items['vc_city'])-2]['name']} ${items.vc_worke?'|'+items.vc_worke:''}`}}
+													
+												<!-- 湛江|157cm|客户经理 -->
 											</div>
-											<div class="sayhellow" @click.stop="dazh('小小与')">
+											<div class="umakers">
+												{{items['vc_descript']==""?'努力寻找另一半....':items['vc_descript']}}
+												
+											</div>
+											<div class="sayhellow" @click.stop="dazh(items['vc_nickname']?items['vc_nickname']:'')">
 												<el-button size="small">打招呼</el-button>
 											</div>
-										</div>
-									</el-col>
-								</el-row>
-							</div> -->
-							<div v-for="(items,index) in userdata['tjList']" :key="index" class="useritem" @click.stop="showDetail(items['vc_nickname'],items['id']?items['id']:'')">
-								<el-row :gutter="24">
-									<el-col :span="10">
-										<img v-if="items['vc_img']&&items['vc_img']!=''" style="width:150px;height:150px;" :src="items['vc_img']"
-										 alt="">
-										<img v-else style="width:150px;height:150px;" src="../assets/img/8311191311554389.png"
-										 alt="">
-									</el-col>
-									<el-col :span="14">
-										<div class="uiname">{{items['vc_nickname']?items['vc_nickname']:''}}</div>
-										<div class="uiinfo">
-											{{`${items['n_age']}岁 | ${bigdata[Number(items['vc_city'])-2]['name']} ${items.vc_worke?'|'+items.vc_worke:''}`}}
-												{{items['vc_city']}}
-											<!-- 湛江|157cm|客户经理 -->
-										</div>
-										<div class="umakers">
-											{{items['vc_descript']==""?'努力寻找另一半....':items['vc_descript']}}
-											
-										</div>
-										<div class="sayhellow" @click.stop="dazh(items['vc_nickname']?items['vc_nickname']:'')">
-											<el-button size="small">打招呼</el-button>
-										</div>
-									</el-col>
-								</el-row>
+										</el-col>
+									</el-row>
+								</div>
 							</div>
-
+							<div v-else class="emptytip">
+								<img class="tips" src="../assets/img/true_03.jpg" alt="">
+								<div class="tiptxts">暂无匹配到相关用户</div>
+							</div>
 
 						</div>
 
@@ -154,7 +147,9 @@
 						<div class="notice_info">
 							<div class="vipuserinfo">
 								<div class="box">
-									<img style="width:100px;height:100px;" src="../assets/img/8311191311554389.png"
+									<img v-if="userdata['userlist']['vc_img']&&userdata['userlist']['vc_img']!=''" style="width:100px;height:100px;" :src="userdata['userlist']['vc_img']"
+									 alt="">
+									 <img v-else style="width:100px;height:100px;" src="../assets/img/8311191311554389.png"
 									 alt="">
 									<div class="icon_vip">
 										<span :class="userdata['userlist']['n_isstar']?'start atctive':'start'" @click="dolink('./start')"></span>
@@ -462,6 +457,7 @@
 	.changeseach {
 		margin-top: 2%;
 		min-height: 26.5em;
+		position: relative;
 	}
 
 	.uerlistbg {
@@ -698,5 +694,22 @@
 
 	.el-select input {
 		padding: 0 !important;
+	}
+	
+	.emptytip{
+		position: absolute;
+		top: 30%;
+		left: 50%;
+		width: 24%;
+		margin: auto;
+		margin-left: -28%;;
+	}
+	.emptytip .tips{
+		width: 100%;
+	}
+	.tiptxts{
+		padding-top: 10px;
+		text-align: center;
+		color: #999;
 	}
 </style>

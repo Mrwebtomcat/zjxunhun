@@ -5,8 +5,8 @@
 		<div class="vipConten flex">
 			<div class="vipclfet">
 				<div class="h_th1">会员充值</div>
-				<div class="bigBoxvip">
-					<div class="recharG">
+				<div class="bigBoxvip" :style="userData?(userData['n_sex']!=1?'padding-left:0;':''):''">
+					<div class="recharG" v-if="userData['n_sex']==1" >
 						<li v-for="(items,index) in vipList" :key="index" class="threemonth slider">
 							<div class="li_box">
 								<div class="vip_h1">购买会员{{items.n_time}}个月</div>
@@ -38,6 +38,10 @@
 							</div>
 						</li> -->
 					</div>
+					<div v-else class="recharG" >
+						<img style="width:100%;height:250px;" src="../assets/img/womanvip.png" alt="">
+						{{vipList[2]['n_money']}}
+					</div>
 				</div>
 				<div class="vipqaunyi">
 					<div class="qyh1">
@@ -64,7 +68,8 @@
 						</li>
 					</div>
 					<div class="nfeibtn">
-						<el-button @click="ktvip(vipList.length-2)">立即开通 <span>{{vipList[vipList.length-2]['n_money']}}元/年</span></el-button>
+						<el-button v-if="userData['n_sex']==1" @click="ktvip(vipList.length-2)">立即开通 <span>{{vipList[vipList.length-2]?vipList[vipList.length-2]['n_money']:''}}元/年</span></el-button>
+						<el-button v-else @click="ktvip(vipList.length-2)">立即开通 <span>{{vipList[vipList.length-2]?vipList[vipList.length-2]['n_money']:''}}元/年</span></el-button>
 					</div>
 					<div class="des" >
 						<p class="title">服务说明</p>
@@ -267,7 +272,10 @@
 	.vipModule {
 		width: 100%;
 		min-height: 100%;
-		background: url(../assets/img/vipbg.jpg) repeat-x;
+		 background: url(../assets/img/vipbg.jpg) repeat-x;
+		 
+		/* background: linear-gradient(-134.2deg,#f11197,#e175a5); */
+		/* background: #fff; */
 		background-size: cover;
 		padding-top: 80px;
 	}
@@ -276,6 +284,7 @@
 		width: 1200px;
 		margin: auto;
 		padding-top: 2%;
+		border-radius:10px ;
 	}
 
 	.shadows {
@@ -317,7 +326,7 @@
 	.h_th1 {
 		font-size: 30px;
 		padding: 10px;
-		color: #fff;
+		color: red;
 	}
 
 	.threemonth {
