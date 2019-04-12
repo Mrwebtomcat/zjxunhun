@@ -107,7 +107,7 @@
 							</div>
 						</div>
 						<div class="userboxs">
-							<div v-if="userdata['tjList']&&userdata['tjList'].length>0">
+							<!-- <div v-if="userdata['tjList']&&userdata['tjList'].length>0"> -->
 								<div v-for="(items,index) in userdata['tjList']" :key="index" class="useritem" @click.stop="showDetail(items['vc_nickname'],items['id']?items['id']:'')">
 									<el-row :gutter="24">
 										<el-col :span="10">
@@ -119,7 +119,7 @@
 										<el-col :span="14">
 											<div class="uiname">{{items['vc_nickname']?items['vc_nickname']:''}}</div>
 											<div class="uiinfo">
-												{{`${items['n_age']}岁 | ${bigdata[Number(items['vc_city'])-2]['name']} ${items.vc_worke?'|'+items.vc_worke:''}`}}
+												{{`${items['n_age']}岁 | ${bigdata[Number(items['vc_city'])-2]?bigdata[Number(items['vc_city'])-2]['name']:''} ${items.vc_worke?'|'+items.vc_worke:''}`}}
 													
 												<!-- 湛江|157cm|客户经理 -->
 											</div>
@@ -133,8 +133,8 @@
 										</el-col>
 									</el-row>
 								</div>
-							</div>
-							<div v-else class="emptytip">
+							<!-- </div> -->
+							<div v-if="userdata['tjList']&&userdata['tjList'].length<=0" class="emptytip">
 								<img class="tips" src="../assets/img/true_03.jpg" alt="">
 								<div class="tiptxts">暂无匹配到相关用户</div>
 							</div>

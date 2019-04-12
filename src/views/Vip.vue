@@ -102,7 +102,7 @@
 						<div class="left_qrcode">
 							<!-- 支付宝的扫码 -->
 							<img v-if="payType==1" src="https://mobilecodec.alipay.com/show.htm?code=gdxox0xozdovjgkxa2&picSize=S" alt="">
-							<img v-else src="../assets/img/payweixin.png" alt="">
+							<div v-else id="qrcode"></div>
 						</div>
 						<div class="right_cordeMeta" v-if="payType==1">
 							<div>使用支付宝扫码支付</div>
@@ -155,6 +155,7 @@
 <script>
 	import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
 	import https from "../utils/Https.js"
+	import QRCode from "qrcode"
 	export default {
 		data() {
 			return {
@@ -169,6 +170,14 @@
 			}
 		},
 		methods: {
+			// 生成二维码
+			qrcode:function(){
+				let qrcode = new QRCode('qrcode',{
+					width:100,
+					height:100,//高度
+					text:"http://www.jingqiweb.cn"
+				})
+			},
 			ktvip: function(i) {
 				this.isShowVip = 1;
 				this.payType = 1;
@@ -181,6 +190,9 @@
 			},
 			palypost: function(i) {
 				this.payType = i;
+				if(i==2){
+					this.qrcode();
+				}
 			},
 			goPay: function() {
 				message(this,{
