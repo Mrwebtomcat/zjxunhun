@@ -40,7 +40,7 @@
 					</div>
 					<div v-else class="recharG" >
 						<img style="width:100%;height:250px;" src="../assets/img/womanvip.png" alt="">
-						{{vipList[2]['n_money']}}
+						{{vipList[2]?vipList[2]['n_money']:''}}
 					</div>
 				</div>
 				<div class="vipqaunyi">
@@ -102,7 +102,7 @@
 						<div class="left_qrcode">
 							<!-- 支付宝的扫码 -->
 							<img v-if="payType==1" src="https://mobilecodec.alipay.com/show.htm?code=gdxox0xozdovjgkxa2&picSize=S" alt="">
-							<div v-else id="qrcode"></div>
+							<div id="qrcode" v-else ref="qrcode"></div>
 						</div>
 						<div class="right_cordeMeta" v-if="payType==1">
 							<div>使用支付宝扫码支付</div>
@@ -138,7 +138,7 @@
 										<span>{{items['n_age']}}岁</span><span>161cm</span>
 									</div>
 									<div class="u_mark">
-										我正在{{diliArray[Number(items['vc_city'])-2].name}}，寻找年龄在{{items['n_age']}}岁-{{items['n_age']+5}}岁的...
+										我正在{{diliArray[Number(items['vc_city'])-2]?diliArray[Number(items['vc_city'])-2].name:''}}，寻找年龄在{{items['n_age']}}岁-{{items['n_age']+5}}岁的...
 									</div>
 								</div>
 							</div>
@@ -155,7 +155,8 @@
 <script>
 	import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
 	import https from "../utils/Https.js"
-	import QRCode from "qrcode"
+	import QRCode from 'qrcodejs2'
+	// console.log(QRCode,333)
 	export default {
 		data() {
 			return {
@@ -172,11 +173,15 @@
 		methods: {
 			// 生成二维码
 			qrcode:function(){
-				let qrcode = new QRCode('qrcode',{
+				var mydom = document.getElementById("qrcode");
+				console.log(mydom,'mydom')
+				let qrcodee = new QRCode(mydom,{
 					width:100,
 					height:100,//高度
 					text:"http://www.jingqiweb.cn"
 				})
+				//更新二维码的内容
+				// qrcodee.makeCode("123456");
 			},
 			ktvip: function(i) {
 				this.isShowVip = 1;
@@ -191,7 +196,12 @@
 			palypost: function(i) {
 				this.payType = i;
 				if(i==2){
-					this.qrcode();
+					this.$nextTick(()=>{
+						setTimeout(()=> {
+							this.qrcode()
+						})
+						
+					})
 				}
 			},
 			goPay: function() {
@@ -270,7 +280,6 @@
 			this.diliArray = JSON.parse(localStorage.posPAC);
 		},
 		mounted() {
-			
 			
 		}
 	}
