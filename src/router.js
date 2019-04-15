@@ -175,12 +175,12 @@ indexRouter.beforeEach(function(to, from, next) {
 		}
 	}
 		// 判断是否登录
-// 	if(!localStorage.openid){
-// 		if(to.fullPath!="/"){
-// 			next('/')
-// 			return false;
-// 		}
-// 	}
+	if(!localStorage.openid){
+		if(to.fullPath!="/"){
+			next('/')
+			return false;
+		}
+	}
 	document.body.scrollTop = 0;
 	next();
 })

@@ -13,7 +13,7 @@
 								<div class="vip_h2">{{items.vc_daymoney}}元/天</div>
 								<div class="vip_content">会员价{{items['n_money']}}元</div>
 								<div class="vip_ktbtn">
-									<el-button type="primary" plain @click="ktvip(index)">立即开通</el-button>
+									<el-button type="primary" plain @click="ktvip(index,items.id)">立即开通</el-button>
 								</div>
 							</div>
 						</li>
@@ -68,8 +68,8 @@
 						</li>
 					</div>
 					<div class="nfeibtn">
-						<el-button v-if="userData['n_sex']==1" @click="ktvip(vipList.length-2)">立即开通 <span>{{vipList[vipList.length-2]?vipList[vipList.length-2]['n_money']:''}}元/年</span></el-button>
-						<el-button v-else @click="ktvip(vipList.length-2)">立即开通 <span>{{vipList[vipList.length-2]?vipList[vipList.length-2]['n_money']:''}}元/年</span></el-button>
+						<el-button v-if="userData['n_sex']==1" @click="ktvip(vipList.length-2,vipList[vipList.length-2].id)">立即开通 <span>{{vipList[vipList.length-2]?vipList[vipList.length-2]['n_money']:''}}元/年</span></el-button>
+						<el-button v-else @click="ktvip(vipList.length-2,vipList[vipList.length-2].id)">立即开通 <span>{{vipList[vipList.length-2]?vipList[vipList.length-2]['n_money']:''}}元/年</span></el-button>
 					</div>
 					<div class="des" >
 						<p class="title">服务说明</p>
@@ -84,8 +84,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="shadows" v-if="isShowVip==1"></div>
-			<div class="showPay" v-if="isShowVip==1">
+			<div class="shadows" v-show="isShowVip==1"></div>
+			<div class="showPay" v-show="isShowVip==1">
 				<div class="showPhead">会员充值 <div class="closePay" @click="closeVip"><span>X</span></div>
 				</div>
 				<div class="showPcontext">
@@ -95,33 +95,37 @@
 					</div>
 					<div class="zffs">支付方式：</div>
 					<ul class="paytype">
-						<li @click="palypost(1)" :class="payType==1?'ative':''">支付宝</li>
-						<li @click="palypost(2)" :class="payType==2?'ative':''">微信</li>
+						<!-- <li @click="palypost(1)" :class="payType==1?'ative':''">支付宝</li> -->
+						<!-- <li @click="palypost(2)" :class="payType==2?'ative':''">微信</li> -->
+						<li @click="palypost(2)" class="ative">微信</li>
 					</ul>
 					<div class="payCode">
 						<div class="left_qrcode">
 							<!-- 支付宝的扫码 -->
-							<img v-if="payType==1" src="https://mobilecodec.alipay.com/show.htm?code=gdxox0xozdovjgkxa2&picSize=S" alt="">
-							<div id="qrcode" v-else ref="qrcode"></div>
+							<img v-show="payType==1" src="https://mobilecodec.alipay.com/show.htm?code=gdxox0xozdovjgkxa2&picSize=S" alt="">
+							<div id="qrcode"  ref="qrcode"></div>
 						</div>
-						<div class="right_cordeMeta" v-if="payType==1">
+						<!-- <div class="right_cordeMeta" v-if="payType==1">
 							<div>使用支付宝扫码支付</div>
 							<div>
 								<ul>
+									暂未开通
 									<li>可支持：</li>
 									<li>1:支付宝余额支付</li>
 									<li>2.支持二十多家主流银行的储蓄卡（即借记卡）和信用卡，无需开通网银，没有支付宝也可支付。</li>
 								</ul>
 							</div>
-						</div>
-						<div v-else class="right_cordeMeta">
+						</div> -->
+						<div class="right_cordeMeta">
 							<div>请使用微信扫一扫</div>
 							<div>扫描图中二维码支付</div>
 						</div>
 					</div>
+					<!-- 
+						支付宝启用再打开
 					<div style="margin-top: 20px;text-align: center;">
-						<el-button type="primary" plain @click="goPay" style="width:200px;">前往支付</el-button>
-					</div>
+						<el-button v-if="payType==1" type="primary" plain @click="goPay" style="width:200px;">前往支付</el-button>
+					</div> -->
 				</div>
 			</div>
 			<div class="vipcright">
@@ -163,46 +167,78 @@
 				isShowVip: 0,
 				vipMoney: 360,
 				vipMoneth: 3,
-				payType: 1,
+				payType: 2,    //支付宝和微信切换
 				vipList:[{n_money:''}],
 				userData:[],
 				tjUser:[],
-				diliArray:""
+				diliArray:"",
+				isNew:0,
+				vipId:"",
+				processCode:null,
+				orderStatus:1,
+				timer:null
 			}
 		},
 		methods: {
 			// 生成二维码
-			qrcode:function(){
+			qrcode:function(data){
 				var mydom = document.getElementById("qrcode");
-				console.log(mydom,'mydom')
-				let qrcodee = new QRCode(mydom,{
-					width:100,
-					height:100,//高度
-					text:"http://www.jingqiweb.cn"
-				})
+				if(!this.isNew){
+					this.processCode = new QRCode(mydom,{
+						width:100,
+						height:100,//高度
+						text:data['code_url']
+					})
+				}
+				this.isNew = 1;
 				//更新二维码的内容
-				// qrcodee.makeCode("123456");
+				this.processCode.makeCode(data['code_url']);
+				this.getOrder(data.vc_order_sn)
+				
 			},
-			ktvip: function(i) {
+			ktvip: function(i,id) {
 				this.isShowVip = 1;
+				// 支付类型
 				this.payType = 1;
+				// 金额
 				this.vipMoney = this.vipList[i].n_money;
+				// 月份
 				this.vipMoneth = this.vipList[i].n_time;
+				// vip id
+				this.vipId = id;
+				this.setOrder(this.vipId);
+				// this.orderStatus = 0;
 				
 			},
 			closeVip: function() {
+				// 关闭弹窗
 				this.isShowVip = 0;
+				this.orderStatus = 1;
+				if(this.timer){
+					clearInterval(this.timer)
+				}
+			},
+			toastip:function(str,type){
+				this.$message({
+				  message:str ,
+				  type: type||'warning'
+				});
 			},
 			palypost: function(i) {
-				this.payType = i;
-				if(i==2){
-					this.$nextTick(()=>{
-						setTimeout(()=> {
-							this.qrcode()
-						})
-						
-					})
-				}
+				// this.payType = i;
+// 				
+// 				if(i==2){
+// 					if(this.orderStatus==1){
+// 						this.setOrder(this.vipId)
+// 					}
+					
+// 					this.$nextTick(()=>{
+// 						setTimeout(()=> {
+// 							this.qrcode()
+// 						})
+// 						
+// 					})
+				// }
 			},
 			goPay: function() {
 				message(this,{
@@ -258,6 +294,52 @@
 					.catch(res => {
 						// console.log(res,"res")
 					})
+			},
+			setOrder:function(id){
+				let data = {
+					id:id,
+					oc_usercode:localStorage.openid
+				}
+				connetAction.ajaxPost(https['setOrder'], data)
+					.then(rd => {
+						if(rd.status==1){
+							this.qrcode(rd.data);
+							
+						}
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
+			getOrder:function(id){
+				let data = {
+					vc_order_sn:id
+				}
+				var that = this;
+				var targe = false;
+				that.timer = setInterval(function(){
+					connetAction.ajaxPost(https['getOrderStatus'], data)
+						.then(rd => {
+							if(rd.data=="支付成功"){
+								targe = true;
+// 								clearInterval(that.timer);
+// 								that.$router.push('./home');
+							}
+						})
+						.catch(res => {
+							// console.log(res,"res")
+						})
+					if(targe){
+						that.toastip("支付成功，你已升级为会员赶紧体验下吧",'success');
+						clearInterval(that.timer);
+						setTimeout(function(){
+							that.$router.push('./home');
+						},3000)
+						
+					}
+				},3000)
+				
+				
 			},
 			huiyuanInfo(){
 				connetAction.ajaxPost(https['huiyuan'], {id:5})
@@ -495,7 +577,9 @@
 	.zffs {
 		margin-top: 1%;
 	}
-
+	#qrcode{
+		transform: translateY(-20px);
+	}
 	.left_qrcode {
 		width: 100px;
 		margin-right: 5%;

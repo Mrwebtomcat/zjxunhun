@@ -80,7 +80,7 @@
 								<div class="aqbz">
 									<div class="bztxt">金梦情缘，严格保护会员隐私</div>
 									<br>
-									<div class="bztxt">如认证遇到困难，可咨询客服0759-12154-121</div>
+									<div class="bztxt">如认证遇到困难，可咨询客服13824818105</div>
 								</div>
 								
 						</el-col>

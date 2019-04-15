@@ -12,7 +12,7 @@
 							placeholder="请输入昵称搜索"
 							v-model="idinpyt"
 							clearable>
-							 <i slot="suffix" class='el-icon-search idIcon' @click='searchidFn'></i>
+							 <i slot="suffix" class='el-icon-search idIcon curpointer' @click='searchidFn'></i>
 						</el-input>
 					</div>
 				</div>
@@ -24,47 +24,47 @@
 				</div> -->
 				<div class="li">
 					<span class="fontw">基础条件:</span>
-					<div class="w5  ml3" >
+					<div class="w5  ml3"  style="width:8%;" >
 						 <el-select v-model="form.n_sex" size="small" placeholder="性别">
 							  <el-option v-for="(items,index) in ['男','女']" :key="index" :label="items" :value="index+1"></el-option>
 						</el-select>
 					</div>
 					<div class="ml1" style="width:10%;">
-						<el-input v-model="form.n_min_age" size="small" placeholder="请输入年龄">
+						<el-input v-model="form.n_min_age" size="small" placeholder="年龄">
 							 <!-- <i slot="suffix" class='idIcon'>岁</i> -->
 						</el-input>
 					</div>
 					<span class="ml1">至</span>
 					<div class="ml1" style="width:10%;">
-						<el-input v-model="form.n_max_age" size="small" placeholder="请输入年龄">
+						<el-input v-model="form.n_max_age" size="small" placeholder="年龄">
 							 <!-- <i slot="suffix" class='idIcon' >岁</i> -->
 						</el-input>
 					</div>
-					<div  class="ml1" style="width:8%;">
-						<el-input v-model="form.n_min_sg" size="small" placeholder="请输入身高">
+					<div  class="ml1" style="width:7%;">
+						<el-input v-model="form.n_min_sg" size="small" placeholder="身高">
 							 <i slot="suffix" class='idIcon' >cm</i>
 						</el-input>
 					</div>
 					<div class="ml1">至</div>
-					<div class="ml1" style="width:8%;">
-						<el-input v-model="form.n_max_sg" size="small" placeholder="请输入身高">
+					<div class="ml1" style="width:7%;">
+						<el-input v-model="form.n_max_sg" size="small" placeholder="身高">
 							 <i slot="suffix" class='idIcon' >cm</i>
 						</el-input>
 					</div>
-					<div class="ml1" style="width:8%;">
-						 <el-select v-model="form.vc_province" size="small" placeholder="请选择" @change="getCity">
+					<div class="ml1" style="width:9%;">
+						 <el-select v-model="form.vc_province" size="small" placeholder="选择省份" @change="getCity">
 							<el-option v-for="(items,index) in vc_province" :key="index" :label="items['name']" :value="items['id']">
 							</el-option>
 						</el-select>
 					</div>
-					<div class="ml1" style="width:8%;">
-						 <el-select v-model="form.vc_city" size="small" @change="getArea"  placeholder="请选择城市">
+					<div class="ml1" style="width:9%;">
+						 <el-select v-model="form.vc_city" size="small" @change="getArea"  placeholder="选择城市">
 							<el-option v-for="(item,index) in vc_city" :key="index" :label="item['name']" :value="item['id']"></el-option>
 						</el-select>
 					</div>
-					<div class="ml1" style="width:8%;">
-						 <el-select v-model="form.vc_area" size="small" placeholder="请选择城区">
-							<el-option v-for="(item,index) in vc_area" :key="index" :label="item['name']" :value="item['id']"></el-option>
+					<div class="ml1" style="width:9%;">
+						 <el-select v-model="form.vc_area" size="small" placeholder="选择城区">
+							<el-option v-for="(item,index) in vc_area" :key="indexa" :label="item['name']" :value="item['id']"></el-option>
 						</el-select>
 					</div>
 					
@@ -74,8 +74,11 @@
 							</el-option>
 						</el-select>
 					</div>
+					<div class="chegj">
+						<el-checkbox v-model="gjchecked">高级检索</el-checkbox>
+					</div>
 				</div>
-				<div class="li">
+				<div v-if="gjchecked" class="li">
 					<span class="fontw">高级搜索:</span>
 					<div class="ml3" style="width:12%;">
 						 <el-select v-model="form.vc_worke" :disabled="vip" size="small" placeholder="职业" >
@@ -116,7 +119,8 @@
 					</div>
 					
 				</div>
-				<div class="searchbtn"><el-button @click="gjSearch">高级搜索</el-button></div>
+				<div v-if="gjchecked" class="searchbtn"><el-button @click="gjSearch">高级搜索</el-button></div>
+				<div v-else class="searchbtn"><el-button @click="gjSearch(1)">搜索</el-button></div>
 			 </div>
 			 <div class="changeseach">
 				  <ul class="searchul">
@@ -143,24 +147,24 @@
 					  	</div>
 					  </li>
 					<li v-for="(item,index) in searchList" class="buy-star member-list" :key="index" @click.stop="goInfoDetai">
-						<div class="headimg" :style="`background:url(${item.imgSrc}) ;`">
+						<div class="headimg" :style="`background:url(${item.vc_img?item.vc_img:'https://photo.zastatic.com/images/photo/260496/1041981648/1497227643627100.png?scrop=1&crop=1&cpos=north&w=150&h=150'}) 0% 0% / contain;`">
 							<div class="dzh">打招呼</div>
 						</div>
 						<div class="name pl11">
-							<span class="left1">金梦情缘金梦情缘金梦情缘</span>
-							<span class="icontype ative start"></span>
-							<span class="icontype vip"></span>
-							<span class="icontype card"></span>
+							<span class="left1">{{item['vc_nickname']?item['vc_nickname']:''}}</span>
+							<span :class="item['n_isstar']?'icontype ative start':'icontype start'"></span>
+							<span :class="item['n_isvip']?'icontype ative vip':'icontype vip'"></span>
+							<span :class="item['n_issm']?'icontype ative card':'icontype card'"></span>
 						</div>
 						<div class="tag pl11">
-							<el-tag  size="small">22岁</el-tag>
+							<el-tag  size="small">{{item['n_age']?item['n_age']:''}}岁</el-tag>
 							<el-tag size="small">湛江</el-tag>
-							<el-tag size="small">166CM</el-tag>
+							<el-tag size="small">{{item['n_sg']?item['n_sg']:'180'}}CM</el-tag>
 							<el-tag size="small">大专</el-tag>
-							<el-tag size="small">自由职业</el-tag>
+							<el-tag size="small">{{item['vc_worke']?item['vc_worke']:'未知'}}</el-tag>
 						</div>
 						<div class="marks">
-							我正在寻找广东湛江霞山区,年龄在18-23岁,...
+							{{item['vc_descript']&&item['vc_descript']!=""?item['vc_descript']:'我正在寻找灯火阑珊处的你,...'}}
 						</div>
 					</li>
 				  </ul>
@@ -180,20 +184,41 @@ export default {
  data(){
 	 return{
 		 vip:false,
-		 form:{},
+		 gjchecked:false, //是否高级搜索
+		 form:{},		 //表单数据
 		 img:"https://photo.zastatic.com/images/photo/381783/1527130186/18602580078900397.png?scrop=1&crop=1&cpos=north&w=184&h=184",
-		 searchList:[
-			 {imgSrc:'https://photo.zastatic.com/images/photo/260496/1041981648/1497227643627100.png?scrop=1&crop=1&cpos=north&w=150&h=150'},
-			 {imgSrc:'https://photo.zastatic.com/images/photo/432985/1731937621/350084957976258.png?scrop=1&crop=1&cpos=north&w=150&h=150'},
-			 {imgSrc:'https://photo.zastatic.com/images/photo/473254/1893012501/14081895096275678.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'},
-			 {imgSrc:'https://photo.zastatic.com/images/photo/443018/1772071871/7729106694384830.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'},
-			 {imgSrc:'https://photo.zastatic.com/images/photo/383333/1533329108/9079873433504577.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'}
+		 searchList:[ //用户列表假数据
+			 {
+				vc_img:'https://photo.zastatic.com/images/photo/260496/1041981648/1497227643627100.png?scrop=1&crop=1&cpos=north&w=150&h=150',
+				vc_nickname:'金梦情缘',
+				n_age: 18,
+				n_issm: 0,
+				n_isstar: 0,
+				n_isvip: 0,
+				n_xueli: 1,
+				vc_city: 75,
+				vc_descript: "123"
+			 },
+			 {
+				vc_img:'https://photo.zastatic.com/images/photo/432985/1731937621/350084957976258.png?scrop=1&crop=1&cpos=north&w=150&h=150',
+				vc_nickname:'金梦情缘',
+				n_age: 18,
+				n_issm: 0,
+				n_isstar: 0,
+				n_isvip: 0,
+				n_xueli: 1,
+				vc_city: 75,
+				vc_descript: "21334555"
+			 },
+// 			 {vc_img:'https://photo.zastatic.com/images/photo/473254/1893012501/14081895096275678.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'},
+// 			 {vc_img:'https://photo.zastatic.com/images/photo/443018/1772071871/7729106694384830.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'},
+// 			 {vc_img:'https://photo.zastatic.com/images/photo/383333/1533329108/9079873433504577.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'}
 		 ],
 		 isShowSlec:0,
 		 idinpyt:'',
-		 vc_province:{},
-		 vc_city:"",
-		 vc_area:'',
+		 vc_province:[],
+		 vc_city:[],
+		 vc_area:[],
 		 autoData:{},
 		 vc_worke:'',
 		 worker:mingzu['zhiye'],//职业
@@ -221,6 +246,7 @@ export default {
 	goSearch(){
 		this.isShowSlec = !this.isShowSlec;
 	},
+	//昵称搜索
 	searchidFn:function(){
 		
 		if(this.idinpyt==""){
@@ -234,7 +260,7 @@ export default {
 		connetAction.ajaxPost(https['nameSousuo'], {vc_nickname:this.idinpyt})
 					.then(rd => {
 						if(rd.status==1){
-							console.log(rd.datam,44444)
+							this.searchList = rd.data;
 						}
 					})
 					.catch(res => {
@@ -262,11 +288,20 @@ export default {
 		this.provincearr=[];
 		this.citysarrs=[];
 		this.areaarrs=[];
+		
 		if(localStorage.posPAC){
-			var data =  JSON.parse(localStorage.posPAC);
-			this.vc_province = this.provincearr = data.vc_province;
-			this.citysarrs = data.vc_city;
-			this.areaarrs = data.vc_area;
+			this.provincearr =  JSON.parse(localStorage.posPAC);
+			for(var i=0;i<this.provincearr .length;i++){
+				if(this.provincearr[i]['type']==1){
+					this.vc_province.push(this.provincearr[i]);
+				}
+				if(this.provincearr [i]['type']==2){
+					this.citysarrs.push(this.provincearr[i]);
+				}
+				if(this.provincearr[i]['type']==3){
+					this.areaarrs.push(this.provincearr[i]);
+				}
+			}
 		}
 
 	},
@@ -292,8 +327,10 @@ export default {
 				this.vc_area.push(this.areaarrs[i])
 			}
 		}
+		console.log(this.vc_area,1111)
 		
 	},
+	// 高级搜索
 	gjSearch:function(page){
 		let data = null;
 		data = this.form;
@@ -357,6 +394,7 @@ export default {
 		display: flex;
 		font-size: 0.9em;
 		align-items: center;
+		position: relative;
 	}
 	.li .el-tag{
 		margin-left: 3%;
@@ -412,7 +450,6 @@ export default {
 		background: 50% no-repeat;
 		background-size: 100% 100%;
 		margin: auto;
-		border: 1px solid transparent;
 	}
 	.pl11{
 		padding-left:11% ;
@@ -511,6 +548,13 @@ export default {
 		height: 30px;
 		line-height: 30px;
 		font-size: 20px;
+	}
+	.curpointer{
 		cursor: pointer;
+	}
+	.chegj{
+		position: absolute;
+		right: 8%;
+		top: 5.6em;
 	}
 </style>

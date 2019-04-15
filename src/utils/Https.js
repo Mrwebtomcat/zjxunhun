@@ -27,8 +27,10 @@ let INTERFACE = {
 	nameSousuo:'base/nameSouSuo',
 	huiyuan:'Huiyuan/index',				//查询VIP会员列表 params{id:会员id}
 	addAlbum:'user/addAlbum',				//上传图片
-	delAlbum:'user/addAlbum',				//删除图片  { id:图片id; oc_usercode:用户id}
+	delAlbum:'user/delAlbum',				//删除图片  { id:图片id; oc_usercode:用户id}
 	updateLogo:'user/updateLogo',			//上传头像  { id:用户id,id; vc_img:头像}
+	setOrder:'wxpay/setOrder',			//发起微信支付  { id:用户id,}  返回订单id 和url
+	getOrderStatus:'wxpay/getOrderStatus',			//获得订单状态
 	masterBusiness:'/weservice/masterBusiness'	//技师业绩流水
 }
 for(var key in INTERFACE){
