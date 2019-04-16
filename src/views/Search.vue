@@ -120,7 +120,7 @@
 					
 				</div>
 				<div v-if="gjchecked" class="searchbtn"><el-button @click="gjSearch">高级搜索</el-button></div>
-				<div v-else class="searchbtn"><el-button @click="gjSearch(1)">搜索</el-button></div>
+				<div v-else class="searchbtn"><el-button @click="suoSouPt">搜索</el-button></div>
 			 </div>
 			 <div class="changeseach">
 				  <ul class="searchul">
@@ -229,6 +229,12 @@ export default {
 	 }
  },
  methods: {
+	 toastip:function(str,type){
+	 	this.$message({
+	 	  message:str ,
+	 	  type: type||'warning'
+	 	});
+	 },
  	goInfoDetai() {
  		this.$router.push('./userinfo')
  	},
@@ -337,6 +343,58 @@ export default {
 		data.page = 1;
 		data.pageNum =20;
 		data.vc_xinzuo = "";
+		// page&&page!="" ? data.page = page : data.page = "1";
+		connetAction.ajaxPost(https['souSuo'], data)
+			.then(rd => {
+				this.searchList = rd.data;
+			})
+			.catch(res => {
+				console.log(res, "res")
+			})
+	},
+	// 普通搜索
+	suoSouPt:function(){
+		let {n_max_sg,n_min_age,n_min_sg,n_money,n_sex,vc_province,vc_city,vc_area} = this.form;
+		if(n_sex == ""|| !n_sex){
+			this.toastip('请填性别，在操作');
+			return false;
+		}
+		if(n_min_age == ""|| !n_min_age){
+			this.toastip('请填年龄，在操作');
+			return false;
+		}
+		if(n_min_sg==0||!n_min_sg){
+			this.toastip('身高不能为空，请选择');
+			return false;
+		}
+		if(vc_province==0||!vc_province){
+			this.toastip('请选择省份');
+			return false;
+		}
+		if(vc_city==0||!vc_city){
+			this.toastip('请选择城市，请选择');
+			return false;
+		}
+		if(vc_area==0||!vc_area){
+			this.toastip('城区不能为空，请选择');
+			return false;
+		}
+		if(n_money==0||!n_money){
+			this.toastip('薪资不能为空，请选择');
+			return false;
+		}
+		
+		let data = {
+			n_max_sg,
+			n_min_age,
+			n_min_sg,
+			n_money,
+			n_sex,
+			vc_province,
+			vc_area,
+			vc_city
+		}
+		console.log(data,2223333)
 		// page&&page!="" ? data.page = page : data.page = "1";
 		connetAction.ajaxPost(https['souSuo'], data)
 			.then(rd => {
