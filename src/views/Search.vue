@@ -270,18 +270,18 @@ export default {
 	},
 	//默认数据
 	autoCode: function() {
-				connetAction.ajaxPost(https['getCode'], "")
-					.then(rd => {
-						this.autoData = rd.data;
-						this.gzArr = 	this.autoData['2'];
-							
-						// 获得资料模板数据
-						// this.setpCode(rd.data);
-						//console.log(this.autoData)
-					})
-					.catch(res => {
-						// console.log(res,"res")
-					})
+		connetAction.ajaxPost(https['getCode'], "")
+			.then(rd => {
+				this.autoData = rd.data;
+				this.gzArr = 	this.autoData['2'];
+					
+				// 获得资料模板数据
+				// this.setpCode(rd.data);
+				//console.log(this.autoData)
+			})
+			.catch(res => {
+				// console.log(res,"res")
+			})
 	},
 	// 获取省份
 	getProvice: function(n) {
@@ -340,11 +340,25 @@ export default {
 		// page&&page!="" ? data.page = page : data.page = "1";
 		connetAction.ajaxPost(https['souSuo'], data)
 			.then(rd => {
-				// console.log(rd)
-				this.vc_area = rd.data;
+				this.searchList = rd.data;
 			})
 			.catch(res => {
 				console.log(res, "res")
+			})
+	},
+	getuerList:function(){
+		let data = {
+			oc_usercode:localStorage.openid
+		}
+		connetAction.ajaxPost(https['index'], data)
+			.then(rd => {
+				if(rd.status==1){
+					this.searchList = rd.data.tjList;
+					console.log(this.searchList)
+				}
+			})
+			.catch(res => {
+				// console.log(res,"res")
 			})
 	}
  },
@@ -352,6 +366,9 @@ export default {
 	 this.getProvice();
 	 this.autoCode();
 	 
+ },
+ mounted:function(){
+	  this.getuerList();
  }
 }
 </script>
