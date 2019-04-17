@@ -2,7 +2,7 @@
 // const baseURL = "http://10.10.2.27/zjxh/public/index.php"
 const baseURL = "http://server.zjxunhun.com/index.php/"
 let INTERFACE = {
-	login:'/login/login',					//登陆
+	login:'login/login',					//登陆
 	/*
 		注册参数：{
 			vc_userphone:用户
