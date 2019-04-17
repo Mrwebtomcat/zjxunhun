@@ -22,7 +22,7 @@
 									<!-- ID：1761685425 -->
 									<div class="user_id mt10"></div>
 									<div class="workesage mt10">
-									{{bigAreaData[Number(userData['vc_province'])-2].name}} {{bigAreaData[Number(userData['vc_city'])-2].name}} | {{userData['n_age']}}岁 | {{autoCode[1][Number(userData['n_xueli'])-1].value}} | {{userData['n_huntype']==1?'未婚':userData['n_huntype']==2?'离异':'丧偶'}} | {{userData['n_sg']}}cm | 
+									{{bigAreaData[Number(userData['vc_province'])-2]?bigAreaData[Number(userData['vc_province'])-2].name:''}} {{bigAreaData[Number(userData['vc_city'])-2]?bigAreaData[Number(userData['vc_city'])-2].name:''}} | {{userData['n_age']}}岁 | {{autoCode[1][Number(userData['n_xueli'])-1].value}} | {{userData['n_huntype']==1?'未婚':userData['n_huntype']==2?'离异':'丧偶'}} | {{userData['n_sg']}}cm | 
 										{{autoCode[2][Number(userData['n_money'])-1].value}}元
 									</div>
 									<div class="phoneto">
@@ -81,7 +81,7 @@
 							</div>
 							<div class="planemsg">
 								<el-tag v-if="userData['vc_mz']">{{mingzu[Number(userData['vc_mz'])-1].value}}</el-tag>
-								<el-tag type="success">籍贯:{{bigAreaData[Number(userData['vc_province'])-2].name}} {{bigAreaData[Number(userData['vc_city'])-2].name}} </el-tag>
+								<el-tag type="success">籍贯:{{bigAreaData[Number(userData['vc_province'])-2]?bigAreaData[Number(userData['vc_province'])-2].name:''}} {{bigAreaData[Number(userData['vc_city'])-2]?bigAreaData[Number(userData['vc_city'])-2].name:''}} </el-tag>
 								<el-tag type="info">体型:苗条</el-tag>
 								<el-tag type="warning" v-if="userData['n_smoke']">{{userData['n_smoke']}}不吸烟社交场合会喝酒</el-tag>
 								<el-tag type="danger">租房未买车</el-tag>
