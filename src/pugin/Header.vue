@@ -58,7 +58,15 @@ export default {
   	},
 	itemFn(i){
 		this.isNav = 0;
-		if(i==4){
+		if(i==0){
+			this.goPage('/editInfo')
+		}else if(i==1){
+			this.goPage('/idCard')
+		}else if(i==2){
+			this.goPage({name:'editInfo',query:{page:2}})
+		}else if(i==3){
+			this.goPage({name:'editInfo',query:{page:7}})
+		}else if(i==4){
 			localStorage.removeItem('openid');
 			window.location.reload();
 		}

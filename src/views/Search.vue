@@ -63,8 +63,8 @@
 						</el-select>
 					</div>
 					<div class="ml1" style="width:9%;">
-						 <el-select v-model="form.vc_area" size="small" placeholder="选择城区">
-							<el-option v-for="(item,index) in vc_area" :key="indexa" :label="item['name']" :value="item['id']"></el-option>
+						 <el-select v-model="form.vc_area" size="small"  placeholder="选择城区">
+							<el-option v-for="(item,index) in vc_area" :key="index" :label="item['name']" :value="item['id']"></el-option>
 						</el-select>
 					</div>
 					
@@ -146,9 +146,9 @@
 					  		我正在寻找广东湛江霞山区,年龄在18-23岁,...
 					  	</div>
 					  </li>
-					<li v-for="(item,index) in searchList" class="buy-star member-list" :key="index" @click.stop="goInfoDetai">
+					<li v-for="(item,index) in searchList" class="buy-star member-list" :key="index" @click.stop="goInfoDetai(item.id)">
 						<div class="headimg" :style="`background:url(${item.vc_img?item.vc_img:'https://photo.zastatic.com/images/photo/260496/1041981648/1497227643627100.png?scrop=1&crop=1&cpos=north&w=150&h=150'}) 0% 0% / contain;`">
-							<div class="dzh">打招呼</div>
+							<div class="dzh" @click.stop="dzh(item['vc_nickname'])">打招呼</div>
 						</div>
 						<div class="name pl11">
 							<span class="left1">{{item['vc_nickname']?item['vc_nickname']:''}}</span>
@@ -158,8 +158,8 @@
 						</div>
 						<div class="tag pl11">
 							<el-tag  size="small">{{item['n_age']?item['n_age']:''}}岁</el-tag>
-							<el-tag size="small">湛江</el-tag>
-							<el-tag size="small">{{item['n_sg']?item['n_sg']:'180'}}CM</el-tag>
+							<el-tag size="small">{{provincearr[Number(item['vc_province'])-2]?provincearr[Number(item['vc_province'])-2]['name']:'湛江'}}</el-tag>
+							<el-tag size="small">{{item['n_sg']?item['n_sg']:'0'}}CM</el-tag>
 							<el-tag size="small">大专</el-tag>
 							<el-tag size="small">{{item['vc_worke']?item['vc_worke']:'未知'}}</el-tag>
 						</div>
@@ -196,8 +196,9 @@ export default {
 				n_isstar: 0,
 				n_isvip: 0,
 				n_xueli: 1,
+				id:3,
 				vc_city: 75,
-				vc_descript: "123"
+				vc_descript: ""
 			 },
 			 {
 				vc_img:'https://photo.zastatic.com/images/photo/432985/1731937621/350084957976258.png?scrop=1&crop=1&cpos=north&w=150&h=150',
@@ -207,8 +208,10 @@ export default {
 				n_isstar: 0,
 				n_isvip: 0,
 				n_xueli: 1,
+				id:4,
+				vc_province:80,
 				vc_city: 75,
-				vc_descript: "21334555"
+				vc_descript: ""
 			 },
 // 			 {vc_img:'https://photo.zastatic.com/images/photo/473254/1893012501/14081895096275678.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'},
 // 			 {vc_img:'https://photo.zastatic.com/images/photo/443018/1772071871/7729106694384830.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'},
@@ -235,8 +238,8 @@ export default {
 	 	  type: type||'warning'
 	 	});
 	 },
- 	goInfoDetai() {
- 		this.$router.push('./userinfo')
+ 	goInfoDetai(id) {
+ 		this.$router.push({name:'userinfo',query:{id:id}})
  	},
 	gotfollw() {
  		this.$router.push('./follow')
@@ -256,12 +259,8 @@ export default {
 	searchidFn:function(){
 		
 		if(this.idinpyt==""){
-			message(this,{
-				title:'',
-				contxt:'用户昵称不能为空',
-				center:true,
-				btntxt:'确定'
-			})
+			this.toastip('请输入昵称后再搜索')
+			return false;
 		}
 		connetAction.ajaxPost(https['nameSousuo'], {vc_nickname:this.idinpyt})
 					.then(rd => {
@@ -356,15 +355,19 @@ export default {
 	suoSouPt:function(){
 		let {n_max_sg,n_min_age,n_min_sg,n_money,n_sex,vc_province,vc_city,vc_area} = this.form;
 		if(n_sex == ""|| !n_sex){
-			this.toastip('请填性别，在操作');
+			this.toastip('请选择性别，在操作');
 			return false;
 		}
 		if(n_min_age == ""|| !n_min_age){
-			this.toastip('请填年龄，在操作');
+			this.toastip('请填写年龄，在操作');
 			return false;
 		}
 		if(n_min_sg==0||!n_min_sg){
-			this.toastip('身高不能为空，请选择');
+			this.toastip('请填写身高，请选择');
+			return false;
+		}
+		if(n_max_sg==0||!n_max_sg){
+			this.toastip('请填写身高，请选择');
 			return false;
 		}
 		if(vc_province==0||!vc_province){
@@ -403,6 +406,9 @@ export default {
 			.catch(res => {
 				console.log(res, "res")
 			})
+	},
+	dzh:function(str){
+		this.toastip(`与${str}打招呼成功`,'success');
 	},
 	getuerList:function(){
 		let data = {

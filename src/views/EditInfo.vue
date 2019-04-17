@@ -346,7 +346,8 @@
 										<p>实名认证</p>
 										<p>提高诚信级别，认识更多诚信用户</p>
 									</div>
-									<div class="button">立即认证</div>
+									<div v-if="autoInfo['n_issm']!=1" class="button" @click="doLink('/idcard')">立即认证</div>
+									<div v-else class="button" >您已实名认证</div>
 								</li>
 							</div>
 						</div>
