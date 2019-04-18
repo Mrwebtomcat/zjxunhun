@@ -118,61 +118,25 @@
 						<div class="rightcontent2">
 							<div class="h2">猜你喜欢 <span  style="float: right;font-size: 20px;cursor: pointer;" class="el-icon-refresh"></span></div>
 							<div class="ranguser">
-								<div class="useritem">
+								<div v-if="tjUser['tjList'].length>0"  v-for="(items,index) in tjUser['tjList']" :key="index" class="useritem" @click="goChat">
 									<div class="user_left">
-										<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
+										<img :src="items['vc_img']&&items['vc_img']!=''?items['vc_img']:'https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100'" alt="">
 									</div>
 									<div class="user_right">
-										<div class="u_name">beenle</div>
+										<div class="u_name">{{items?items['vc_nickname']:''}}</div>
 										<div class="u_tallorage">
-											<span>24岁</span><span>161cm</span>
+											<span>{{items['n_age']}}岁</span>
+											<!-- <span>161cm</span> -->
 										</div>
 										<div class="u_mark">
-											我正在寻找广东湛江霞山区,年龄在26-31岁...
+											我正在
+											<!-- {{diliArray[Number(items['vc_city'])-2]?diliArray[Number(items['vc_city'])-2].name:''}}， -->
+											寻找年龄在{{items['n_age']}}岁-{{items['n_age']+5}}岁的...
 										</div>
 									</div>
 								</div>
-								<div class="useritem">
-									<div class="user_left">
-										<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
-									</div>
-									<div class="user_right">
-										<div class="u_name">beenle</div>
-										<div class="u_tallorage">
-											<span>24岁</span><span>161cm</span>
-										</div>
-										<div class="u_mark">
-											我正在寻找广东湛江霞山区,年龄在26-31岁...
-										</div>
-									</div>
-								</div>
-								<div class="useritem">
-									<div class="user_left">
-										<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
-									</div>
-									<div class="user_right">
-										<div class="u_name">beenle</div>
-										<div class="u_tallorage">
-											<span>24岁</span><span>161cm</span>
-										</div>
-										<div class="u_mark">
-											我正在寻找广东湛江霞山区,年龄在26-31岁...
-										</div>
-									</div>
-								</div>
-								<div class="useritem">
-									<div class="user_left">
-										<img src="https://photo.zastatic.com/images/photo/426830/1707319317/23549166602228029.jpg?scrop=1&crop=1&cpos=north&w=100&h=100" alt="">
-									</div>
-									<div class="user_right">
-										<div class="u_name">beenle</div>
-										<div class="u_tallorage">
-											<span>24岁</span><span>161cm</span>
-										</div>
-										<div class="u_mark">
-											我正在寻找广东湛江霞山区,年龄在26-31岁...
-										</div>
-									</div>
+								<div v-else>
+									暂无发现更多的消息
 								</div>
 							</div>
 						</div>
@@ -193,6 +157,7 @@ import https from "../utils/Https.js"
 				isShowVip:0,
 				isShowMesages:1,
 				GMative:1,
+				tjUser:[],//推荐会员
 				mingzu:mingzu,
 				bigAreaData:[],
 				vipList:[],
@@ -313,9 +278,36 @@ import https from "../utils/Https.js"
 					
 				})
 			},
+			//推荐用户
+			getuerList:function(){
+				let data = {
+					oc_usercode:localStorage.openid
+				}
+				connetAction.ajaxPost(https['index'], data)
+					.then(rd => {
+						if(rd.status==1){
+							this.tjUser = rd.data;
+							console.log(this.tjUser,333)
+						}
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
+			goChat: function() {
+				if(!this.userData['n_isvip']){
+					message(this,{
+						title:`不是会员暂时不能与${this.userData['n_sex']==1?'她':'他'}发起消息`,
+						contxt:"",
+						center:true
+					})
+				}
+				
+			}
 		},
 		created(){
 			this.huiyuanInfo();
+			this.getuerList();
 			if(localStorage.posPAC){
 				this.bigAreaData = JSON.parse(localStorage.posPAC);
 			}
