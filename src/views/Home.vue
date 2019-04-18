@@ -111,10 +111,9 @@
 								<div v-for="(items,index) in userdata['tjList']" :key="index" class="useritem" @click.stop="showDetail(items['vc_nickname'],items['id']?items['id']:'')">
 									<el-row :gutter="24">
 										<el-col :span="10">
-											<img v-if="items['vc_img']&&items['vc_img']!=''" style="width:150px;height:150px;" :src="items['vc_img']"
-											 alt="">
-											<img v-else style="width:150px;height:150px;" src="../assets/img/8311191311554389.png"
-											 alt="">
+											<img v-if="items['vc_img']&&items['vc_img']!=''" style="width:150px;height:150px;" :src="items['vc_img']" />
+											<img v-if="(!items['vc_img'] || items['vc_img']=='')&&items['n_issex']==1" src="../assets/img/main.jpg" style="width:150px;height:150px;"  />
+											<img v-if="(!items['vc_img'] || items['vc_img']=='')&&items['n_issex']!=1" src="../assets/img/woman.jpg" style="width:150px;height:150px;"  />
 										</el-col>
 										<el-col :span="14">
 											<div class="uiname">{{items['vc_nickname']?items['vc_nickname']:''}}</div>
@@ -147,10 +146,9 @@
 						<div class="notice_info">
 							<div class="vipuserinfo">
 								<div class="box">
-									<img v-if="userdata['userlist']['vc_img']&&userdata['userlist']['vc_img']!=''" style="width:100px;height:100px;" :src="userdata['userlist']['vc_img']"
-									 alt="">
-									 <img v-else style="width:100px;height:100px;" src="../assets/img/8311191311554389.png"
-									 alt="">
+									<img v-if="userdata['userlist']['vc_img']&&userdata['userlist']['vc_img']!=''" style="width:100px;height:100px;" :src="userdata['userlist']['vc_img']" >
+									 <img v-if="(!userdata['userlist']['vc_img'] || userdata['userlist']['vc_img']=='')&&userdata['userlist']['n_issex']==1" style="width:100px;height:100px;" src="../assets/img/main.jpg" />
+									 <img v-if="(!userdata['userlist']['vc_img'] || userdata['userlist']['vc_img']=='')&&userdata['userlist']['n_issex']!=1" style="width:100px;height:100px;" src="../assets/img/woman.jpg" />
 									<div class="icon_vip">
 										<span :class="userdata['userlist']['n_isstar']?'start atctive':'start'" @click="dolink('./start')"></span>
 										<span :class="userdata['userlist']['n_isvip']?'vip active':'vip'" @click="dolink('./vip')"></span>
@@ -161,7 +159,7 @@
 									<div class="lac1">{{userdata['userlist']['vc_nickname']?userdata['userlist']['vc_nickname']:''}}</div>
 									<div class="lac1" style="padding-top:4%;"><!--ID：12321542512--></div>
 									<div class="lac1" style="padding-top:3%;">
-										<span>30%</span>
+										<!-- <span>30%</span> -->
 										<span @click="dolink('./editinfo')">个人资料</span>
 										<span @click="dolink('./vip')">充值</span>
 									</div>
@@ -203,7 +201,7 @@
 											<div class="body">解锁消息发送，无限量免费查看，更多精准筛选条件</div>
 										</div>
 									</li>
-									<li @click="dolink('./vip')">
+									<li @click="dolink('./start')">
 										<div class="imgs">
 											<img src="https://i.zhenai.com/pc/portal/myZhenai/images/star.a6da2b1.png" alt="">
 										</div>
@@ -238,8 +236,9 @@
 				</el-row>
 			</div>
 		</div>
-		<Shadow :xianshi="n_issm" :linkUrl="'./idcard'" :shadowcall="callclose">
-		</Shadow>
+		<!-- 实名弹窗 -->
+		<Shadow :xianshi="n_issm" :linkUrl="'./idcard'" :shadowcall="callclose"></Shadow>
+		<!-- 聊天窗口 -->
 		<chatPan 
 			:showChat = "isShowChat"
 			:chartDate="liaotainarray"
@@ -267,7 +266,7 @@
 					vc_city:'',
 					vc_area:''
 				},
-				isShowChat:1,
+				isShowChat:0,//显示聊天窗口
 				liaotainarray:[],
 				provice: [], //省份
 				city: [], //城市
@@ -280,7 +279,9 @@
 				provincearr:[],
 				citysarrs:[],
 				areaarrs:[],
-				bigdata:[]
+				bigdata:[],
+				mainImgurl:'',
+				womanImgUrl:''
 			}
 		},
 		computed:{
@@ -446,6 +447,7 @@
 				
 				
 			}
+			
 		},
 
 		created(){

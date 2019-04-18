@@ -257,8 +257,8 @@ export default {
 	},
 	//昵称搜索
 	searchidFn:function(){
-		
-		if(this.idinpyt==""){
+		this.idinpyt = this.idinpyt.replace( / /g , "");
+		if(this.idinpyt==""||!this.idinpyt){
 			this.toastip('请输入昵称后再搜索')
 			return false;
 		}

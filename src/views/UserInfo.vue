@@ -11,7 +11,7 @@
 					<div class="letcontent">
 						<div class="lef_con_top">
 							<div class="userheader">
-								<div class="myheaderlogo" :style="userData['vc_img']?`background:url(${userData.vc_img}) no-repeat;background-size:cover;`:'background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAAAAACreq1xAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAHhSURBVFjD7ZhLa8MwEIQnQVjYFxsK+f+/L6XgXCRk9tBDQ5tKuyPZCekD6xKitb6MXrsTH17x2HZ8MG8H7sD/CXQNz6SIReA69P4RwHkRAIAIguume4HpIjffRJaxovLAs80ciq6Bi+QKz1L2BVAi3eVZtN4wbwUq860TCTAtVmSxBzFgFCsiRKINTMEeRUI2MJJ5wZb4xOQQ2DA7aAITF2KGN07ZvmAbgeaJeuKmeJo2nJnEnnhsOjbMDtrAns3YDtpAPxCBdh0ga9hvChGgLXEghYrt8mScHMeKCj02o0p0JzaGAv1JIQ4jG1I72KdiHYeJV/qac5j6eJv7hqq9qXob73vERQCHrkfdLTW4Lw9M6eOzobXYOXh4AKmJyIEpXou6OLk+WXOJxH2laJUiZhNNhenNViESzO02gN99ptKC5Tz1KTN5X1rUK6jelLmFBzlrxVkDzqEBB0AuClEBtvIAiSWx3JTUzANCeX1KhU3r90ksJBbAuRmm/3wOXDNhVUAOjCtYgGLgj5V4tUm2ihkwySqaMqcjjW5o97uvbBcz4OolLOz273/n8OeA43pC5u2y9OVf4rrL7PLSkudD73tELA0XxqGD4k3KBOuvDyVv/p/zxEQc9pe6O3AH/gTwHa7ie7sz6ui1AAAAAElFTkSuQmCC) no-repeat;background-size:cover;' "></div>
+								<div class="myheaderlogo" :style="userData['vc_img']?`background:url(${userData.vc_img}) no-repeat;background-size:cover;`:'' "></div>
 								<div class="infoworks">
 									<div class="name" style="margin-top:25px;">{{userData['vc_nickname']}}
 										<span :class="userData['n_isstar']?'card_type start active':'card_type start'"></span>
@@ -25,20 +25,18 @@
 									{{bigAreaData[Number(userData['vc_province'])-2]?bigAreaData[Number(userData['vc_province'])-2].name:''}} {{bigAreaData[Number(userData['vc_city'])-2]?bigAreaData[Number(userData['vc_city'])-2].name:''}} | {{userData['n_age']}}岁 | {{autoCode[1][Number(userData['n_xueli'])-1].value}} | {{userData['n_huntype']==1?'未婚':userData['n_huntype']==2?'离异':'丧偶'}} | {{userData['n_sg']}}cm | 
 										{{autoCode[2][Number(userData['n_money'])-1].value}}元
 									</div>
+										
 									<div class="phoneto">
 										<div class="ctrl prve" v-if="userData['album'].length>0"></div>
 										<div class="photoWrapper">
 											<ul v-if="userData['album'].length>0">
-												<li v-for="(items,index) in userData['album']">
-													<img preview="1" preview-text="..." :src="items" alt="">
+												<li v-for="(items,index) in userData['album']" :key="index">
+													<img preview="1" preview-text="..." :src="items.vc_img" alt="">
 												</li>
-												<!-- <li>
-													<img preview="1" preview-text="描述文字2"  src="https://photo.zastatic.com/images/photo/448999/1795993224/23076152760215462.png?scrop=1&crop=1&cpos=north&w=110&h=110" alt="">
-												</li> -->
 											</ul>
-											<div v-else class="noImgs">
+											<!-- <div v-else class="noImgs">
 												她没有上传更多的照片
-											</div>
+											</div> -->
 											
 										</div>
 										<div class="ctrl next" v-if="userData['album'].length>0"></div>
@@ -491,6 +489,7 @@ import https from "../utils/Https.js"
 	.photoWrapper ul li img{
 		width: 80px;
 		height: 80px;
+		/* cursor: pointer; */
 	}
 	.user_bottom{
 		display: flex;
