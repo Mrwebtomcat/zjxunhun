@@ -1,7 +1,9 @@
 <template>
 	<div class="jmqy_chart" v-if="showChat">
 		<div class="char_heade">
-			<div class="imgbox"></div>
+			<div class="imgbox">
+				<img :src="ohterHeadUrl" alt="">
+			</div>
 			<div class="metalist">
 				<p class="chart_name">{{username}}</p>
 				<p class="chart_meta">{{usertmeta}}</p>
@@ -12,9 +14,9 @@
 		<div class="char_body">
 			<ul id="char_ul" ref="scrollUL">
 				<li v-for="(item,index) in chartDate" :key="index" :class="item.state!=1?'my':''" >
-					<div class="imghead" v-if="item.state==1"><img width="100%" src="https://i.zhenai.com/pc/portal/home/images/person.a2f3ceb.png" alt=""></div>
+					<div class="imghead" v-if="item.state==1"><img width="100%" :src="ohterHeadUrl" alt=""></div>
 					<div class="liaotxt">{{item['chatTxt']}}</div>
-					<div class="imghead" v-if="item.state!=1"><img width="100%" src="https://i.zhenai.com/pc/portal/home/images/person.a2f3ceb.png" alt=""></div>
+					<div class="imghead" v-if="item.state!=1"><img width="100%" :src="headUrl" alt=""></div>
 				</li>
 				<!-- <li v-for="(item,index) in chartDate" :key="index" class="my" v-if="item.state==0">
 					<div class="liaotxt">{{item['chatTxt']}}</div>
@@ -92,6 +94,14 @@ export default {
 	Mofan:{
 		type:[Function]
 	},
+	headUrl:{
+		type:[String,Number],
+		default:"https://i.zhenai.com/pc/portal/home/images/person.a2f3ceb.png"
+	},
+	ohterHeadUrl:{
+		type:[String,Number],
+		default:"https://i.zhenai.com/pc/portal/home/images/person.a2f3ceb.png"
+	},
 	//聊天数据展示模板
 	chartDate:{
 		type:[Array,Object],
@@ -128,6 +138,9 @@ export default {
 			this.$nextTick(()=>{this.$refs.scrollUL.scrollTop = this.$refs.scrollUL.scrollHeight});
 			this.textarea = "";
 		}
+	},
+	autoScroll:function(){
+		this.$nextTick(()=>{this.$refs.scrollUL.scrollTop = this.$refs.scrollUL.scrollHeight});
 	},
 	colseChat:function(){
 		this.closeFn()
@@ -182,9 +195,12 @@ export default {
 	.imgbox{
 		width: 40px;
 		height: 40px;
-		background: red;
 		border-radius: 10px;
 		margin-left: 30px;
+	}
+	.imgbox img{
+		width: 100%;
+		height: 40px;
 	}
 	.metalist{
 		 padding-left: 20px;
@@ -215,8 +231,12 @@ export default {
 	.imghead{
 		width: 30px;
 		height: 30px;
-		background: paleturquoise;
+		/* background: paleturquoise; */
 		margin-right: 20px;
+	}
+	.imghead img{
+		width: 100%;
+		height: 100%;
 	}
 	.liaotxt{
 		font-size: 16px;

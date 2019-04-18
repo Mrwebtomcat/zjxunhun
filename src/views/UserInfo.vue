@@ -13,7 +13,7 @@
 							<div class="userheader">
 								<div class="myheaderlogo" :style="userData['vc_img']?`background:url(${userData.vc_img}) no-repeat;background-size:cover;`:'' "></div>
 								<div class="infoworks">
-									<div class="name" style="margin-top:25px;">{{userData['vc_nickname']}}
+									<div class="name" style="margin-top:25px;">{{userData['vc_nickname']?userData['vc_nickname']:''}}
 										<span :class="userData['n_isstar']?'card_type start active':'card_type start'"></span>
 										<span :class="userData['n_issm']?'card_type card active':'card_type card'"></span>
 										<span :class="userData['n_isvip']?'card_type vip active':'card_type vip'"></span>
@@ -78,7 +78,7 @@
 								<span>个人资料</span>
 							</div>
 							<div class="planemsg">
-								<el-tag v-if="userData['vc_mz']">{{mingzu[Number(userData['vc_mz'])-1].value}}</el-tag>
+								<el-tag v-if="userData['vc_mz']">{{mingzu[Number(userData['vc_mz'])-1]?mingzu[Number(userData['vc_mz'])-1].value:''}}</el-tag>
 								<el-tag type="success">籍贯:{{bigAreaData[Number(userData['vc_province'])-2]?bigAreaData[Number(userData['vc_province'])-2].name:''}} {{bigAreaData[Number(userData['vc_city'])-2]?bigAreaData[Number(userData['vc_city'])-2].name:''}} </el-tag>
 								<el-tag type="info">体型:苗条</el-tag>
 								<el-tag type="warning" v-if="userData['n_smoke']">{{userData['n_smoke']}}不吸烟社交场合会喝酒</el-tag>
@@ -149,12 +149,15 @@
 		<chatPan 
 			:showChat = "isShowChat"
 			:chartDate="liaotainarray"
-			:username="'刘强东'" 
-			:usertmeta="'刘强东是京东的创始人'"
-			:input_state="'离线中....'"
+			:username="userData['vc_nickname']" 
+			:usertmeta="'  '"
+			:input_state="isline"
 			:closeFn="fnfn1"
 			:enterFn="enterFn"
-			:Mofan="Mofan "
+			:Mofan="fnfn1 "
+			:ohterHeadUrl="userData['vc_img']&&userData['vc_img']!=''?userData.vc_img:''"
+			:headUrl="tjUser['userlist']&&tjUser['userlist']['vc_img']!=''?tjUser['userlist']['vc_img']:'暂无头像'"
+			ref="chatPlane"
 		>
 		</chatPan>
   </div>
@@ -168,6 +171,7 @@ import https from "../utils/Https.js"
 			return{
 				isShowVip:0,
 				isShowMesages:1,
+				isline:'离线中....',
 				isShowChat:0, //聊天窗口
 				liaotainarray:[],//聊天容器
 				GMative:1,
@@ -205,7 +209,7 @@ import https from "../utils/Https.js"
 					vc_area: 690,
 					vc_city: 75,
 					vc_descript: "",
-					vc_img: null,
+					vc_img: "",
 					vc_loveplay: "",
 					vc_mz: null,
 					vc_nickname: "丽梓",
@@ -254,6 +258,9 @@ import https from "../utils/Https.js"
 // 				});
 			},
 			fnfn1:function(){ //关闭聊天
+				if(this.sokect){
+					this.sokect.send(JSON.stringify({'type':'close','uid':this.tjUser['userlist']['id']}))
+				}
 				this.isShowChat = 0;
 			},
 			Mofan:function(str){//模仿第二人
@@ -261,7 +268,11 @@ import https from "../utils/Https.js"
 			},
 			enterFn:function(str){//回车聊天发送
 				// state:0 代表自己发出的消息,state:1聊天对象发出的信息
-				this.liaotainarray.push({state:0,chatTxt:str})
+				// this.liaotainarray.push({state:0,chatTxt:str})
+				this.sokect.send(JSON.stringify({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str}));
+				this.liaotainarray.push({state:0,chatTxt:str});
+				console.log(JSON.stringify({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str}));
+				console.log({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str});
 			},
 			// 发信息
 			fxx:function(str){
@@ -270,19 +281,33 @@ import https from "../utils/Https.js"
 // 				  type: type||'warning'
 // 				});
 				// 建立通信
-				this.sokect = new WebSocket("ws://47.105.35.82:1688?uid="+this.tjUser['userlist']['id']);
+				this.sokect = new WebSocket("ws://47.105.35.82:1688");
 				// 通信建立
-				this.sokect.onopen = function(){
+				this.sokect.onopen = (e)=>{
+					this.isline = "对方上线了";
 					 // 发送一条信息
-					//console.log('WS客户端已经重新成功连接到服务器上');
-					this.sokect.send({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':'你好呀！我是小明'});
-					this.liaotainarray.push({state:1,chatTxt:"你好呀！我是小明"})
+					console.log('WS客户端已经重新成功连接到服务器上');
+					this.sokect.send({'uid':this.tjUser['userlist']['id']});
+// 					this.sokect.send({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':'你好呀！我是小明'});
+// 					this.liaotainarray.push({state:0,chatTxt:"你好呀！我是小明"})
 				}
-				this.sokect.onmessage = function(e){
-					//console.log('WS客户端接收到一个服务器的消息：'+ e.data);
-					if(e.data.status==3){
-						this.liaotainarray.push({state:1,chatTxt:e.data.message})
+				this.sokect.onmessage = (e)=>{
+					console.log('WS客户端接收到一个服务器的消息', e);
+					var data = JSON.parse(e.data);
+					if(data.status==1){
+						this.isline = "对方上线了";
+						this.sokect.send(JSON.stringify({'uid':this.tjUser['userlist']['id']}));
+						console.log("this.tjUser['userlist']['id']",this.tjUser['userlist']['id'])
 					}
+					if(data.status==2){ //系统消息
+						var str  =data.message?data.message:'该用户不在线';
+						//this.liaotainarray.push({state:1,chatTxt:e.data})
+					}
+					if(data.status==3){
+						this.liaotainarray.push({state:1,chatTxt:data.message});
+						this.$refs.chatPlane.autoScroll();
+					}
+					console.log(data,"data")
 					
 				}
 				// 用户打开或回到页面
