@@ -253,7 +253,22 @@ export default {
 			})
 			return false;
 		}
-		this.renzheng = 1;
+		
+		let data = {id:localStorage.openid};
+		
+		connetAction.ajaxPost(https['getInfo'],data)
+		.then((res)=>{
+			if(res.status==1){
+					 this.autoInfo = res.data;
+					this.renzheng = 1;
+			}else{
+				this.toastip(res.message)
+			}	
+			
+		})
+		.catch((res)=>{
+			
+		})
 	}
  },
 }

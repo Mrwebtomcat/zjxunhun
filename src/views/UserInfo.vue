@@ -145,6 +145,18 @@
 				</el-col>
 			</el-row>
 		</div>
+		<!-- 聊天窗口 -->
+		<chatPan 
+			:showChat = "isShowChat"
+			:chartDate="liaotainarray"
+			:username="'刘强东'" 
+			:usertmeta="'刘强东是京东的创始人'"
+			:input_state="'离线中....'"
+			:closeFn="fnfn1"
+			:enterFn="enterFn"
+			:Mofan="Mofan "
+		>
+		</chatPan>
   </div>
 </template>
 <script>
@@ -156,11 +168,14 @@ import https from "../utils/Https.js"
 			return{
 				isShowVip:0,
 				isShowMesages:1,
+				isShowChat:0, //聊天窗口
+				liaotainarray:[],//聊天容器
 				GMative:1,
+				sokect:null,
 				tjUser:[],//推荐会员
-				mingzu:mingzu,
-				bigAreaData:[],
-				vipList:[],
+				mingzu:mingzu, //名族
+				bigAreaData:[], //地区bigjson
+				vipList:[], //会员充值列表
 				userData:{
 					album: [],
 					dt_addtime: "2019-02-14 07:02:52",
@@ -233,17 +248,74 @@ import https from "../utils/Https.js"
 			},
 			// 打招呼
 			dzh:function(str,type){
-				this.$message({
-				  message:str ,
-				  type: type||'warning'
-				});
+// 				this.$message({
+// 				  message:str ,
+// 				  type: type||'warning'
+// 				});
+			},
+			fnfn1:function(){ //关闭聊天
+				this.isShowChat = 0;
+			},
+			Mofan:function(str){//模仿第二人
+				this.liaotainarray.push({state:1,chatTxt:str})
+			},
+			enterFn:function(str){//回车聊天发送
+				// state:0 代表自己发出的消息,state:1聊天对象发出的信息
+				this.liaotainarray.push({state:0,chatTxt:str})
 			},
 			// 发信息
-			fxx:function(str,type){
-				this.$message({
-				  message:str ,
-				  type: type||'warning'
-				});
+			fxx:function(str){
+// 				this.$message({
+// 				  message:str ,
+// 				  type: type||'warning'
+// 				});
+				// 建立通信
+				this.sokect = new WebSocket("ws://47.105.35.82:1688?uid="+this.tjUser['userlist']['id']);
+				// 通信建立
+				this.sokect.onopen = function(){
+					 // 发送一条信息
+					//console.log('WS客户端已经重新成功连接到服务器上');
+					this.sokect.send({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':'你好呀！我是小明'});
+					this.liaotainarray.push({state:1,chatTxt:"你好呀！我是小明"})
+				}
+				this.sokect.onmessage = function(e){
+					//console.log('WS客户端接收到一个服务器的消息：'+ e.data);
+					if(e.data.status==3){
+						this.liaotainarray.push({state:1,chatTxt:e.data.message})
+					}
+					
+				}
+				// 用户打开或回到页面
+				if (document.visibilityState === 'visible') {
+					//sokect = new WebSocket("ws://47.105.35.82:1688");
+					// document.title = '页面可见';					
+					
+					this.sokect.onopen = function(){
+						//console.log('WS客户端已经重新成功连接到服务器上');
+						//this.sokect.send({'type':'liaotian','startid':123,'endid':456,'content':'聊天内容'});
+					}
+				}
+				document.addEventListener('visibilitychange', function () {
+					//console.log(document.visibilityState,'哈哈哈');
+				  // 用户离开了当前页面
+					if (document.visibilityState === 'hidden') {
+						// document.title = '页面不可见';
+						//this.sokect.send('我要准备关闭了哦');
+						this.sokect.onmessage = function(e){
+								  console.log(e,'关闭信息有么');
+								//console.log('WS客户端接收到一个服务器的消息：'+ e.data);
+								//val.val=e.data;
+						 }
+							//sokect.close();
+							  //向服务器发消息，主动断开连接
+							//sokect.onclose = function(){
+							//经过客户端和服务器的四次挥手后，二者的连接断开了
+							//	console.log('到服务器的连接已经断开')
+							// }
+					}
+					
+				})
+				this.isShowChat = 1;
 			},
 			// 会员列表
 			huiyuanInfo(){
@@ -303,7 +375,8 @@ import https from "../utils/Https.js"
 					})
 				}
 				
-			}
+			},
+			
 		},
 		created(){
 			this.huiyuanInfo();
@@ -314,7 +387,17 @@ import https from "../utils/Https.js"
 		},
 		mounted(){
 			this.getInfos();
-			console.log(this.autoCode)
+			if(this.sokect){
+				window.onbeforeunload=function(e){     
+				　　var e = window.event||e;  
+					/*if(sokect&&document.visibilityState=="visible"){
+						
+						sokect.send('我要关闭了哦');
+					}*/
+				　　e.returnValue=("确定离开当前页面吗？");
+				}
+			}
+			
 		}
 	}
 	
