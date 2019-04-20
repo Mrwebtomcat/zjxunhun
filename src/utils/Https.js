@@ -24,8 +24,8 @@ let INTERFACE = {
 	updateInfo:'user/updateInfo',			//更新个人资料
 	getInfo:'user/getInfo',					//获取个人资料
 	quanxian:'user/quanxian',				//权限 params{id：n_isinfo:'是否显示',n_yuanying:'原因'}
-	souSuo:'base/souSuo',					//昵称搜索   参数 用户昵称 params{vc_nickname}
-	nameSousuo:'base/nameSouSuo',
+	souSuo:'base/souSuo',					//高级搜索   参数 用户昵称 params{vc_nickname}
+	nameSousuo:'base/nameSouSuo',			//昵称搜索   参数 用户昵称 params{vc_nickname}
 	huiyuan:'Huiyuan/index',				//查询VIP会员列表 params{id:会员id}
 	addAlbum:'user/addAlbum',				//上传图片
 	delAlbum:'user/delAlbum',				//删除图片  { id:图片id; oc_usercode:用户id}

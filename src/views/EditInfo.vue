@@ -729,6 +729,26 @@
 					vc_loveplay:this.formm.vc_loveplay,
 					vc_descript:this.formm.vc_descript
 				}
+				if(data.n_money=="" || !data.n_money){
+					this.toastip("请填写薪资再操作");
+					return false;
+				}
+				if(data.n_sg=="" || !data.n_sg || <=100){
+					this.toastip("请填写身高，再操作");
+					return false;
+				}
+				if(data.vc_province=="" || !data.vc_province){
+					this.toastip("请选择省份，再操作");
+					return false;
+				}
+				if(data.vc_city=="" || !data.vc_city){
+					this.toastip("请选择城市，再操作");
+					return false;
+				}
+				if(data.vc_area=="" || !data.vc_area){
+					this.toastip("请选择地区，再操作");
+					return false;
+				}
 				// console.log(data,333)
 				connetAction.ajaxPost(https['updateInfo'],data)
 				.then((res)=>{

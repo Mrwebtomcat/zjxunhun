@@ -166,6 +166,7 @@
 import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
 import mingzu from '../json/mz.json'
 import https from "../utils/Https.js"
+var sokect = null;
 	export default{
 		data(){
 			return{
@@ -258,8 +259,8 @@ import https from "../utils/Https.js"
 // 				});
 			},
 			fnfn1:function(){ //关闭聊天
-				if(this.sokect){
-					this.sokect.send(JSON.stringify({'type':'close','uid':this.tjUser['userlist']['id']}))
+				if(sokect){
+					sokect.send(JSON.stringify({'type':'close','uid':this.tjUser['userlist']['id']}))
 				}
 				this.isShowChat = 0;
 			},
@@ -267,36 +268,32 @@ import https from "../utils/Https.js"
 				this.liaotainarray.push({state:1,chatTxt:str})
 			},
 			enterFn:function(str){//回车聊天发送
+				if(!sokect){
+					console.log("sokect不存在",sokect)
+				}
+				sokect.send(JSON.stringify({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str}));
 				// state:0 代表自己发出的消息,state:1聊天对象发出的信息
-				// this.liaotainarray.push({state:0,chatTxt:str})
-				this.sokect.send(JSON.stringify({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str}));
 				this.liaotainarray.push({state:0,chatTxt:str});
-				console.log(JSON.stringify({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str}));
 				console.log({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str});
 			},
 			// 发信息
 			fxx:function(str){
-// 				this.$message({
-// 				  message:str ,
-// 				  type: type||'warning'
-// 				});
 				// 建立通信
-				this.sokect = new WebSocket("ws://47.105.35.82:1688");
+				sokect = new WebSocket("ws://47.105.35.82:1688");
 				// 通信建立
-				this.sokect.onopen = (e)=>{
-					this.isline = "对方上线了";
+				sokect.onopen = (e)=>{
+					//this.isline = "对方上线了";
 					 // 发送一条信息
-					console.log('WS客户端已经重新成功连接到服务器上');
-					this.sokect.send({'uid':this.tjUser['userlist']['id']});
-// 					this.sokect.send({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':'你好呀！我是小明'});
-// 					this.liaotainarray.push({state:0,chatTxt:"你好呀！我是小明"})
+					// console.log('WS客户端已经重新成功连接到服务器上');
+					// sokect.send(JSON.stringify({'uid':this.tjUser['userlist']['id']}));
 				}
-				this.sokect.onmessage = (e)=>{
+				sokect.onmessage = (e)=>{
 					console.log('WS客户端接收到一个服务器的消息', e);
 					var data = JSON.parse(e.data);
 					if(data.status==1){
 						this.isline = "对方上线了";
-						this.sokect.send(JSON.stringify({'uid':this.tjUser['userlist']['id']}));
+						sokect.send(JSON.stringify({'uid':this.tjUser['userlist']['id']}));
+						localStorage.ulistid = this.$route.query.id;
 						console.log("this.tjUser['userlist']['id']",this.tjUser['userlist']['id'])
 					}
 					if(data.status==2){ //系统消息
@@ -304,39 +301,50 @@ import https from "../utils/Https.js"
 						//this.liaotainarray.push({state:1,chatTxt:e.data})
 					}
 					if(data.status==3){
+						// state:0 代表自己发出的消息,state:1聊天对象发出的信息
 						this.liaotainarray.push({state:1,chatTxt:data.message});
 						this.$refs.chatPlane.autoScroll();
 					}
 					console.log(data,"data")
 					
 				}
-				// 用户打开或回到页面
-				if (document.visibilityState === 'visible') {
-					//sokect = new WebSocket("ws://47.105.35.82:1688");
-					// document.title = '页面可见';					
-					
-					this.sokect.onopen = function(){
-						//console.log('WS客户端已经重新成功连接到服务器上');
-						//this.sokect.send({'type':'liaotian','startid':123,'endid':456,'content':'聊天内容'});
-					}
-				}
+				this.isShowChat = 1;
+				return false;
 				document.addEventListener('visibilitychange', function () {
-					//console.log(document.visibilityState,'哈哈哈');
 				  // 用户离开了当前页面
 					if (document.visibilityState === 'hidden') {
-						// document.title = '页面不可见';
-						//this.sokect.send('我要准备关闭了哦');
-						this.sokect.onmessage = function(e){
-								  console.log(e,'关闭信息有么');
-								//console.log('WS客户端接收到一个服务器的消息：'+ e.data);
-								//val.val=e.data;
+						console.log(0)
+						sokect.onmessage = function(e){
+								//sokect.send(JSON.stringify({'type':'close','uid':this.tjUser['userlist']['id']}));
 						 }
-							//sokect.close();
-							  //向服务器发消息，主动断开连接
-							//sokect.onclose = function(){
-							//经过客户端和服务器的四次挥手后，二者的连接断开了
-							//	console.log('到服务器的连接已经断开')
-							// }
+						
+					}
+					// 用户打开或回到页面
+					if (document.visibilityState === 'visible') {
+						console.log(1)
+						console.log(this.tjUser)
+						//sokect = new WebSocket("ws://47.105.35.82:1688");
+						sokect.onmessage = (e)=>{
+							console.log('WS客户端接收到一个服务器的消息', e);
+							var data = JSON.parse(e.data);
+							if(data.status==1){
+								this.isline = "对方上线了";
+								sokect.send(JSON.stringify({'uid':localStorage.openid}));
+								console.log("this.tjUser['userlist']['id']",this.tjUser['userlist']['id'])
+							}
+							if(data.status==2){ //系统消息
+								var str  =data.message?data.message:'该用户不在线';
+								this.isline = "对方已离线了.....";
+								//this.liaotainarray.push({state:1,chatTxt:e.data})
+							}
+							if(data.status==3){
+								// state:0 代表自己发出的消息,state:1聊天对象发出的信息
+								this.liaotainarray.push({state:1,chatTxt:data.message});
+								this.$refs.chatPlane.autoScroll();
+							}
+							console.log(data,"data")
+							
+						}
 					}
 					
 				})
@@ -412,7 +420,7 @@ import https from "../utils/Https.js"
 		},
 		mounted(){
 			this.getInfos();
-			if(this.sokect){
+			if(sokect){
 				window.onbeforeunload=function(e){     
 				　　var e = window.event||e;  
 					/*if(sokect&&document.visibilityState=="visible"){

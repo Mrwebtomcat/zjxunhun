@@ -35,10 +35,10 @@
 											
 										</div>
 										  <el-form-item v-if="renzheng==0">
-											<el-button type="primary" @click="onSubmit">下一步</el-button>
+											<el-button type="primary" @click="onSubmit(1)">下一步</el-button>
 										  </el-form-item>
 										  <el-form-item v-else-if="renzheng==1">
-										  		<el-button type="primary" @click="onSubmit">手机验证</el-button>
+										  		<el-button type="primary" @click="onSubmit(2)">手机验证</el-button>
 										  </el-form-item>
 									</el-form>
 								</div>
@@ -206,8 +206,40 @@ export default {
 	dolink(url) {
  		this.$router.push(url)
  	},
+	toastip:function(str,type){
+		this.$message({
+		  message:str ,
+		  type: type||'warning'
+		});
+	},
 	GetYzm() {
- 		// this.$router.push(url)
+		let data = {
+			type:3,
+			vc_userphone:this.form.phone
+			
+		}
+		if(data.vc_userphone==""){
+			this.toastip('手机号码不能为空');
+			return false;
+		}else{
+			if(!regPhone(data.vc_userphone)){
+				this.toastip('手机号码不正确');
+				return false;
+			}
+		}
+		connetAction.ajaxPost(https['getSmsCode'],data)
+		.then((res)=>{
+			if(res.status==1){
+				this.form.yzm=this.form.phone;
+					
+			}else{
+				this.toastip(res.message)
+			}	
+			
+		})
+		.catch((res)=>{
+			
+		})
  	},
 	showDetail(str) {
  		this.$router.push({
@@ -237,7 +269,7 @@ export default {
 			
 		})
 	},
-	onSubmit(){
+	onSubmit(type){
 		console.log(this.form)
 		if(this.form['name']==""){
 			message(this,{
@@ -254,21 +286,37 @@ export default {
 			return false;
 		}
 		
-		let data = {id:localStorage.openid};
+		this.renzheng = type;
+		return false;
+		if(type==2){
+			let data1 = {
+				id:localStorage.openid,
+				vc_username:'',
+				vc_userphone:this.form.phone,
+				post_n_sfzh:'',
+				code:
+			};
+			if(data1.vc_username=='' && !data1.vc_username){
+				this.toastip'请填写姓名’)
+			}
+			if(data1.vc_userphone=='' && !data1.vc_userphone){
+				this.toastip'手机号码’)
+			}
+			connetAction.ajaxPost(https['setSm'],data1)
+			.then((res)=>{
+				if(res.status==1){
+						 this.autoInfo = res.data;
+						
+				}else{
+					this.toastip(res.message)
+				}	
+				
+			})
+			.catch((res)=>{
+				
+			})
+		}
 		
-		connetAction.ajaxPost(https['getInfo'],data)
-		.then((res)=>{
-			if(res.status==1){
-					 this.autoInfo = res.data;
-					this.renzheng = 1;
-			}else{
-				this.toastip(res.message)
-			}	
-			
-		})
-		.catch((res)=>{
-			
-		})
 	}
  },
 }
