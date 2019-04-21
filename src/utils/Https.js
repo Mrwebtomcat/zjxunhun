@@ -1,6 +1,5 @@
 // INTERFACE MODULE
 // const baseURL = "http://10.10.2.27/zjxh/public/index.php"
-const charUrl = "ws://192.168.2.103:1688";
 const baseURL = "http://server.zjxunhun.com/index.php/";
 let INTERFACE = {
 	login:'login/login',					//登陆
@@ -33,6 +32,8 @@ let INTERFACE = {
 	setOrder:'wxpay/setOrder',				//发起微信支付  { id:用户id,}  返回订单id 和url
 	setSm:'user/setSm',						//实名认证
 	upDatePhone:'user/updatePhone',			//修改手机号码
+	showDsh:'AdminUser/showDsh',			//待审核会员信息
+	nvIndex:'Huiyuan/nvIndex',			//修改手机号码
 	masterBusiness:'/weservice/masterBusiness'	//技师业绩流水
 }
 for(var key in INTERFACE){

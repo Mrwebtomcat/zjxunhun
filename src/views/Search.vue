@@ -132,14 +132,14 @@
 							<div>把自己放在搜索第一位</div>
 					  	</div>
 					  	<div class="name pl11">
-					  		<span class="left1">会员199DASDASD</span>
+					  		<span class="left1">{{userData['userlist']?userData['userlist']['vc_nickname']:''}}</span>
 					  		<span class="icontype start"></span>
 					  		<span class="icontype ative vip"></span>
 					  		<span class="icontype ative card"></span>
 					  	</div>
 					  	<div class="tag pl11">
-					  		<el-tag  size="small">22岁</el-tag>
-					  		<el-tag size="small">湛江</el-tag>
+					  		<el-tag  size="small">{{userData['userlist']?userData['userlist']['n_age']:'0'}}岁</el-tag>
+					  		<el-tag size="small">{{userData['userlist']?userData['userlist']['vc_area']:''}}</el-tag>
 					  		<el-tag size="small">178cm</el-tag>
 					  	</div>
 					  	<div class="marks">
@@ -186,6 +186,7 @@ export default {
 		 vip:false,
 		 gjchecked:false, //是否高级搜索
 		 form:{},		 //表单数据
+		 userData:{},	//用户数据
 		 img:"https://photo.zastatic.com/images/photo/381783/1527130186/18602580078900397.png?scrop=1&crop=1&cpos=north&w=184&h=184",
 		 searchList:[ //用户列表假数据
 			 {
@@ -342,6 +343,39 @@ export default {
 		data.page = 1;
 		data.pageNum =20;
 		data.vc_xinzuo = "";
+		let {n_max_sg,n_min_age,n_min_sg,n_money,n_sex,vc_province,vc_city,vc_area} = this.form;
+		if(n_sex == ""|| !n_sex){
+			this.toastip('请选择性别，在操作');
+			return false;
+		}
+		if(n_min_age == ""|| !n_min_age){
+			this.toastip('请填写年龄，在操作');
+			return false;
+		}
+		if(n_min_sg==0||!n_min_sg){
+			this.toastip('请填写身高，请选择');
+			return false;
+		}
+		if(n_max_sg==0||!n_max_sg){
+			this.toastip('请填写身高，请选择');
+			return false;
+		}
+		if(vc_province==0||!vc_province){
+			this.toastip('请选择省份');
+			return false;
+		}
+		if(vc_city==0||!vc_city){
+			this.toastip('请选择城市，请选择');
+			return false;
+		}
+		if(vc_area==0||!vc_area){
+			this.toastip('城区不能为空，请选择');
+			return false;
+		}
+		if(n_money==0||!n_money){
+			this.toastip('薪资不能为空，请选择');
+			return false;
+		}
 		// page&&page!="" ? data.page = page : data.page = "1";
 		connetAction.ajaxPost(https['souSuo'], data)
 			.then(rd => {
@@ -424,11 +458,33 @@ export default {
 			.catch(res => {
 				// console.log(res,"res")
 			})
+	},
+	getInfos:function(){
+		let data = {id:localStorage.openid};
+		if(!data.id){
+			return false;
+		}
+		
+		connetAction.ajaxPost(https['getInfo'],data)
+		.then((res)=>{
+			if(res.status==1){
+						this.userData = res.data;
+					// 初始化基本数据
+					
+			}else{
+				this.toastip(res.message)
+			}	
+			
+		})
+		.catch((res)=>{
+			
+		})
 	}
  },
  created(){
 	 this.getProvice();
 	 this.autoCode();
+	 this.getInfos();
 	 
  },
  mounted:function(){

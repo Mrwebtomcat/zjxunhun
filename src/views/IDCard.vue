@@ -1,7 +1,7 @@
 <!-- 身份认证 -->
 <template>
   <div class="xunhun">
-    <Header :isHeader="1"></Header>
+    <Header :isHeader="1" :ative="0"></Header>
 		<div class="xh_main">
 			 <div class="vip_notice" >
 				<img src="../assets/img/banner.fa0272b.png" alt="">
@@ -11,7 +11,7 @@
 						<el-col :span="17" class="uerlistbg">
 								<div class="seachbox">
 									<div class="selcinev" >
-										身份认证	
+										 认证状态	- <span class="smspan">未实名认证，请填写相关信息实名认证</span>	
 									</div>
 								</div>
 								<div class="userboxs">
@@ -30,7 +30,8 @@
 											</el-form-item>
 											 <el-form-item label="验证码">
 												<el-input v-model="form.yzm" style="width:100px;margin-right: 30px;" type="small" ></el-input>
-												<el-button type="small"  @click="GetYzm">获取验证码</el-button>
+												<el-button v-show="showCode==1" type="small"  @click="GetYzm">获取验证码</el-button>
+												<el-button v-show="showCode!=1" type="primary">{{isCode}}</el-button>
 											</el-form-item>
 											
 										</div>
@@ -89,7 +90,7 @@
 							<div class="notice_info">
 								<div class="vipuserinfo">
 									<div class="box">
-										<img v-if="autoInfo['vc_img']" :src="autoInfo['vc_nickname']" alt="">
+										<img v-if="autoInfo['vc_img']" :src="autoInfo['vc_img']" alt="">
 										<img v-else src="https://photo.zastatic.com/images/photo/479940/1919757993/24788310680142720.jpeg" alt="">
 									</div>
 									<div class="box">
@@ -102,7 +103,7 @@
 												</div>
 											</div>
 											<div class="lac1" style="padding-top:3%;">
-												 <span>30%</span>
+												 <!-- <span>30%</span> -->
 												 <span @click="dolink('/editinfo')">个人资料</span>
 												 <span @click="dolink('/vip')">充值</span>
 											</div>
@@ -178,6 +179,7 @@
 import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
 import mingzu from '../json/mz.json'
 import https from "../utils/Https.js"
+import { setInterval, clearInterval, setTimeout } from 'timers';
 export default {
  data(){
 	 return{
@@ -190,11 +192,14 @@ export default {
 		 },
 		 autoInfo:{vc_nickname:'',n_issm: 0,n_isstar: 0,n_isvip: 0},
 		 isShowSlec:0,
-		 renzheng:0
+		 renzheng:0,
+		 isCode:60,
+		 showCode:1
 	 }
  },
  created() {
- 	this.getInfos();
+	 this.getInfos();
+	 this.vipInfo();
  },
  methods: {
  	goToVip() {
@@ -227,11 +232,24 @@ export default {
 				return false;
 			}
 		}
+		var timer = null,that=this;
+		if(this.showCode){
+			timer = setInterval(function(){
+				that.isCode--;
+				if(that.isCode<=0){
+					clearInterval(timer);
+					that.isCode = 60;
+					that.showCode = 1;
+				
+				}
+			},1000)
+		}
+		that.showCode =0;
+	
 		connetAction.ajaxPost(https['getSmsCode'],data)
 		.then((res)=>{
 			if(res.status==1){
-				this.form.yzm=this.form.phone;
-					
+				
 			}else{
 				this.toastip(res.message)
 			}	
@@ -269,45 +287,63 @@ export default {
 			
 		})
 	},
+	vipInfo:function(){
+		let data = {
+			page:1,
+			pageNum:20 
+		};
+		
+		connetAction.ajaxPost(https['showDsh'],data)
+		.then((res)=>{
+			if(res.status==1){
+					 console.log(res.data)
+					
+			}else{
+				this.toastip(res.message)
+			}	
+			
+		})
+		.catch((res)=>{
+			
+		})
+	},
 	onSubmit(type){
-		console.log(this.form)
 		if(this.form['name']==""){
-			message(this,{
-				title:"",
-				contxt:'姓名不能为空',
-			})
+			this.toastip('请输入姓名，再操作');
 			return false;
 		}
 		if(this.form['idcard']==""){
-			message(this,{
-				title:"",
-				contxt:'身份证号码不能为空',
-			})
+				this.toastip('请输入身份证，再操作');
 			return false;
 		}
-		
 		this.renzheng = type;
-		return false;
 		if(type==2){
 			let data1 = {
 				id:localStorage.openid,
-				vc_username:'',
+				vc_username:this.autoInfo['vc_nickname'],
 				vc_userphone:this.form.phone,
-				post_n_sfzh:'',
-				code:
-			};
-			if(data1.vc_username=='' && !data1.vc_username){
-				this.toastip'请填写姓名’)
+				n_sfzh:this.form.idcard,
+				code:this.form.yzm
 			}
+			var that  =this;
+			
 			if(data1.vc_userphone=='' && !data1.vc_userphone){
-				this.toastip'手机号码’)
+				this.toastip('手机号码');
+					return false;
+			}
+			if(data1.code=='' && !data1.code){
+				this.toastip('请填写验证码');
+					return false;
 			}
 			connetAction.ajaxPost(https['setSm'],data1)
 			.then((res)=>{
 				if(res.status==1){
-						 this.autoInfo = res.data;
-						
+					this.toastip(res.message,'success');
+					setTimeout(function(){
+							that.$route.push('/home')
+					},4000)
 				}else{
+				
 					this.toastip(res.message)
 				}	
 				
@@ -356,6 +392,10 @@ export default {
 	.slecdx{
 		color: royalblue;
 		cursor: pointer;
+	}
+	.smspan{
+		color: red;
+		font-size: 12px;
 	}
 	.userboxs{
 		/* height: 500px; */

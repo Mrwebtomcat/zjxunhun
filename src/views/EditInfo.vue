@@ -244,11 +244,11 @@
 								</div>
 								<div class="flex">
 								  <el-form-item label="体重(KG):">
-									<el-input v-model="form2.n_min_tz"><i slot="suffix" class='idIcon' >(kg)</i></el-input>
+									<el-input v-model="form2.n_min_tz"  placeholder="请输入体重"><i slot="suffix" class='idIcon' >(kg)</i></el-input>
 								  </el-form-item>
 								  <div style="line-height: 40px;margin-left: 25px;"> 至</div>
 								   <el-form-item label-width="30px">
-									   <el-input v-model="form2.n_max_tz"><i slot="suffix" class='idIcon' >(kg)</i></el-input>
+									   <el-input v-model="form2.n_max_tz"  placeholder="请输入体重"><i slot="suffix" class='idIcon' >(kg)</i></el-input>
 								  </el-form-item>
 								</div>
 								<div class="flex">
@@ -346,7 +346,8 @@
 										<p>实名认证</p>
 										<p>提高诚信级别，认识更多诚信用户</p>
 									</div>
-									<div v-if="autoInfo['n_issm']!=1" class="button" @click="doLink('/idcard')">立即认证</div>
+									<div v-if="autoInfo['n_issm']==0" class="button" @click="doLink('/idcard')">立即认证</div>
+									<div v-else-if="autoInfo['n_issm']==1" class="button" @click="doLink('/idcard')">正在审核中...</div>
 									<div v-else class="button" >您已实名认证</div>
 								</li>
 							</div>
@@ -355,20 +356,21 @@
 							<el-form ref="form5" :model="form5" label-width="80px">
 							    <div style="width:50%;">
 										<el-form-item label="手机号码:">
-										<el-input v-model="form5.vc_ordpassword" type="text" placeholder="请输入手机号码"></el-input>
+										<el-input v-model="form5.vc_userphone" type="text" placeholder="请输入手机号码"></el-input>
 										</el-form-item> 
 									<div  style="line-height: 40px;margin-left: 25px;"></div>
 										<el-form-item label="验证码:">
 											<div class="flex">
 														<el-input type="text" v-model="form5.code" placeholder="请输验证码"></el-input>
 														<div style="margin-left:10%;">
-															<el-button type="primary" size="small" @click="posCode">发送验证码</el-button>
+															<el-button type="primary" v-show="isCode==0" size="small" @click.stop="posCode">发送验证码</el-button>
+															<el-button type="primary" v-show="isCode>0" size="small" >{{isCode}}</el-button>
 														</div>
 											</div>
 										</el-form-item> 
 									</div>
 									<el-form-item>
-										<el-button type="primary" @click="changPsw">确认修改</el-button>
+										<el-button type="primary" @click="chanphone">确认修改</el-button>
 									</el-form-item>
 							</el-form>	
 						</div>
@@ -427,11 +429,11 @@
 							<el-form ref="form7" :model="form7" label-width="80px">
 							    <div class="flex">
 								  <el-form-item label="原密码:">
-									<el-input v-model="form5.vc_ordpassword" type="text" placeholder="请输入原密码"></el-input>
+									<el-input v-model="form6.vc_ordpassword" type="text" placeholder="请输入原密码"></el-input>
 								  </el-form-item> 
 								 <div style="line-height: 40px;margin-left: 25px;"></div>
 								  <el-form-item label="新密码:">
-										<el-input type="text" v-model="form5.vc_newpassword" placeholder="请输入新密码"></el-input>
+										<el-input type="text" v-model="form6.vc_newpassword" placeholder="请输入新密码"></el-input>
 								  </el-form-item> 
 								</div>
 								 <el-form-item>
@@ -451,6 +453,7 @@
 	import mingzu from '../json/mz.json'
 	import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
 	import https from "../utils/Https.js"
+import { setInterval, clearInterval } from 'timers';
 	export default{
 		data(){
 			return{
@@ -460,6 +463,7 @@
 				gzArr:[],
 				infoHeadImg:'',
 				imgdata:"1",//判断Img数据
+				isCode:0,//验证码倒计时
 				pannelList:{ //左侧菜单
 					myinfo_nav:[
 						{
@@ -712,6 +716,57 @@
 					
 				})
 			},
+			//修改手机号码
+			chanphone:function(){
+				let data = {
+					vc_userphone:this.form5.vc_userphone,
+					code:this.form5.code
+				}
+				if(data['vc_userphone']==""){
+					this.toastip("手机号码不能为空");
+					return false;
+				}
+				if(data['code']==""){
+					this.toastip("请输入验证码");
+					return false;
+				}
+				connetAction.ajaxPost(https['upDatePhone'],data)
+				.then((res)=>{
+						this.toastip("修改成功");
+
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			posCode:function(){ //手机验证码
+				var timer = null,that = this;
+				let data = {
+					type:4,
+					vc_userphone:this.form5.vc_userphone
+				}
+				if(data['vc_userphone']==""){
+					this.toastip("请填修改的手机号码，再操作");
+					return false;
+				}
+			
+				connetAction.ajaxPost(https['getSmsCode'],data)
+				.then((res)=>{
+					if(res.status==1){
+								timer = setInterval(function(){
+									that.isCode++;
+									if(that.isCode>=60){
+											clearInterval(timer);
+											that.isCode = 0;	
+									}
+								},1000);
+					}
+
+				})
+				.catch((res)=>{
+					
+				})
+			},
 			updateInfo:function(){
 				let data = {
 					id:localStorage.openid,
@@ -733,7 +788,7 @@
 					this.toastip("请填写薪资再操作");
 					return false;
 				}
-				if(data.n_sg=="" || !data.n_sg || <=100){
+				if(data.n_sg=="" || data.n_sg<=0){
 					this.toastip("请填写身高，再操作");
 					return false;
 				}
@@ -752,9 +807,9 @@
 				// console.log(data,333)
 				connetAction.ajaxPost(https['updateInfo'],data)
 				.then((res)=>{
-					if(res.status==1){
-							
-					}
+					// if(res.status==1){
+								this.toastip("修改成功","success");
+					// }
 				})
 				.catch((res)=>{
 					
@@ -828,7 +883,7 @@
 				
 				connetAction.ajaxPost(https['addWsh'],data)
 				.then((res)=>{
-					
+					this.toastip('工作生活修改成功');
 				})
 				.catch((res)=>{
 					
@@ -872,28 +927,70 @@
 			updatezh:function(){
 				let data = null;data=this.form2;
 				data.id = localStorage.openid;
-// 				if(!data['vc_worke']){
-// 					this.toastip('请选择职业类别后再操作')
-// 					return false;
-// 				}
-// 				if(!data['n_ishouse']){
-// 					this.toastip('请选择买房情况后再操作')
-// 					return false;
-// 				}
-// 				if(!data['n_iscar']){
-// 					this.toastip('请选择买车情况后再操作')
-// 					return false;
-// 				}
-// 				if(!data['n_smoke']){
-// 					this.toastip('请选择是否吸烟后再操作')
-// 					return false;
-// 				}
-// 				if(!data['n_alcohol']){
-// 					this.toastip('请选择是否喝酒后再操作')
-// 					return false;
-// 				}
-				// console.log(data,333)
-				
+				if(!data['n_min_age']||data['n_min_age']<=0){
+					this.toastip('年龄范围有空项,请填写');
+					return false;
+				}
+				if(!data['n_max_age']||data['n_max_age']<0){
+					this.toastip('年龄范围有空项,请填写');
+					return false;
+				}
+				if(data['n_min_age']<18||data['n_max_age']<18){
+					this.toastip('年龄不能小于18岁,请填写');
+					return false;
+				}
+					if(!data['n_min_sg']||data['n_min_sg']<=0){
+					this.toastip('身高范围有空项,请填写');
+					return false;
+				}
+				if(!data['n_max_sg']||data['n_max_sg']<=0){
+					this.toastip('身高范围有空项,请填写');
+					return false;
+				}
+				if(!data['n_min_tz']||data['n_min_tz']<=0){
+					this.toastip('体重范围有空项,请填写');
+					return false;
+				}
+				if(!data['n_max_tz']||data['n_max_tz']<=0){
+					this.toastip('体重范围有空项,请填写');
+					return false;
+				}
+				if(!data['n_money']||data['n_money']==""){
+					this.toastip('请选择月收情况,再操作');
+					return false;
+				}
+				if(!data['n_xueli']||data['n_xueli']==""){
+					this.toastip('请选择学历情况,再操作');
+					return false;
+				}
+				if(!data['n_province']||data['n_province']==""){
+					this.toastip('请选择省份,再操作');
+					return false;
+				}
+				if(!data['n_city']||data['n_city']==""){
+					this.toastip('请选择城市,再操作');
+					return false;
+				}
+				if(!data['n_child']||data['n_child']==""){
+					this.toastip('请选择有没有孩子,再操作');
+					return false;
+				}
+				if(!data['n_ischild']||data['n_ischild']==""){
+					this.toastip('请选择是否想要孩子,再操作');
+					return false;
+				}
+				if(!data['n_smoke']||data['n_smoke']==""){
+					this.toastip('请选择是否可以吸烟,再操作');
+					return false;
+				}
+				if(!data['n_alcohol']||data['n_alcohol']==""){
+					this.toastip('请选择是否可以喝酒,再操作');
+					return false;
+				}
+				if(!data['n_isphoto']||data['n_isphoto']==""){
+					this.toastip('请选择有没有照片,再操作');
+					return false;
+				}
 				connetAction.ajaxPost(https['updateZotj'],data)
 				.then((res)=>{
 					this.toastip(res.message)

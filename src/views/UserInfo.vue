@@ -78,22 +78,24 @@
 								<span>个人资料</span>
 							</div>
 							<div class="planemsg">
-								<el-tag v-if="userData['vc_mz']">{{mingzu[Number(userData['vc_mz'])-1]?mingzu[Number(userData['vc_mz'])-1].value:''}}</el-tag>
+								<el-tag v-if="userData['vc_mz']">民族：{{mingzu[Number(userData['vc_mz'])-1]?mingzu[Number(userData['vc_mz'])-1].value:''}}</el-tag>
 								<el-tag type="success">籍贯:{{bigAreaData[Number(userData['vc_province'])-2]?bigAreaData[Number(userData['vc_province'])-2].name:''}} {{bigAreaData[Number(userData['vc_city'])-2]?bigAreaData[Number(userData['vc_city'])-2].name:''}} </el-tag>
-								<el-tag type="info">体型:苗条</el-tag>
+								<el-tag type="info" v-if="userData['n_tz']">体型:苗条</el-tag>
 								<el-tag type="warning" v-if="userData['n_smoke']">{{userData['n_smoke']}}不吸烟社交场合会喝酒</el-tag>
-								<el-tag type="danger">租房未买车</el-tag>
-								<el-tag type="danger">是否想要孩子:视情况而定</el-tag>
-								<el-tag type="danger">何时结婚:时机成熟就结婚</el-tag>
-								<el-tag type="danger">没有小孩</el-tag>
+								<el-tag type="danger" v-if="userData['n_alcohol']">{{userData['n_alcohol']}}不吸烟社交场合会喝酒</el-tag>
+								<el-tag type="info"   v-if="userData['n_iscar']">租房未买车</el-tag>
+								<el-tag type="danger" v-if="userData['n_ischild']">是否想要孩子:视情况而定</el-tag>
+								<el-tag type="info" v-if="userData['n_huntype']">何时结婚:时机成熟就结婚</el-tag>
+								<el-tag type="danger" v-if="userData['n_child']">没有小孩</el-tag>
 							</div>
 							<div class="details_header">
 								<span>择偶条件</span>
 							</div>
 							<div class="planemsg">
-								<el-tag>汉族</el-tag>
-								<el-tag type="success">籍贯:四川泸州</el-tag>
-								<el-tag type="info">体型:苗条</el-tag>
+								<el-tag type="warning" v-show="!tjUser.tiaoJian">暂无描述</el-tag>
+								<el-tag v-show="tjUser.tiaoJian">汉族</el-tag>
+								<el-tag type="success" v-show="tjUser.tiaoJian">籍贯:四川泸州</el-tag>
+								<el-tag type="info" v-show="tjUser.tiaoJian">体型:苗条</el-tag>
 							</div>
 						</div>
 					</div>
@@ -116,7 +118,9 @@
 						</div>
 						
 						<div class="rightcontent2">
-							<div class="h2">猜你喜欢 <span  style="float: right;font-size: 20px;cursor: pointer;" class="el-icon-refresh"></span></div>
+							<div class="h2">猜你喜欢 
+								<!-- <span  style="float: right;font-size: 20px;cursor: pointer;" class="el-icon-refresh"></span> -->
+								</div>
 							<div class="ranguser">
 								<div v-if="tjUser['tjList'].length>0"  v-for="(items,index) in tjUser['tjList']" :key="index" class="useritem" @click="goChat">
 									<div class="user_left">

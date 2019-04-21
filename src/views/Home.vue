@@ -238,18 +238,7 @@
 		</div>
 		<!-- 实名弹窗 -->
 		<Shadow :xianshi="n_issm" :linkUrl="'./idcard'" :shadowcall="callclose"></Shadow>
-		<!-- 聊天窗口 -->
-		<chatPan 
-			:showChat = "isShowChat"
-			:chartDate="liaotainarray"
-			:username="'刘强东'" 
-			:usertmeta="'刘强东是京东的创始人'"
-			:input_state="'离线中....'"
-			:closeFn="fnfn1"
-			:enterFn="enterFn"
-			:Mofan="Mofan "
-		>
-		</chatPan>
+		
 	</div>
 </template>
 
@@ -266,8 +255,6 @@
 					vc_city:'',
 					vc_area:''
 				},
-				isShowChat:0,//显示聊天窗口
-				liaotainarray:[],
 				provice: [], //省份
 				city: [], //城市
 				Area: [], //地区
@@ -302,16 +289,6 @@
 			},
 			dolink(url) {
 				this.$router.push(url)
-			},
-			fnfn1:function(){ //关闭聊天
-				this.isShowChat = 0;
-			},
-			Mofan:function(str){//模仿第二人
-				this.liaotainarray.push({state:1,chatTxt:str})
-			},
-			enterFn:function(str){//回车聊天发送
-				// state:0 代表自己发出的消息,state:1聊天对象发出的信息
-				this.liaotainarray.push({state:0,chatTxt:str})
 			},
 			showDetail(str,id) {
 				this.$router.push({

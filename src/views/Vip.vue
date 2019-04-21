@@ -182,6 +182,7 @@
 		methods: {
 			// 生成二维码
 			qrcode:function(data){
+			
 				var mydom = document.getElementById("qrcode");
 				if(!this.isNew){
 					this.processCode = new QRCode(mydom,{
@@ -193,7 +194,8 @@
 				this.isNew = 1;
 				//更新二维码的内容
 				this.processCode.makeCode(data['code_url']);
-				this.getOrder(data.vc_order_sn)
+				this.getOrder(data.vc_order_sn);
+					alert(1)
 				
 			},
 			ktvip: function(i,id) {
@@ -358,11 +360,11 @@
 		created() {
 			this.getuerList();
 			this.getInfos();
-			this.huiyuanInfo();
+			
 			this.diliArray = JSON.parse(localStorage.posPAC);
 		},
 		mounted() {
-			
+			this.huiyuanInfo();
 		}
 	}
 </script>
