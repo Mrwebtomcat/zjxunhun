@@ -132,18 +132,18 @@
 							<div>把自己放在搜索第一位</div>
 					  	</div>
 					  	<div class="name pl11">
-					  		<span class="left1">{{userData['userlist']?userData['userlist']['vc_nickname']:''}}</span>
-					  		<span class="icontype start"></span>
-					  		<span class="icontype ative vip"></span>
-					  		<span class="icontype ative card"></span>
+					  		<span class="left1">{{userData?userData['vc_nickname']:''}}</span>
+					  		<span :class="userData['n_isstar']?'icontype ative start':'icontype start'"></span>
+					  		<span :class="userData['n_isstar']?'icontype ative vip':'icontype vip'"></span>
+					  		<span :class="userData['n_isstar']?'icontype ative card':'icontype card'"></span>
 					  	</div>
 					  	<div class="tag pl11">
-					  		<el-tag  size="small">{{userData['userlist']?userData['userlist']['n_age']:'0'}}岁</el-tag>
-					  		<el-tag size="small">{{userData['userlist']?userData['userlist']['vc_area']:''}}</el-tag>
-					  		<el-tag size="small">178cm</el-tag>
+					  		<el-tag  size="small">{{userData?userData['n_age']:'0'}}岁</el-tag>
+					  		<el-tag size="small">{{userData?userData['vc_area']:''}}</el-tag>
+					  		<el-tag size="small">{{userData?userData['n_sg']:''}}cm</el-tag>
 					  	</div>
 					  	<div class="marks">
-					  		我正在寻找广东湛江霞山区,年龄在18-23岁,...
+					  		我正在寻找广东湛江霞山区,年龄在{{userData?Number(userData['n_age'])-5:''}}-{{userData?Number(userData['n_age'])+5:''}}岁,...
 					  	</div>
 					  </li>
 					<li v-for="(item,index) in searchList" class="buy-star member-list" :key="index" @click.stop="goInfoDetai(item.id)">
@@ -469,6 +469,7 @@ export default {
 		.then((res)=>{
 			if(res.status==1){
 						this.userData = res.data;
+						console.log(this.userData)
 					// 初始化基本数据
 					
 			}else{
