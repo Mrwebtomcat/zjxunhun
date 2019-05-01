@@ -10,55 +10,66 @@
 							<div class="left_h1_info">我的关注</div>
 						</div>
 						<ul class="selctul">
-							<li :class="isShowMesages==1?'ative':''" @click="slectLi(1)">我的关注 <span class="tognum">4</span></li>
-							<li :class="isShowMesages==2?'ative':''" @click="slectLi(2)">关注我的人 <span class="tognum">4</span></li>
+							<li :class="isShowMesages==1?'ative':''" @click="slectLi(1)">我的关注 <span class="tognum">{{gzArr['gzList'].length}}</span></li>
+							<li :class="isShowMesages==2?'ative':''" @click="slectLi(2)">关注我的人 <span class="tognum">{{gzArr['bgzList'].length}}</span></li>
 						</ul>
 						<div v-if="isShowMesages==1" class="slecmainshow1">
 							<ul class="message_ul">
-								<li>
+								<li v-for="(items,index) in gzArr['gzList']" :key="index">
 									<div class="mesage_li_left">
-										<img src="https://photo.zastatic.com/images/photo/2223/8888888/163784965568714450.jpg?scrop=1&crop=1&cpos=north&w=80&h=80?scrop=1&crop=1&cpos=north&w=80&h=80" alt="">
+										<img :src="items.vc_img" alt="">
 										<div class="mesg_boxtxt">
-											<div class="meboxh1">快速找对象 <span class="isguanfan">官方</span></div>
-											<div class="meboxarea infoarea">
-												湛江 | 21岁 | 高中及以下 | 未婚 | 158cm | 3000元以下
+											<div class="meboxh1">{{items.vc_nickname}} 
+												<!-- <span class="isguanfan">官方</span> -->
 											</div>
-											<div class="meboxarea dtime">3月15日</div>
+											<div class="meboxarea infoarea">
+												{{items.n_xueli}}
+												{{items.vc_city}} | {{items.n_age}}岁 | {{autoCode["1"][Number(items.n_xueli)-1]?autoCode["1"][Number(items.n_xueli)-1]['value']:''}} | 
+												{{autoCode["4"][Number(items.n_huntype)-1]?autoCode["4"][Number(items.n_huntype)-1]['value']:''}}
+												<!-- | 158cm | 3000元以下 -->
+											</div>
+											<div class="meboxarea dtime">{{items.dt_addtime}}</div>
 										</div>
 										<div class="mesg_btnx">
 										</div>
 									</div>
 									<div class="mesage_li_right">
 										<!-- <div class="wdxinxi">3封未读</div> -->
-										<el-button class="showinfo" type="primary">打招呼</el-button>	
-										<el-button class="showinfo" type="primary">关注</el-button>	
-										<el-button class="showinfo" type="primary">发消息</el-button>	
+										<el-button class="showinfo" type="primary" @click="dzh(items.vc_nickname)">打招呼</el-button>	
+										<el-button class="showinfo" type="primary" @click="qxgz(items.oc_usercode)">取消关注</el-button>	
+										<el-button class="showinfo" type="primary"  @click="message(items.oc_usercode)">发消息</el-button>	
 									</div>
 								</li>
-								
+								<li v-show="gzArr['gzList'].length<=0">
+									<div style="padding: 80px;">	暂无关注信息。。。。。。。。</div>
+								</li>
 							</ul>
 						</div>
 						<div  v-if="isShowMesages==2" class="slecmainshow2">
 							<ul class="message_ul">
-								<li>
+								<li v-for="(items,index) in gzArr['bgzList']" :key="index">
 									<div class="mesage_li_left">
-										<img src="https://photo.zastatic.com/images/photo/27649/110594718/5989554594832143.jpg?scrop=1&crop=1&cpos=north&w=106&h=106" alt="">
+										<img :src="items.vc_img" alt="">
 										<div class="mesg_boxtxt">
-											<div class="meboxh1">这个姐姐不太冷 <!-- <span class="isguanfan">官方</span> --></div>
+											<div class="meboxh1">{{items.vc_nickname}} <!-- <span class="isguanfan">官方</span> --></div>
 											<div class="meboxarea infoarea">
-												湛江 | 21岁 | 高中及以下 | 未婚 | 158cm | 3000元以下
+												{{items.vc_city}} | {{items.n_age}}岁 | {{autoCode["1"][Number(items.n_xueli)-1]?autoCode["1"][Number(items.n_xueli)-1]['value']:''}} | 
+												{{autoCode["4"][Number(items.n_huntype)-1]?autoCode["4"][Number(items.n_huntype)-1]['value']:''}}
 											</div>
-											<div class="meboxarea dtime">3月15日</div>
+											<div class="meboxarea dtime">{{items.dt_addtime}}</div>
 										</div>
 										<div class="mesg_btnx">
 										</div>
 									</div>
 									<div class="mesage_li_right">
 										<!-- <div class="wdxinxi">3封未读</div> -->
-										<el-button class="showinfo" type="primary">打招呼</el-button>	
-										<el-button class="showinfo" type="primary">关注</el-button>	
-										<el-button class="showinfo" type="primary">发消息</el-button>	
+										<el-button class="showinfo" type="primary" @click="dzh(items.vc_nickname)">打招呼</el-button>	
+										<el-button class="showinfo" type="primary" @click="addgz(items.oc_usercode)">关注</el-button>	
+										<el-button class="showinfo" type="primary" @click="message(items.oc_usercode)">发消息</el-button>	
 									</div>
+								</li>
+								<li v-show="gzArr['bgzList'].length<=0">
+									<div style="padding: 80px;">	暂无用户关注。。。。。。。。</div>
 								</li>
 							</ul>
 							<!-- <div class="hn_img_box">
@@ -73,27 +84,27 @@
 				<el-col :span="6" style="margin-left: 0;">
 					<div class="right_mysel">
 						<div class="headeicon">
-							<img src="https://photo.zastatic.com/images/cms/banner/20181121/8311191311554389.png?scrop=1&crop=1&cpos=north&w=80&h=80" alt="">
+							<img :src="showImgurl(userdata.vc_img,userdata.n_sex)" alt="">
 						</div>
 						<div class="user_name">
-							按时大撒大撒
+							{{userdata?userdata.vc_nickname:''}}
 						</div>
 						<div class="user_name iconbox">
-							<span class="start"></span>
-							<span class="vip"></span>
-							<span class="card"></span>
+							<span :class="userdata&&userdata.n_isstart==1?'start ative':'start'"></span>
+							<span :class="userdata&&userdata.n_isvip==1?'vip ative':'vip'"></span>
+							<span :class="userdata&&userdata.n_issm==3?'card ative':'card'"></span>
 						</div>
 						<ul class="myulitem">
 							<li>
 								<div class="liclickitem" @click="doLink('./follow')">
 									<div class="liname">关注我的</div>
-									<div class="lincount">1</div>
+									<div class="lincount">{{gzArr.bgzList.length}}</div>
 								</div>
 							</li>
 							<li>
 								<div class="liclickitem">
 									<div class="liname" @click="doLink('./Information')">消息</div>
-									<div class="lincount">1</div>
+									<div class="lincount">{{wdxinxi}}</div>
 								</div>
 								
 							</li>
@@ -113,26 +124,165 @@
   </div>
 </template>
 <script>
+	import {connetAction,regPhone} from "../utils/index.js"
+	import https from "../utils/Https.js"
 	export default{
 		data(){
 			return{
-				isShowVip:0,
-				isShowMesages:1
+				isShowMesages:1,
+				userdata:{},
+				liulannum:0,//浏览量	
+				wdxinxi:0, //未读信息
+				gzArr:{
+					bgzList:[],
+					gzList:[]
+				},
+				autoCode:{}
 			}
 		},
 		methods:{
-			ktvip:function(){
-				this.isShowVip = 1;
-			},
-			closeVip:function(){
-				this.isShowVip = 0;
+			toastip:function(str,type){
+				this.$message({
+				  message:str ,
+				  type: type||'warning'
+				});
 			},
 			slectLi:function(ints){
 				this.isShowMesages = ints;
 			},
 			doLink:function(url){
 				this.$router.push(url)
+			},
+			dzh:function(str){
+				this.toastip(`与${str}打招呼成功`,'success')
+			},
+			message:function(str){
+				if(this.userdata.n_isvip!=1){
+					this.toastip('开通会员立即享受，立即与心仪的人一对一聊天哦')
+					return false;
+				}
+				this.$router.push({name:'userinfo',query:{id:str}})
+			},
+			getuerList:function(){
+				let data = {
+					oc_usercode:localStorage.openid
+				}
+				connetAction.ajaxPost(https['index'], data)
+					.then(rd => {
+						if(rd.status==1){
+							this.userdata = rd.data.userlist;
+						}
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
+			addgz:function(id){
+				let data = {
+					startid:localStorage.openid,
+					endid:id
+				};
+							
+				
+				connetAction.ajaxPost(https['addGuanzu'],data)
+				.then((res)=>{
+					if(res.status==1){
+							// 初始化基本数据
+							
+					}else{
+						this.toastip(res.message)
+					}	
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			qxgz:function(id){
+				let data = {
+					startid:localStorage.openid,
+					endid:id
+				};
+							
+				
+				connetAction.ajaxPost(https['qxGz'],data)
+				.then((res)=>{
+					if(res.status==1){
+							// 初始化基本数据
+						this.toastip(res.message,'success')	
+					}else{
+						this.toastip(res.message)
+					}	
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			showImgurl(url,sex){
+				if(url!=""){
+					return url;
+				}else{
+					if(sex!=1){
+						url = "../assets/img/main.jpg"
+					}else{
+						url = "../assets/img/woman.jpg"
+					}
+				}
+				return url;
+			},
+			getGuanzhu:function(){
+				let data = {
+					id:localStorage.openid
+				};
+			
+				connetAction.ajaxPost(https['getGz'],data)
+				.then((res)=>{
+					if(res.status==1){
+							// 初始化基本数据
+							this.gzArr = res.data
+							console.log(this.gzArr)
+							
+					}else{
+						this.toastip(res.message)
+					}	
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			getWdxx:function(){
+				connetAction.ajaxPost(https['getWdxx'],{id:localStorage.openid})
+				.then(function(data){
+					this.wdxinxi = data.xtMessage.length;
+				})
+				.catch(function(rd){
+					
+				})
+			},
+			getLl:function(){
+				connetAction.ajaxPost(https['getLl'],{id:localStorage.openid})
+				.then(function(data){
+					this.liulannum = data.blList.length;
+				})
+				.catch(function(rd){
+					
+				})
 			}
+			
+			
+		},
+		created(){
+			this.getuerList();
+			this.getGuanzhu();
+			this.getWdxx();
+			this.getLl();
+			this.autoCode = JSON.parse(localStorage.autoCode)
+		},
+		mounted(){
+			// console.log(this.gzArr,333)
+			//this.getLl();
 		}
 	}
 	
@@ -143,7 +293,7 @@
 	}
 	.module_follow{
 		width: 100%;
-		height: 100%;
+		/* height: 100%; */
 		background: #f3f3f3;
 		padding-top: 80px;
 	}
@@ -205,7 +355,7 @@
 	}
 	.slecmainshow1,.slecmainshow2{
 		width: 100%;
-		height: 400px;
+		min-height: 400px;
 		background: #fff;
 		box-sizing: border-box;
 	}
@@ -358,6 +508,15 @@
 	}
 	.user_name .card{
 		background: url(../assets/img/card1.png) no-repeat;
+	}
+	.user_name .start.ative{
+		background: url(../assets/img/start2.png) no-repeat;
+	}
+	.user_name .vip.ative{
+		background: url(../assets/img/vip2.png) no-repeat;
+	}
+	.user_name .card.ative{
+		background: url(../assets/img/card2.png) no-repeat;
 	}
 	.myulitem{
 		padding-top: 1em;

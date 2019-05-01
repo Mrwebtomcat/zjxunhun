@@ -13,7 +13,6 @@ const requestURL={
 	historyCount:'/weservice/historyCount',		//历史业绩提成统计
 	salesBusiness:'/weservice/salesBusiness',	//销售业绩流水
 	masterBusiness:'/weservice/masterBusiness'	//技师业绩流水
-	
 }
 
 /*

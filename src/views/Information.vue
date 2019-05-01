@@ -10,12 +10,12 @@
 							<div class="left_h1_info">消息中心</div>
 						</div>
 						<ul class="selctul">
-							<li :class="isShowMesages==1?'ative':''" @click="slectLi(1)">消息列表 <span class="tognum">4</span></li>
+							<li :class="isShowMesages==1?'ative':''" @click="slectLi(1)">消息列表 <span class="tognum">{{wdxinxi.xtMessage.length+wdxinxi.yhMessage.length}}</span></li>
 							<li :class="isShowMesages==2?'ative':''" @click="slectLi(2)">红娘来信</li>
 						</ul>
 						<div v-if="isShowMesages==1" class="slecmainshow1">
 							<ul class="message_ul">
-								<li>
+								<li v-for="(itmes,index) in wdxinxi.xtMessage" :key="index">
 									<div class="mesage_li_left">
 										<img src="https://photo.zastatic.com/images/photo/2223/8888888/163784965568714450.jpg?scrop=1&crop=1&cpos=north&w=80&h=80?scrop=1&crop=1&cpos=north&w=80&h=80" alt="">
 										<div class="mesg_boxtxt">
@@ -27,11 +27,11 @@
 										</div>
 									</div>
 									<div class="mesage_li_right">
-										<div class="wdxinxi">3封未读</div> 
+										<!-- <div class="wdxinxi">3封未读</div> -->
 										<el-button class="showinfo" type="primary">查看</el-button>	
 									</div>
 								</li>
-								<li>
+								<li v-for="(itmes,index) in wdxinxi.yhMessage" :key="index" >
 									<div class="mesage_li_left">
 										<img src="https://photo.zastatic.com/images/photo/2223/8888888/163784965568714450.jpg?scrop=1&crop=1&cpos=north&w=80&h=80?scrop=1&crop=1&cpos=north&w=80&h=80" alt="">
 										<div class="mesg_boxtxt">
@@ -48,14 +48,17 @@
 										<div class="colmesagLi">x</div>
 									</div>
 								</li>
+								<li v-show="wdxinxi.xtMessage?wdxinxi.xtMessage.length<=0?true:false:false">
+									<div style="padding: 80px;">	暂无消息。。。</div>
+								</li>
 							</ul>
 						</div>
 						<div  v-if="isShowMesages==2" class="slecmainshow2">
 							<div class="hn_img_box">
 								<img src="https://i.zhenai.com/pc/portal/message/index/images/no-letter.764585b.png" alt="">
 							</div>
-							<div class="hn_infotext">服务流程五步走，六重保障觅珍爱</div>
-							<div class="hn_infotext">相亲无难事，珍爱有红娘！</div>
+							<div class="hn_infotext">服务流程五步走，六重保障觅金梦</div>
+							<div class="hn_infotext">相亲无难事，金梦有红娘！</div>
 							<div class="ljhn"><el-button class="showinfo" type="primary" @click="doLink('./hongniang')">了解红娘服务</el-button>	</div>
 						</div>
 					</div>
@@ -63,34 +66,34 @@
 				<el-col :span="6" style="margin-left: 0;">
 					<div class="right_mysel">
 						<div class="headeicon">
-							<img src="https://photo.zastatic.com/images/cms/banner/20181121/8311191311554389.png?scrop=1&crop=1&cpos=north&w=80&h=80" alt="">
+							<img :src="showImgurl(userdata.vc_img,userdata.n_sex)" alt="">
 						</div>
 						<div class="user_name">
-							按时大撒大撒
+							{{userdata?userdata.vc_nickname:''}}
 						</div>
 						<div class="user_name iconbox">
-							<span class="start"></span>
-							<span class="vip"></span>
-							<span class="card"></span>
+							<span :class="userdata&&userdata.n_isstart==1?'start ative':'start'"></span>
+							<span :class="userdata&&userdata.n_isvip==1?'vip ative':'vip'"></span>
+							<span :class="userdata&&userdata.n_issm==3?'card ative':'card'"></span>
 						</div>
 						<ul class="myulitem">
 							<li>
 								<div class="liclickitem" @click="doLink('./follow')">
 									<div class="liname">关注我的</div>
-									<div class="lincount">1</div>
+									<div class="lincount">{{gzsl.bgzList?gzsl.bgzList.length:0}}</div>
 								</div>
 							</li>
 							<li>
 								<div class="liclickitem">
 									<div class="liname" @click="doLink('./Information')">消息</div>
-									<div class="lincount">1</div>
+									<div class="lincount">{{wdxinxi.xtMessage?wdxinxi.xtMessage.length:0}}</div>
 								</div>
 								
 							</li>
 							<li>
 								<div class="liclickitem">
 									<div class="liname"  @click="doLink('./browse')">浏览过我的</div>
-									<div class="lincount">1</div>
+									<div class="lincount">{{liulannum}}</div>
 								</div>
 								
 							</li>
@@ -103,9 +106,16 @@
   </div>
 </template>
 <script>
+	import {connetAction,regPhone} from "../utils/index.js"
+	import https from "../utils/Https.js"
 	export default{
 		data(){
 			return{
+				userdata:{},
+				gzsl:{},
+				LLArr:[],
+				liulannum:0,
+				wdxinxi:{xtMessage:[],yhMessage:[]},
 				isShowVip:0,
 				isShowMesages:1
 			}
@@ -122,8 +132,101 @@
 			},
 			doLink:function(url){
 				this.$router.push(url)
+			},
+			dzh:function(str){
+				this.toastip(`与${str}打招呼成功`,'success')
+			},
+			message:function(str){
+				if(this.userdata.n_isvip!=1){
+					this.toastip('开通会员立即享受，立即与心仪的人一对一聊天哦')
+					return false;
+				}
+				this.$router.push({name:'userinfo',query:{id:str}})
+			},
+			// 关注
+			getGuanzhu:function(){
+				let data = {
+					id:localStorage.openid
+				};
+			
+				connetAction.ajaxPost(https['getGz'],data)
+				.then((res)=>{
+					if(res.status==1){
+							// 初始化基本数据
+							this.gzsl = res.data
+							console.log(this.gzsl)
+							
+					}else{
+						this.toastip(res.message)
+					}	
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			// 未读
+			getWdxx:function(){
+				connetAction.ajaxPost(https['getWdxx'],{id:localStorage.openid})
+				.then((res)=>{
+					if(res.status==1){
+						this.wdxinxi = data.xtMessage;
+					}
+				})
+				.catch(function(rd){
+					
+				})
+			},
+			// 浏览
+			getLl:function(){
+				connetAction.ajaxPost(https['getLl'],{id:localStorage.openid})
+				.then((res)=>{
+					if(res.status==1){
+						this.LLArr = res.data.lList.length;
+						this.liulannum = res.data.blList.length;
+					}
+				})
+				.catch((rd)=>{
+					
+				})
+			},
+			getuerList:function(){
+				let data = {
+					oc_usercode:localStorage.openid
+				}
+				connetAction.ajaxPost(https['index'], data)
+					.then(rd => {
+						if(rd.status==1){
+							this.userdata = rd.data.userlist;
+						}
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
+			showImgurl(url,sex){
+				if(url!=""){
+					return url;
+				}else{
+					if(sex!=1){
+						url = "../assets/main.jpg"
+					}else{
+						url = "../assets/woman.jpg"
+					}
+					return false;
+				}
 			}
+		},
+		created(){
+			this.getuerList();
+			this.getLl();
+			this.getWdxx();
+			this.getGuanzhu();
+		},
+		mounted(){
+			
 		}
+		
 	}
 	
 </script>
@@ -337,6 +440,15 @@
 	}
 	.user_name .card{
 		background: url(../assets/img/card1.png) no-repeat;
+	}
+	.user_name .start.ative{
+		background: url(../assets/img/start2.png) no-repeat;
+	}
+	.user_name .vip.ative{
+		background: url(../assets/img/vip2.png) no-repeat;
+	}
+	.user_name .card.ative{
+		background: url(../assets/img/card2.png) no-repeat;
 	}
 	.myulitem{
 		padding-top: 1em;

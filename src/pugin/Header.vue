@@ -63,9 +63,11 @@ export default {
 		}else if(i==1){
 			this.goPage('/idCard')
 		}else if(i==2){
-			this.goPage({name:'editInfo',query:{page:2}})
+			this.goPage({path:'/editInfo',query:{page:2}});
+			location.reload()
 		}else if(i==3){
-			this.goPage({name:'editInfo',query:{page:7}})
+			this.goPage({path:'/editInfo',query:{page:6}})
+			location.reload()
 		}else if(i==4){
 			localStorage.removeItem('openid');
 			window.location.reload();

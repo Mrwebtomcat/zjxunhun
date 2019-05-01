@@ -85,12 +85,13 @@
 											<!-- citysarrs:[],
 											areaarrs:[],
 											provincearr -->
+											
 											{{userdata['tiaoJian']?(provincearr[Number(userdata['tiaoJian']['n_province'])-2]?provincearr[Number(userdata['tiaoJian']['n_province'])-2]['name']:''):''}}
-											{{userdata['tiaoJian']?(citysarrs[Number(userdata['tiaoJian']['n_city'])-2]?citysarrs[Number(userdata['tiaoJian']['n_city'])-2]['name']:''):''}}
+											{{userdata['tiaoJian']?(citysarrs[Number(userdata['tiaoJian']['n_city'])]?ctiyretrun(userdata['tiaoJian']['n_city']).name:''):''}}
 											| {{userdata['tiaoJian']?userdata['tiaoJian']['n_min_age']:''}}
 											-
 											{{userdata['tiaoJian']?userdata['tiaoJian']['n_max_age']:''}}岁的{{userdata['userlist']?(userdata['userlist']['n_sex']==1?'女士':'男士'):''}}
-											{{userdata['tiaoJian']?autoData['1'][userdata['tiaoJian']['n_xueli']-2]['value']:''}}
+											{{userdata['tiaoJian']?autoData['1'][userdata['tiaoJian']['n_xueli']-1]['value']:''}}
 											<!-- {{userdata['tiaoJian']}}
 											广东湛江麻章区 | 18-20岁的女士 -->
 										</span>
@@ -118,7 +119,8 @@
 										<el-col :span="14">
 											<div class="uiname">{{items['vc_nickname']?items['vc_nickname']:''}}</div>
 											<div class="uiinfo">
-												{{`${items['n_age']}岁 | ${bigdata[Number(items['vc_city'])-2]?bigdata[Number(items['vc_city'])-2]['name']:''} ${items.vc_worke?'|'+items.vc_worke:''}`}}
+												{{`${items['n_age']}岁 | ${items.vc_city} ${items.vc_worke?'|'+ worketype(items.vc_worke):'职业（暂无设置）'}`}}
+												<!-- {{`${items['n_age']}岁 | ${bigdata[Number(items['vc_city'])]?ctiyretrun(items['vc_city']).name:''} ${items.vc_worke?'|'+items.vc_worke:''}`}} -->
 													
 												<!-- 湛江|157cm|客户经理 -->
 											</div>
@@ -147,12 +149,12 @@
 							<div class="vipuserinfo">
 								<div class="box">
 									<img v-if="userdata['userlist']['vc_img']&&userdata['userlist']['vc_img']!=''" style="width:100px;height:100px;" :src="userdata['userlist']['vc_img']" >
-									 <img v-if="(!userdata['userlist']['vc_img'] || userdata['userlist']['vc_img']=='')&&userdata['userlist']['n_issex']==1" style="width:100px;height:100px;" src="../assets/img/main.jpg" />
-									 <img v-if="(!userdata['userlist']['vc_img'] || userdata['userlist']['vc_img']=='')&&userdata['userlist']['n_issex']!=1" style="width:100px;height:100px;" src="../assets/img/woman.jpg" />
+									 <img v-if="(!userdata['userlist']['vc_img'] || userdata['userlist']['vc_img']=='')&&userdata['userlist']['n_sex']==1" style="width:100px;height:100px;" src="../assets/img/main.jpg" />
+									 <img v-if="(!userdata['userlist']['vc_img'] || userdata['userlist']['vc_img']=='')&&userdata['userlist']['n_sex']!=1" style="width:100px;height:100px;" src="../assets/img/woman.jpg" />
 									<div class="icon_vip">
 										<span :class="userdata['userlist']['n_isstar']?'start atctive':'start'" @click="dolink('./start')"></span>
 										<span :class="userdata['userlist']['n_isvip']?'vip active':'vip'" @click="dolink('./vip')"></span>
-										<span :class="userdata['userlist']['n_issm']?'card active':'card'" @click="dolink('./idcard')"></span>
+										<span :class="userdata['userlist']['n_issm']==2?'card active':'card'" @click="dolink('./idcard')"></span>
 									</div>
 								</div>
 								<div class="box">
@@ -162,6 +164,14 @@
 										<!-- <span>30%</span> -->
 										<span @click="dolink('./editinfo')">个人资料</span>
 										<span @click="dolink('./vip')">充值</span>
+									</div>
+									<div v-if="userdata['userlist']['n_isvip']==1" class="lac1" style="padding-top:3%;">
+										<!-- <span>30%</span> -->
+										<span style="color: red;">尊敬的会员您好，您的会员截止时间到：2019-10-12</span>
+									</div>
+									<div v-else class="lac1" style="padding-top:4%;">
+										<!-- <span>30%</span> -->
+										<span style="color: blue;">普通用户</span>
 									</div>
 								</div>
 							</div>
@@ -299,16 +309,24 @@
 					}
 				})
 			},
+			worketype:function(val){
+				let str = "";
+				if(val!=""){
+					str = this.wokelist.filter((item,index,arr)=>item.val==val)
+				}
+				return str[0].name
+			},
 			goSearch() {
 				this.isShowSlec = !this.isShowSlec;
 			},
+			toast:function(str,type){
+				this.$message({
+				  message: str,
+				  type: type||'error'
+				});
+			},
 			dazh(name) {
-				message(this, {
-					title: '',
-					contxt: `与${name}打招呼成功`,
-					center: true,
-					btntxt: '确定'
-				})
+				this.toast(`与${name}打招呼成功`,'success')
 			},
 			// 获取省份
 			getProvice: function() {
@@ -355,6 +373,16 @@
 					}
 				}
 			},
+			ctiyretrun:function(id){
+				var arr = [];
+				var city = this.citysarrs.map((item)=>{
+					if(item['id']==id){
+						arr = item;
+						return false;
+					}
+				})
+				return arr;
+			},
 			//获取城市
 			getCity: function(pid) {
 				this.city = [];
@@ -388,6 +416,7 @@
 						}
 						// 获得资料模板数据
 						this.setpCode(rd.data);
+						localStorage.autoCode = JSON.stringify(rd.data)
 						//console.log(this.autoData)
 					})
 					.catch(res => {
@@ -421,7 +450,6 @@
 				}
 				// console.log(str)
 				return str;
-				
 				
 			}
 			
@@ -562,6 +590,7 @@
 		display: flex;
 		padding: 10px;
 		align-items: center;
+		cursor: pointer;
 	}
 
 	.xhyw .imgs {

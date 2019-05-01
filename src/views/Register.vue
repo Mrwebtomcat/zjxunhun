@@ -29,19 +29,19 @@
 			  </el-form-item>
 			  <el-form-item label="工作地区 :" >
 				  <el-col :span="8" style="padding-left:0;" >
-					<el-select v-model="form.vc_province" placeholder="请选择省份" @change="getCity">
+					<el-select v-model="form.n_province" placeholder="请选择省份" @change="getCity">
 					  <el-option v-for="(items,index) in provice" :key="index" :label="items['name']" :value="items['id']" ></el-option>
 					</el-select>
 				  </el-col>
 				  
 				  <el-col :span="8" style="padding-left:0;">
-					<el-select v-model="form.vc_city" placeholder="请选择市区" @change="getArea">
+					<el-select v-model="form.n_city" placeholder="请选择市区" @change="getArea">
 					  <el-option v-for="(items,index) in city" :key="index" :label="items['name']" :value="items['id']" ></el-option>
 					</el-select>
 				  </el-col> 
 				  
 				  <el-col :span="8" style="padding-left:0;">
-					<el-select v-model="form.vc_area" placeholder="请寻选择镇/县">
+					<el-select v-model="form.n_area" placeholder="请寻选择镇/县" @change="getqu">
 					 	<el-option v-for="(items,index) in Area" :key="index" :label="items['name']" :value="items['id']" ></el-option>
 					</el-select>
 				  </el-col>
@@ -93,8 +93,8 @@
 			  </el-form-item>
 			  <el-form-item label="">
 			  		<div>
-						<el-checkbox v-model="istongyi"></el-checkbox> 已阅读和同意寻婚网的服务条款和信息保护政策并同意将本人提供之信息
-由寻婚网提供线上/线下服务使用
+						<el-checkbox v-model="istongyi" @change="fntongyi">已阅读和同意寻婚网的服务条款和信息保护政策并同意将本人提供之信息
+由寻婚网提供线上/线下服务使用</el-checkbox> 
 					</div>
 			  </el-form-item>
 			  <el-form-item>
@@ -136,6 +136,10 @@ export default {
 			autoData:[],
 			isloading:false,
 			aginpsw:'',
+			provice:[],
+			provincearr:[],
+			citysarrs:[],
+			areaarrs:[],
 			form:{
 				vc_nickname:'',
 				n_sex:"男",
@@ -144,16 +148,15 @@ export default {
 				vc_province:'',
 				 vc_city :'',
 				 vc_area:'',
+				 n_province:'',
+				 n_city :'',
+				 n_area:'',
 				n_education:'',
 				n_money:"",
 				n_huntype:0,
 				vc_userphone:'',
 				code:'',
-				vc_password:'',
-				provice:[],
-			  provincearr:[],
-			  citysarrs:[],
-				areaarrs:[]
+				vc_password:''
 			}
 		}
 	},
@@ -163,43 +166,52 @@ export default {
 			let that = this,data=this.form;
 			
 			if(!data['vc_nickname']||data['vc_nickname']==""){
-				message(this,{contxt:"昵称不能为空"})
+				// message(this,{contxt:"昵称不能为空"})
+				this.toast("昵称不能为空",'warning');
 				return false;
 			}
-			
-			
+			// 
+			// 
 			if(this.form['n_sex']=="男"){
 				data['n_sex'] = 1
 			}else if(this.form['n_sex']=="女"){
 				data['n_sex'] = 2
 			}
-			
+			// 
 			if(!data['n_age']||data['n_age']==""){
-				message(this,{contxt:"出生日期不能为空"})
+				// message(this,{contxt:"出生日期不能为空"})
+				this.toast("出生日期不能为空",'warning');
 				return false;
 			}
-			if(!data['vc_province']||data['vc_province']==""){
-				message(this,{contxt:"请选择省份"})
+			if(!data['n_province']||data['n_province']==""){
+				// message(this,{contxt:"请选择省份"})
+				this.toast("请选择省份",'warning');
 				return false;
 			}
-			if(!data['vc_city']||data['vc_city']==""){
-				message(this,{contxt:"请选择城市"})
+			if(!data['n_city']||data['n_city']==""){
+				// message(this,{contxt:"请选择城市"});
+				this.toast("请选择城市",'warning');
+				
 				return false;
 			}
-			if(!data['vc_area']||data['vc_area']==""){
-				message(this,{contxt:"请选择城区"})
+			if(!data['n_area']||data['n_area']==""){
+				// message(this,{contxt:"请选择城区"});
+				this.toast("请选择城区",'warning');
 				return false;
 			}
 			if(!data['n_education']||data['n_education']==""){
-				message(this,{contxt:"请选择学历"})
+				// message(this,{contxt:"请选择学历"})
+				this.toast("请选择学历",'warning');
 				return false;
 			}
 			if(!data['n_money']||data['n_money']==0){
-				message(this,{contxt:"请选择薪资"})
+				// message(this,{contxt:"请选择薪资"});
+				this.toast("请选择薪资",'warning');
 				return false;
 			}
 			if(!data['n_huntype']||data['n_huntype']==0){
-				message(this,{contxt:"请选择婚姻情况"})
+				// message(this,{contxt:"请选择婚姻情况"});
+				this.toast("请选择婚姻情况",'warning');
 				return false;
 			}else{
 				if(data['n_huntype']=="未婚"){
@@ -211,32 +223,46 @@ export default {
 				}
 			}
 			if(!data['vc_userphone']||data['vc_userphone']==""){
-				message(this,{contxt:"手机号码不能为空"})
+				// message(this,{contxt:"手机号码不能为空"})
+				this.toast("手机号码不能为空",'warning')
 				return false;
 			}
 			if(!regPhone(data.vc_userphone)){
-				message(this,{contxt:"手机格式不正确"})
+				// message(this,{contxt:"手机格式不正确"})
+				this.toast("手机格式不正确",'warning')
 				return false;
 			}
 			if(!data['code']||data['code']==""){
-				message(this,{contxt:"验证码不能为空"})
+				// message(this,{contxt:"验证码不能为空"})
+				this.toast("验证码不能为空",'warning')
 				return false;
 			}
 			if(!data['vc_password']||data['vc_password']==""){
-				message(this,{contxt:"密码不能为空"})
+				// message(this,{contxt:"密码不能为空"})
+				this.toast("密码不能为空",'warning')
 				return false;
 			}else{
 				if(data['vc_password']!=this.aginpsw){
-					message(this,{contxt:"两次输入的密码不一致"})
+					// message(this,{contxt:"两次输入的密码不一致"})
+					this.toast("两次输入的密码不一致",'warning')
 					return false;
 				}
+			}
+			if(!this.istongyi){
+				this.toast("请检查是否已经阅读同意金梦情缘服务条款和信息",'warning')
+				return false;
 			}
 			var nowDate = new Date().getFullYear();
 			var inputDate = new Date(data['n_age']).getFullYear();
 			inputDate =Number(nowDate) - Number(inputDate);
 			this.isloading = true;
-			var dd = {};
-			connetAction.ajaxPost(https['register'],Object.assign(dd,data,{'n_age':inputDate}))
+			var dd = {
+				"dt_csrq":data['n_age']
+			};
+			console.log(this.form)
+			// console.log(pcadata,'字符串输出');
+			// console.log(Object.assign(dd,pcadata,data,{'n_age':inputDate}),'合并输出');
+			connetAction.ajaxPost(https['register'],Object.assign(dd,data,{'n_age':inputDate,'dt_csrq':data['n_age']}))
 			.then(rd=>{
 				if(rd.status==1){
 					this.isloading = false;
@@ -253,6 +279,9 @@ export default {
 			.catch(res=>{
 				console.log(res,"res")
 			})
+		},
+		fntongyi:function(e){
+			this.istongyi = e;
 		},
 		cancel() {
 			this.isloading = false;
@@ -305,24 +334,46 @@ export default {
 			getCity: function(pid) {
 				this.city = [];
 				this.Area = [];
-				this.form.vc_area = "";
-				this.form.vc_city = "";
+				this.form.n_area = "";
+				this.form.n_city = "";
 				for(var i=0;i<this.citysarrs.length;i++){
 					if(this.citysarrs[i]['pid']==pid){
 						this.city.push(this.citysarrs[i])
 					}
 				}
-				console.log(this.city.push,333)
+				// 过滤省份
+				let arrs = this.provice.filter((item,index,arr)=>item.id==pid);
+				this.form.vc_province = arrs[0].name;
 			},
 			//获取地区
 			getArea: function(pid) {
-				this.form.vc_area = "";
+				this.form.n_area = "";
 				this.Area = [];
 				for(var i=0;i<this.areaarrs.length;i++){
 					if(this.areaarrs[i]['pid']==pid){
 						this.Area.push(this.areaarrs[i]);
 					}	
 				}
+				// 过滤城市
+				let arrs = this.citysarrs.filter((item,index,arr)=>item.id==pid);
+				this.form.vc_city = arrs[0].name;
+			},
+			getqu:function(pid){
+				let arrs = this.Area.filter((item,index,arr)=>item.id==pid);
+				this.form.vc_area = arrs[0].name;
+			},
+			chenshiStr:function(id){
+				var arr = [];
+					console.log(this.citysarrs.length)
+				for(var i=0;i<this.citysarrs.length;i++){
+					if(this.citysarrs[i]['id']==id){
+						arr = this.citysarrs[i]['id'].name;
+						console.log(arr)
+						break;
+					}
+				}
+				
+				return arr;
 			},
 		// 发送验证码
 		getSms:function(){

@@ -10,12 +10,18 @@
 				  <el-row :gutter="24" style="margin-left: 0;">
 						<el-col :span="17" class="uerlistbg">
 								<div class="seachbox">
-									<div class="selcinev" >
+									<div v-if="autoInfo['n_issm']==0" class="selcinev" >
 										 认证状态	- <span class="smspan">未实名认证，请填写相关信息实名认证</span>	
+									</div>
+									<div v-else-if="autoInfo['n_issm']==1" class="selcinev" >
+										 认证状态	- <span class="smspan">用户待审核状态</span>	
+									</div>
+									<div v-else class="selcinev" >
+										 认证状态	- <span class="smspan">恭喜你已经审核通过了</span>	
 									</div>
 								</div>
 								<div class="userboxs">
-									<el-form ref="form" :model="form" label-width="200px">
+									<el-form v-if="autoInfo['n_issm']==0" ref="form" :model="form" label-width="200px">
 										<div v-show="renzheng==0">
 											 <el-form-item label="姓名">
 													<el-input v-model="form.name"></el-input>
@@ -42,6 +48,14 @@
 										  		<el-button type="primary" @click="onSubmit(2)">手机验证</el-button>
 										  </el-form-item>
 									</el-form>
+									<div v-else style="margin: auto;">
+										<div v-if="autoInfo['n_issm']==1" class="selcinev"  >
+											 <span class="smspan" style="font-size: 20px;">正在等待审核中,请等待...</span>	
+										</div>
+										<div v-if="autoInfo['n_issm']==2" class="selcinev"  >
+											 <span class="smspan" style="font-size: 20px;color: blue;">恭喜你，实名审核已通过</span>	
+										</div>
+									</div>
 								</div>
 								<div class="seachbox">
 									<div class="selcinev" >
@@ -99,7 +113,7 @@
 												<div class="icon_vip">
 													<span :class="autoInfo['n_isstar']?'start active':'start'" @click="dolink('/start')"></span>
 													<span :class="autoInfo['n_isvip']?'vip active':'vip'" @click="dolink('/vip')"></span>
-													<span :class="autoInfo['n_issm']?'card active':'card'" @click="dolink('/idcard')"></span>
+													<span :class="autoInfo['n_issm']==3?'card active':'card'" @click="dolink('/idcard')"></span>
 												</div>
 											</div>
 											<div class="lac1" style="padding-top:3%;">
@@ -194,12 +208,13 @@ export default {
 		 isShowSlec:0,
 		 renzheng:0,
 		 isCode:60,
-		 showCode:1
+		 showCode:1,
+		 shstatus:0
 	 }
  },
  created() {
 	 this.getInfos();
-	 this.vipInfo();
+	 // this.vipInfo();
  },
  methods: {
  	goToVip() {
@@ -287,26 +302,26 @@ export default {
 			
 		})
 	},
-	vipInfo:function(){
-		let data = {
-			page:1,
-			pageNum:20 
-		};
-		
-		connetAction.ajaxPost(https['showDsh'],data)
-		.then((res)=>{
-			if(res.status==1){
-					 console.log(res.data)
-					
-			}else{
-				this.toastip(res.message)
-			}	
-			
-		})
-		.catch((res)=>{
-			
-		})
-	},
+	// vipInfo:function(){
+	// 	let data = {
+	// 		page:1,
+	// 		pageNum:20 
+	// 	};
+	// 	
+	// 	connetAction.ajaxPost(https['showDsh'],data)
+	// 	.then((res)=>{
+	// 		if(res.status==1){
+	// 				 console.log(res.data)
+	// 				
+	// 		}else{
+	// 			this.toastip(res.message)
+	// 		}	
+	// 		
+	// 	})
+	// 	.catch((res)=>{
+	// 		
+	// 	})
+	// },
 	onSubmit(type){
 		if(this.form['name']==""){
 			this.toastip('请输入姓名，再操作');

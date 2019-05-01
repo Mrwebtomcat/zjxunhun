@@ -19,7 +19,7 @@
 						<div class="user_name iconbox">
 							<span :class="autoInfo['n_isstar']==1?'start active':'start'"></span>
 							<span :class="autoInfo['n_isvip']==1?'vip active':'vip'"></span>
-							<span :class="autoInfo['n_issm']==1?'card active':'card'"></span>
+							<span :class="autoInfo['n_issm']==2?'card active':'card'"></span>
 						</div>
 						<div class="pannel_info">
 							<el-collapse v-model="activeName" accordion  @change="change1">

@@ -18,6 +18,7 @@ let INTERFACE = {
 	//tree返回三级联动的地区表  {pid:默认不传参请求该接口的id，type:1默认不用传： 2省 3 市}
 	tree:'index/tree',					      
 	index:'index/homeInfo',					//首页接口
+	getHN:'index/getHongNiang',				//联系红娘
 	addWsh:'user/addWsh',					//工作生活
 	updateZotj:'user/updateZotj',			//更新择偶条件
 	updateInfo:'user/updateInfo',			//更新个人资料
@@ -26,15 +27,22 @@ let INTERFACE = {
 	souSuo:'base/souSuo',					//高级搜索   参数 用户昵称 params{vc_nickname}
 	nameSousuo:'base/nameSouSuo',			//昵称搜索   参数 用户昵称 params{vc_nickname}
 	huiyuan:'Huiyuan/index',				//查询VIP会员列表 params{id:会员id}
+	getStart:'Huiyuan/getStartList',		//查询星级列表 params{id:会员id}
 	addAlbum:'user/addAlbum',				//上传图片
 	delAlbum:'user/delAlbum',				//删除图片  { id:图片id; oc_usercode:用户id}
 	updateLogo:'user/updateLogo',			//上传头像  { id:用户id,id; vc_img:头像}
 	setOrder:'wxpay/setOrder',				//发起微信支付  { id:用户id,}  返回订单id 和url
+	getOrderStatus:'wxpay/getOrderStatus',	//支付状态 vc_order_sn
 	setSm:'user/setSm',						//实名认证
 	upDatePhone:'user/updatePhone',			//修改手机号码
-	showDsh:'AdminUser/showDsh',			//待审核会员信息
-	nvIndex:'Huiyuan/nvIndex',			//修改手机号码
-	masterBusiness:'/weservice/masterBusiness'	//技师业绩流水
+	// showDsh:'AdminUser/showDsh',			//待审核会员信息
+	nvIndex:'Huiyuan/nvIndex',				//查看所有VIP配置信息
+	getGz:'Llgz/getGz',						//查询关注
+	addGuanzu:'Llgz/addGuanzu',				//关注
+	qxGz:'Llgz/qxGz',						//取消关注
+	getWdxx:'Llgz/getWdxx',					//查询浏览信息
+	getLl:'Llgz/getLl'	,					//查询浏览
+	addLiulan:'Llgz/addLiulan'	,				//增加流量浏览
 }
 for(var key in INTERFACE){
 	INTERFACE[key] = baseURL+ INTERFACE[key]

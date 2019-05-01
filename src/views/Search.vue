@@ -26,7 +26,7 @@
 					<span class="fontw">基础条件:</span>
 					<div class="w5  ml3"  style="width:8%;" >
 						 <el-select v-model="form.n_sex" size="small" placeholder="性别">
-							  <el-option v-for="(items,index) in ['男','女']" :key="index" :label="items" :value="index+1"></el-option>
+							  <el-option v-for="(items,index) in agearr" :key="index" :label="items['name']" :value="items['val']"></el-option>
 						</el-select>
 					</div>
 					<div class="ml1" style="width:10%;">
@@ -75,7 +75,7 @@
 						</el-select>
 					</div>
 					<div class="chegj">
-						<el-checkbox v-model="gjchecked">高级检索</el-checkbox>
+						<el-checkbox v-model="gjchecked" @change="gjqh">高级检索</el-checkbox>
 					</div>
 				</div>
 				<div v-if="gjchecked" class="li">
@@ -93,7 +93,7 @@
 					</div> -->
 					<div class="ml1" style="width:10%;">
 						 <el-select v-model="form.n_ishouse" :disabled="vip" size="small" placeholder="住房情况">
-							 <el-option v-for="(items,index) in ['和家人住','已购房','租房','打算婚后购房','在单位宿舍住']" :key="index" :label="items" :value="index+1"></el-option>
+							 <el-option v-for="(items,index) in hoursarr" :key="index" :label="items['name']" :value="items['value']"></el-option>
 						</el-select>
 					</div>
 					<div class="ml1" style="width:9%;">
@@ -143,7 +143,7 @@
 					  		<el-tag size="small">{{userData?userData['n_sg']:''}}cm</el-tag>
 					  	</div>
 					  	<div class="marks">
-					  		我正在寻找广东湛江霞山区,年龄在{{userData?Number(userData['n_age'])-5:''}}-{{userData?Number(userData['n_age'])+5:''}}岁,...
+					  		我正在寻找{{userData.vc_province?userData.vc_province:''}}{{userData.vc_city?userData.vc_city:''}}{{userData.vc_area?userData.vc_area:''}},年龄在{{userData?Number(userData['n_age'])-5:''}}-{{userData?Number(userData['n_age'])+5:''}}岁,...
 					  	</div>
 					  </li>
 					<li v-for="(item,index) in searchList" class="buy-star member-list" :key="index" @click.stop="goInfoDetai(item.id)">
@@ -188,36 +188,7 @@ export default {
 		 form:{},		 //表单数据
 		 userData:{},	//用户数据
 		 img:"https://photo.zastatic.com/images/photo/381783/1527130186/18602580078900397.png?scrop=1&crop=1&cpos=north&w=184&h=184",
-		 searchList:[ //用户列表假数据
-			 {
-				vc_img:'https://photo.zastatic.com/images/photo/260496/1041981648/1497227643627100.png?scrop=1&crop=1&cpos=north&w=150&h=150',
-				vc_nickname:'金梦情缘',
-				n_age: 18,
-				n_issm: 0,
-				n_isstar: 0,
-				n_isvip: 0,
-				n_xueli: 1,
-				id:3,
-				vc_city: 75,
-				vc_descript: ""
-			 },
-			 {
-				vc_img:'https://photo.zastatic.com/images/photo/432985/1731937621/350084957976258.png?scrop=1&crop=1&cpos=north&w=150&h=150',
-				vc_nickname:'金梦情缘',
-				n_age: 18,
-				n_issm: 0,
-				n_isstar: 0,
-				n_isvip: 0,
-				n_xueli: 1,
-				id:4,
-				vc_province:80,
-				vc_city: 75,
-				vc_descript: ""
-			 },
-// 			 {vc_img:'https://photo.zastatic.com/images/photo/473254/1893012501/14081895096275678.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'},
-// 			 {vc_img:'https://photo.zastatic.com/images/photo/443018/1772071871/7729106694384830.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'},
-// 			 {vc_img:'https://photo.zastatic.com/images/photo/383333/1533329108/9079873433504577.jpg?scrop=1&crop=1&cpos=north&w=150&h=150'}
-		 ],
+		 searchList:[],//用户列表假数据
 		 isShowSlec:0,
 		 idinpyt:'',
 		 vc_province:[],
@@ -225,11 +196,18 @@ export default {
 		 vc_area:[],
 		 autoData:{},
 		 vc_worke:'',
-		 worker:mingzu['zhiye'],//职业
-		 xinzuo:mingzu['xingzuo'],
-		 provincearr:[],
-		 citysarrs:[],
-		 areaarrs:[]
+		 worker:[{
+			"name":"不限",
+			"val":0
+		}],//职业
+		 xinzuo:[{'name':'不限','value':0}],
+		 hoursarr:[{'name':'不限','value':0}],//住房情况
+		 caruiarr:[],//买车情况
+		 hunyinarr:[],//婚姻情况
+		 childarr:[],//有没有孩子
+		 xingzarr:[]//星座
+		 
+		 
 	 }
  },
  methods: {
@@ -255,6 +233,18 @@ export default {
  	},
 	goSearch(){
 		this.isShowSlec = !this.isShowSlec;
+	},
+	gjqh:function(e){
+		if(this.userData['n_isvip']==1){
+			this.gjchecked = true;
+			return true;
+		}
+		// this.toastip('尊敬的用户您好，您暂时未开通VIP会员和开通星级无法开启高级搜索');
+		message(this,{
+			contxt:'尊敬的用户您好，您暂时未开通VIP会员和开通星级,暂时无法开启高级搜索功能'
+		})
+		this.gjchecked =  false;
+		return false;
 	},
 	//昵称搜索
 	searchidFn:function(){
@@ -297,6 +287,9 @@ export default {
 		
 		if(localStorage.posPAC){
 			this.provincearr =  JSON.parse(localStorage.posPAC);
+			this.vc_province.push({id: 0, pid: "", name: "不限", type: 1});
+			this.citysarrs.push({id: 0, pid: "", name: "不限", type: 1});
+			this.areaarrs.push({id: 0, pid: "", name: "不限", type: 1});
 			for(var i=0;i<this.provincearr .length;i++){
 				if(this.provincearr[i]['type']==1){
 					this.vc_province.push(this.provincearr[i]);
@@ -309,7 +302,7 @@ export default {
 				}
 			}
 		}
-
+		
 	},
 	//获取城市
 	getCity: function(pid) {
@@ -322,7 +315,7 @@ export default {
 				this.vc_city.push(this.citysarrs[i])
 			}
 		}
-		
+		this.vc_city.push()
 	},
 	//获取地区
 	getArea: function(pid) {
@@ -345,37 +338,42 @@ export default {
 		data.vc_xinzuo = "";
 		let {n_max_sg,n_min_age,n_min_sg,n_money,n_sex,vc_province,vc_city,vc_area} = this.form;
 		if(n_sex == ""|| !n_sex){
-			this.toastip('请选择性别，在操作');
-			return false;
+			// alert(this.userData['n_sex'])
+			// this.toastip('请选择性别，在操作');
+			if(this.userData['n_sex']==2){
+				data.n_sex = 2;
+			}else{
+				data.n_sex = 1;
+			}
 		}
-		if(n_min_age == ""|| !n_min_age){
-			this.toastip('请填写年龄，在操作');
-			return false;
-		}
-		if(n_min_sg==0||!n_min_sg){
-			this.toastip('请填写身高，请选择');
-			return false;
-		}
-		if(n_max_sg==0||!n_max_sg){
-			this.toastip('请填写身高，请选择');
-			return false;
-		}
-		if(vc_province==0||!vc_province){
-			this.toastip('请选择省份');
-			return false;
-		}
-		if(vc_city==0||!vc_city){
-			this.toastip('请选择城市，请选择');
-			return false;
-		}
-		if(vc_area==0||!vc_area){
-			this.toastip('城区不能为空，请选择');
-			return false;
-		}
-		if(n_money==0||!n_money){
-			this.toastip('薪资不能为空，请选择');
-			return false;
-		}
+		// if(n_min_age == ""|| !n_min_age){
+		// 	this.toastip('请填写年龄，在操作');
+		// 	return false;
+		// }
+		// if(n_min_sg==0||!n_min_sg){
+		// 	this.toastip('请填写身高，请选择');
+		// 	return false;
+		// }
+		// if(n_max_sg==0||!n_max_sg){
+		// 	this.toastip('请填写身高，请选择');
+		// 	return false;
+		// }
+		// if(vc_province==0||!vc_province){
+		// 	this.toastip('请选择省份');
+		// 	return false;
+		// }
+		// if(vc_city==0||!vc_city){
+		// 	this.toastip('请选择城市，请选择');
+		// 	return false;
+		// }
+		// if(vc_area==0||!vc_area){
+		// 	this.toastip('城区不能为空，请选择');
+		// 	return false;
+		// }
+		// if(n_money==0||!n_money){
+		// 	this.toastip('薪资不能为空，请选择');
+		// 	return false;
+		// }
 		// page&&page!="" ? data.page = page : data.page = "1";
 		connetAction.ajaxPost(https['souSuo'], data)
 			.then(rd => {
@@ -385,40 +383,74 @@ export default {
 				console.log(res, "res")
 			})
 	},
+	//获取所有ui信息存放起来
+	setUiData:function(){
+		var posData = JSON.parse(localStorage.posPAC);
+		var autoCodeData = JSON.parse(localStorage.autoCode);
+		this.sexarr=posData;	
+		//年龄ui数组
+		if(this.userData['n_sex==1']){
+			this.agearr=[{name:"男",val:1}];
+		}else{
+			this.agearr=[{name:"女",val:2}];
+		}
+		this.worker.push(...mingzu['zhiye']); //职业
+		this.xinzuo.push(...mingzu['xingzuo']); //星座
+		this.hoursarr.push(...mingzu['hours']); //房子情况
+		//this.sgarr=[].concat(autoCodeData[4]);	身高ui数组
+		// this.provinuiearr=[];	//省份ui数组
+		// this.cityuiearr=[];	//城市ui数组
+		// this.areauiearr=[];	//城区ui数组
+		this.xinziuiarr=[{id: 0, type: 0, code: 0, value: "不限"}].concat(autoCodeData['2']);	//薪资
+		this.hunyinarr=[{id: 0, type: 0, code: 0, value: "不限"}].concat(autoCodeData[4]);	//婚姻情况
+		this.childarr=[{id: 0, type: 0, code: 0, value: "不限"}].concat(autoCodeData[5]);	//有没有孩子
+	},
 	// 普通搜索
 	suoSouPt:function(){
 		let {n_max_sg,n_min_age,n_min_sg,n_money,n_sex,vc_province,vc_city,vc_area} = this.form;
 		if(n_sex == ""|| !n_sex){
-			this.toastip('请选择性别，在操作');
-			return false;
+			if(this.userData['n_sex']==2){
+				n_sex = 2;
+			}else{
+				n_sex = 1;
+			}
+			// this.toastip('请选择性别，在操作');
+			// return false;
 		}
 		if(n_min_age == ""|| !n_min_age){
-			this.toastip('请填写年龄，在操作');
-			return false;
+			n_min_age = "";
+			// this.toastip('请填写年龄，在操作');
+			// return false;
 		}
 		if(n_min_sg==0||!n_min_sg){
-			this.toastip('请填写身高，请选择');
-			return false;
+			n_min_sg = 0;
+			// this.toastip('请填写身高，请选择');
+			// return false;
 		}
 		if(n_max_sg==0||!n_max_sg){
-			this.toastip('请填写身高，请选择');
-			return false;
+			n_max_sg = 0;
+			// this.toastip('请填写身高，请选择');
+			// return false;
 		}
 		if(vc_province==0||!vc_province){
-			this.toastip('请选择省份');
-			return false;
+			vc_province = "";
+			// this.toastip('请选择省份');
+			// return false;
 		}
 		if(vc_city==0||!vc_city){
-			this.toastip('请选择城市，请选择');
-			return false;
+			vc_city="";
+			// this.toastip('请选择城市，请选择');
+			// return false;
 		}
 		if(vc_area==0||!vc_area){
-			this.toastip('城区不能为空，请选择');
-			return false;
+			vc_area=""
+			// this.toastip('城区不能为空，请选择');
+			// return false;
 		}
 		if(n_money==0||!n_money){
-			this.toastip('薪资不能为空，请选择');
-			return false;
+			n_money="";
+			// this.toastip('薪资不能为空，请选择');
+			// return false;
 		}
 		
 		let data = {
@@ -429,9 +461,10 @@ export default {
 			n_sex,
 			vc_province,
 			vc_area,
-			vc_city
+			vc_city,
+			page: 1,
+			pageNum: 20
 		}
-		console.log(data,2223333)
 		// page&&page!="" ? data.page = page : data.page = "1";
 		connetAction.ajaxPost(https['souSuo'], data)
 			.then(rd => {
@@ -486,10 +519,13 @@ export default {
 	 this.getProvice();
 	 this.autoCode();
 	 this.getInfos();
+	 this.setUiData();
 	 
  },
  mounted:function(){
-	  this.getuerList();
+	  // this.getuerList();
+	  this.suoSouPt();
+	  
  }
 }
 </script>

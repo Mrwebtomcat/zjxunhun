@@ -11,25 +11,26 @@
 					<div class="letcontent">
 						<div class="lef_con_top">
 							<div class="userheader">
-								<div class="myheaderlogo" :style="userData['vc_img']?`background:url(${userData.vc_img}) no-repeat;background-size:cover;`:'' "></div>
+								<div class="myheaderlogo" :style="userData&&userData['vc_img']?`background:url(${userData.vc_img}) no-repeat;background-size:cover;`:'' "></div>
 								<div class="infoworks">
-									<div class="name" style="margin-top:25px;">{{userData['vc_nickname']?userData['vc_nickname']:''}}
-										<span :class="userData['n_isstar']?'card_type start active':'card_type start'"></span>
-										<span :class="userData['n_issm']?'card_type card active':'card_type card'"></span>
-										<span :class="userData['n_isvip']?'card_type vip active':'card_type vip'"></span>
-									 <span class="userfollow">关注</span>
+									<div class="name" style="margin-top:25px;">{{userData&&userData['vc_nickname']?userData['vc_nickname']:''}}
+										<span :class="userData&&userData['n_isstar']?'card_type start active':'card_type start'"></span>
+										<span :class="userData&&userData['n_issm']?'card_type card active':'card_type card'"></span>
+										<span :class="userData&&userData['n_isvip']?'card_type vip active':'card_type vip'"></span>
+									 <span class="userfollow" @click.stop="addGuanzhu">关注</span>
 									</div>
 									<!-- ID：1761685425 -->
 									<div class="user_id mt10"></div>
 									<div class="workesage mt10">
-									{{bigAreaData[Number(userData['vc_province'])-2]?bigAreaData[Number(userData['vc_province'])-2].name:''}} {{bigAreaData[Number(userData['vc_city'])-2]?bigAreaData[Number(userData['vc_city'])-2].name:''}} | {{userData['n_age']}}岁 | {{autoCode[1][Number(userData['n_xueli'])-1].value}} | {{userData['n_huntype']==1?'未婚':userData['n_huntype']==2?'离异':'丧偶'}} | {{userData['n_sg']}}cm | 
-										{{autoCode[2][Number(userData['n_money'])-1].value}}元
+									<!-- {{bigAreaData[Number(userData['vc_province'])-2]?bigAreaData[Number(userData['vc_province'])-2].name:''}} {{bigAreaData[Number(userData['vc_city'])-2]?bigAreaData[Number(userData['vc_city'])-2].name:''}} | {{userData['n_age']}}岁 | {{autoCode[1][Number(userData['n_xueli'])-1].value}} | {{userData['n_huntype']==1?'未婚':userData['n_huntype']==2?'离异':'丧偶'}} | {{userData['n_sg']}}cm | -->
+										{{userData&&userData['n_money']?strMoney(userData['n_money']):''}}
+										<!-- {{userData&&autoCode[2]?autoCode[2][Number(userData['n_money'])-1].value:''}}元 -->
 									</div>
 										
 									<div class="phoneto">
-										<div class="ctrl prve" v-if="userData['album'].length>0"></div>
+										<div class="ctrl prve" v-if="userData&&userData['album'].length>0"></div>
 										<div class="photoWrapper">
-											<ul v-if="userData['album'].length>0">
+											<ul v-if="userData&&userData['album'].length>0">
 												<li v-for="(items,index) in userData['album']" :key="index">
 													<img preview="1" preview-text="..." :src="items.vc_img" alt="">
 												</li>
@@ -47,7 +48,7 @@
 							<div class="user_bottom">
 								<div class="hellow" @click="dzh(userData['n_isstar'])">打招呼</div>
 								<div class="messages" @click="fxx(userData['n_isvip'])">发信息</div>
-								<div class="hongniang" @click="doLink('./hongniang')">红娘牵线</div>
+								<div class="hongniang" @click="lxHn">红娘牵线</div>
 							</div>
 						</div>
 						<div class="pepole_details">
@@ -185,6 +186,7 @@ var sokect = null;
 				mingzu:mingzu, //名族
 				bigAreaData:[], //地区bigjson
 				vipList:[], //会员充值列表
+				isguanzu:0,
 				userData:{
 					album: [],
 					dt_addtime: "2019-02-14 07:02:52",
@@ -278,10 +280,14 @@ var sokect = null;
 				sokect.send(JSON.stringify({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str}));
 				// state:0 代表自己发出的消息,state:1聊天对象发出的信息
 				this.liaotainarray.push({state:0,chatTxt:str});
-				console.log({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str});
+				//console.log({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str});
 			},
 			// 发信息
 			fxx:function(str){
+				if(str){
+					this.toastip("金梦情缘会员能发起信息聊天哦");
+					return false;
+				}
 				// 建立通信
 				sokect = new WebSocket("ws://47.105.35.82:1688");
 				// 通信建立
@@ -354,9 +360,20 @@ var sokect = null;
 				})
 				this.isShowChat = 1;
 			},
+			strMoney:function(id){
+				let str = "";
+				var autoCode = JSON.parse(localStorage.autoCode);
+				// for(var i=0;i<autoCode["2"].length;i++){
+				// 	if(autoCode["2"][i]['code']==id){
+				// 		str =autoCode["2"][i]['code'].value;
+				// 	}
+				// }
+				str = autoCode['2'][Number(id)-1].value;
+				return str;
+			},
 			// 会员列表
 			huiyuanInfo(){
-				connetAction.ajaxPost(https['huiyuan'], {id:5})
+				connetAction.ajaxPost(https['huiyuan'], {id:localStorage.openid})
 				.then(rd => {
 					this.vipList = rd.data.reverse();
 					console.log(this.vipList,333)
@@ -387,6 +404,69 @@ var sokect = null;
 					
 				})
 			},
+			addGuanzhu:function(){
+				let data = {
+					startid:localStorage.openid,
+					endid:this.$route.query.id
+				};
+			
+				
+				connetAction.ajaxPost(https['addGuanzu'],data)
+				.then((res)=>{
+					if(res.status==1){
+							this.toastip(res.message,'suceess');
+							 this.userData = res.data;
+							// 初始化基本数据
+							
+					}else{
+						this.toastip(res.message)
+					}	
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			lxHn:function(){
+				
+				let data = {
+					oc_usercode:localStorage.openid
+				};
+				
+				connetAction.ajaxPost(https['getHN'],data)
+				.then((res)=>{
+					if(res.status==1){
+							this.toastip(res.message,'success')
+							
+					}else{
+						this.toastip(res.message)
+					}	
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
+			getGuanzhu:function(){
+				let data = {
+					id:this.$route.query.id
+				};
+			
+				
+				connetAction.ajaxPost(https['getGz'],data)
+				.then((res)=>{
+					if(res.status==1){
+							// 初始化基本数据
+							
+					}else{
+						this.toastip(res.message)
+					}	
+					
+				})
+				.catch((res)=>{
+					
+				})
+			},
 			//推荐用户
 			getuerList:function(){
 				let data = {
@@ -397,6 +477,23 @@ var sokect = null;
 						if(rd.status==1){
 							this.tjUser = rd.data;
 							console.log(this.tjUser,333)
+						}
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
+			//
+			addLl:function(){
+				let data = {
+					startid:localStorage.openid,
+					endid:this.$route.query.id
+				}
+				connetAction.ajaxPost(https['addLiulan'], data)
+					.then(rd => {
+						if(rd.status==1){
+							// this.tjUser = rd.data;
+							// console.log(this.tjUser,333)
 						}
 					})
 					.catch(res => {
@@ -421,9 +518,11 @@ var sokect = null;
 			if(localStorage.posPAC){
 				this.bigAreaData = JSON.parse(localStorage.posPAC);
 			}
+			this.addLl(); 
 		},
 		mounted(){
 			this.getInfos();
+			// this.getGuanzhu();
 			if(sokect){
 				window.onbeforeunload=function(e){     
 				　　var e = window.event||e;  
@@ -434,6 +533,7 @@ var sokect = null;
 				　　e.returnValue=("确定离开当前页面吗？");
 				}
 			}
+			
 			
 		}
 	}

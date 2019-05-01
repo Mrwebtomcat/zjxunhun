@@ -84,27 +84,9 @@ export default {
 			this.$router.push('./getPsw')
 		},
 		gotoreg:function(){
-			let that = this;
-			that.$router.push('./register')
-			return false;
-			connetAction.ajaxPost(https['register'],{sid:localStorage.sessionid})
-			.then(rd=>{
-				if(rd.status!=0){
-					that.$router.push('./register')
-					// message(that,{contxt:rd.message})
-					setKey('sessionid',rd.data);
-					//that.$router.push('./home');
-				}else{
-					message(that,{contxt:rd.message});
-					setKey(rd.data);
-				}
-				
-			})
-			.catch(res=>{
-				console.log(res,"res")
-			})
+			this.$router.push('./register')
 		},
-		goLogin:function(){
+		goLogin:function(){ 
 			if(this.user==""){
 				message(this,{contxt:"用户名不能为空"})
 				return false;
