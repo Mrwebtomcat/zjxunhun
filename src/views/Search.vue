@@ -147,7 +147,7 @@
 					  	</div>
 					  </li>
 					<li v-for="(item,index) in searchList" class="buy-star member-list" :key="index" @click.stop="goInfoDetai(item.id)">
-						<div class="headimg" :style="`background:url(${item.vc_img?item.vc_img:'https://photo.zastatic.com/images/photo/260496/1041981648/1497227643627100.png?scrop=1&crop=1&cpos=north&w=150&h=150'}) 0% 0% / contain;`">
+						<div class="headimg" :style="`background:url(${item.vc_img?item.vc_img:(yhn_sex==1?womanimg:manimg)}) 0% 0% / contain;`">
 							<div class="dzh" @click.stop="dzh(item['vc_nickname'])">打招呼</div>
 						</div>
 						<div class="name pl11">
@@ -157,11 +157,11 @@
 							<span :class="item['n_issm']?'icontype ative card':'icontype card'"></span>
 						</div>
 						<div class="tag pl11">
-							<el-tag  size="small">{{item['n_age']?item['n_age']:''}}岁</el-tag>
-							<el-tag size="small">{{provincearr[Number(item['vc_province'])-2]?provincearr[Number(item['vc_province'])-2]['name']:'湛江'}}</el-tag>
+							<el-tag  size="small">{{item['n_age']?item['n_age']:'0'}}岁</el-tag>
+							<el-tag size="small">{{item['vc_city']?item['vc_city']:''}}</el-tag>
 							<el-tag size="small">{{item['n_sg']?item['n_sg']:'0'}}CM</el-tag>
-							<el-tag size="small">大专</el-tag>
-							<el-tag size="small">{{item['vc_worke']?item['vc_worke']:'未知'}}</el-tag>
+							<el-tag size="small">{{autoData['1'][item.n_xueli]['value']}}</el-tag>
+							<el-tag size="small">{{item['vc_worke']? worketype(item['vc_worke']):'暂无职业设置'}}</el-tag>
 						</div>
 						<div class="marks">
 							{{item['vc_descript']&&item['vc_descript']!=""?item['vc_descript']:'我正在寻找灯火阑珊处的你,...'}}
@@ -180,6 +180,8 @@
 import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
 import mingzu from '../json/mz.json'
 import https from "../utils/Https.js"
+import womanimg from '../assets/img/woman.jpg'
+import manimg from '../assets/img/main.jpg'
 export default {
  data(){
 	 return{
@@ -205,8 +207,11 @@ export default {
 		 caruiarr:[],//买车情况
 		 hunyinarr:[],//婚姻情况
 		 childarr:[],//有没有孩子
-		 xingzarr:[]//星座
-		 
+		 xingzarr:[],//星座
+		 agearr:[],
+		 yhn_sex:1,
+		manimg:manimg,
+		womanimg:womanimg
 		 
 	 }
  },
@@ -220,19 +225,13 @@ export default {
  	goInfoDetai(id) {
  		this.$router.push({name:'userinfo',query:{id:id}})
  	},
-	gotfollw() {
- 		this.$router.push('./follow')
- 	},
-	showDetail(str) {
- 		this.$router.push({
-			name:"userinfo",
-			params:{
-				detailname:str
-			}
-		})
- 	},
-	goSearch(){
-		this.isShowSlec = !this.isShowSlec;
+	worketype:function(val){
+		let str = [];
+		if(val){
+			str = this.worker.filter((item,index,arr)=>item.val==val);
+			return str[0]['name']
+		}
+		console.log(str)
 	},
 	gjqh:function(e){
 		if(this.userData['n_isvip']==1){
@@ -270,13 +269,10 @@ export default {
 			.then(rd => {
 				this.autoData = rd.data;
 				this.gzArr = 	this.autoData['2'];
-					
-				// 获得资料模板数据
-				// this.setpCode(rd.data);
-				//console.log(this.autoData)
+				
 			})
 			.catch(res => {
-				// console.log(res,"res")
+				
 			})
 	},
 	// 获取省份
@@ -326,8 +322,31 @@ export default {
 				this.vc_area.push(this.areaarrs[i])
 			}
 		}
-		console.log(this.vc_area,1111)
 		
+	},
+	getInfos:function(){
+		let data = {id:localStorage.openid};
+		if(!data.id){
+			return false;
+		}
+		
+		connetAction.ajaxPost(https['getInfo'],data)
+		.then((res)=>{
+			if(res.status==1){
+						this.userData = res.data;
+						this.yhn_sex = this.userData.n_sex;
+						this.setUiData();
+						this.suoSouPt();
+					// 初始化基本数据
+					
+			}else{
+				this.toastip(res.message)
+			}	
+			
+		})
+		.catch((res)=>{
+			
+		})
 	},
 	// 高级搜索
 	gjSearch:function(page){
@@ -338,7 +357,6 @@ export default {
 		data.vc_xinzuo = "";
 		let {n_max_sg,n_min_age,n_min_sg,n_money,n_sex,vc_province,vc_city,vc_area} = this.form;
 		if(n_sex == ""|| !n_sex){
-			// alert(this.userData['n_sex'])
 			// this.toastip('请选择性别，在操作');
 			if(this.userData['n_sex']==2){
 				data.n_sex = 2;
@@ -389,10 +407,10 @@ export default {
 		var autoCodeData = JSON.parse(localStorage.autoCode);
 		this.sexarr=posData;	
 		//年龄ui数组
-		if(this.userData['n_sex==1']){
-			this.agearr=[{name:"男",val:1}];
+		if(this.userData['n_sex']==1){
+			this.agearr=[{name:"女",val:1}];
 		}else{
-			this.agearr=[{name:"女",val:2}];
+			this.agearr=[{name:"男",val:2}];
 		}
 		this.worker.push(...mingzu['zhiye']); //职业
 		this.xinzuo.push(...mingzu['xingzuo']); //星座
@@ -408,6 +426,7 @@ export default {
 	// 普通搜索
 	suoSouPt:function(){
 		let {n_max_sg,n_min_age,n_min_sg,n_money,n_sex,vc_province,vc_city,vc_area} = this.form;
+		
 		if(n_sex == ""|| !n_sex){
 			if(this.userData['n_sex']==2){
 				n_sex = 2;
@@ -491,40 +510,20 @@ export default {
 			.catch(res => {
 				// console.log(res,"res")
 			})
-	},
-	getInfos:function(){
-		let data = {id:localStorage.openid};
-		if(!data.id){
-			return false;
-		}
-		
-		connetAction.ajaxPost(https['getInfo'],data)
-		.then((res)=>{
-			if(res.status==1){
-						this.userData = res.data;
-						console.log(this.userData)
-					// 初始化基本数据
-					
-			}else{
-				this.toastip(res.message)
-			}	
-			
-		})
-		.catch((res)=>{
-			
-		})
 	}
+	
  },
  created(){
-	 this.getProvice();
 	 this.autoCode();
+	 this.getProvice();
 	 this.getInfos();
-	 this.setUiData();
+	
+	 
+	 // this.setUiData();
 	 
  },
  mounted:function(){
 	  // this.getuerList();
-	  this.suoSouPt();
 	  
  }
 }

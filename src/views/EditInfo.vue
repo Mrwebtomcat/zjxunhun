@@ -70,17 +70,17 @@
 							  </div>
 							  <div class="flex">
 								  <el-form-item label="工作地区:">
-									<el-select v-model="formm.vc_province" @change="getCity" placeholder="请选择省份">
-										<el-option v-for="(items,index) in vc_province" :key="index" :label="items['name']" :value="items['id']"></el-option>
+									<el-select v-model="formm.n_province" @change="getCity" placeholder="请选择省份">
+										<el-option v-for="(items,index) in vc_province" :key="index"  :label="items['name']" :value="items['id']"></el-option>
 									</el-select>
 								 </el-form-item> 
 								 <el-form-item label="" label-width="20px">
-									<el-select v-model="formm.vc_city" @change="getArea"  placeholder="请选择城市">
+									<el-select v-model="formm.n_city" @change="getArea"  placeholder="请选择城市">
 										<el-option v-for="(item,index) in vc_city" :key="index" :label="item['name']" :value="item['id']"></el-option>
 									</el-select>
 								 </el-form-item>
-								 <el-form-item label="" label-width="20px">
-										<el-select v-model="formm.vc_area"  placeholder="请选择城区">
+								 <el-form-item label="" label-width="20px" >
+										<el-select v-model="formm.n_area" @change="slecdiqu"  placeholder="请选择城区">
 											<el-option v-for="(item,index) in vc_area" :key="index" :label="item['name']" :value="item['id']"></el-option>
 										</el-select>
 								 </el-form-item>
@@ -392,28 +392,17 @@
 										<div v-if="qxradio==2" class="radiosll">
 											<p>请选择关闭的原因</p>
 											<div class="radiosll">
-												<li>
-												<el-radio-group v-model="qxyy">
-													<el-radio :label="1">我已找到正在交往的对象</el-radio>
-												</el-radio-group>
-											</li>
-												<li> 
-												
-												<el-radio-group v-model="qxyy">
-													<el-radio :label="2">我已找到真爱，即将踏上红毯</el-radio>
-												</el-radio-group>
-											</li>
-												<li>
-												<el-radio-group v-model="qxyy">
-													<el-radio :label="3">我最近忙，无法及时回复邮件</el-radio>
-												</el-radio-group>
-											</li>
+												<li v-for="(item,index) in qxarray" :key="index">
+													<el-radio-group v-model="qxyy" >
+														<el-radio :label="item.id">{{item.value}}</el-radio>
+													</el-radio-group>
+												</li>
 											</div>
 										</div>
 										
 									</div>
 									
-									<div class="radiosl1" style="padding-left: 10px;">
+								<!-- 	<div class="radiosl1" style="padding-left: 10px;">
 										<el-radio-group v-model="qxradio">
 											<el-radio :label="3">部分会员不可见</el-radio>
 										</el-radio-group>
@@ -421,6 +410,9 @@
 									<div v-if="qxradio==3" class="radiosl1" style="padding-left: 10px;padding-top: 10px;display: flex; width: 50%;">
 										<el-input v-model="pbid" placeholder="请输入ID"></el-input>
 										<el-button>屏蔽该ID</el-button>
+									</div> -->
+									<div class="qxbtn">
+										<el-button type="primary" @click="quanxian">确认权限修改</el-button>
 									</div>
 							</div>
 						</div>
@@ -453,7 +445,7 @@
 	import mingzu from '../json/mz.json'
 	import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
 	import https from "../utils/Https.js"
-import { setInterval, clearInterval } from 'timers';
+	import { setInterval, clearInterval } from 'timers';
 	export default{
 		data(){
 			return{
@@ -498,7 +490,7 @@ import { setInterval, clearInterval } from 'timers';
 				vc_city:"",
 				vc_area:"",
 				vc_province1:'',//择偶时候的省
-				formm:{n_money:'',n_sg:"",vc_province:"",vc_city:"",vc_area:"",n_tz:"",vc_xinzuo:"",vc_mz:"",n_ischild:"",n_jiehuntime:"",vc_loveplay:"",vc_descript:""},
+				formm:{n_money:'',n_sg:"",n_province:"",n_city:"",n_area:"",n_province:"",vc_city:"",vc_area:"",n_tz:"",vc_xinzuo:"",vc_mz:"",n_ischild:"",n_jiehuntime:"",vc_loveplay:"",vc_descript:""},
 				form1:{
 						vc_worke:1,
 						n_ishouse:1,
@@ -509,6 +501,12 @@ import { setInterval, clearInterval } from 'timers';
 				form2:{n_city:'',n_province:''},
 				form5:{},
 				form6:{},
+				formvca:{
+					vc_province:'',
+					vc_city:'',
+					vc_area:'',
+				},
+				qxarray:[],
 				qxradio:1,//权限单选
 				qxyy:1,//关闭原因
 				pbid:"",
@@ -534,6 +532,7 @@ import { setInterval, clearInterval } from 'timers';
 			slectInfo:function(index){
 				this.myinf_index = index;
 			},
+			//选中左侧菜单
 			changeItems:function(index,type){
 				for (var i=0;i<this.pannelList['myinfo_nav'].length;i++) {
 					this.pannelList['myinfo_nav'][i]['active'] = 0;
@@ -566,6 +565,26 @@ import { setInterval, clearInterval } from 'timers';
 			},
 			onSubmit:function(ints){
 				this.isShowMesages = ints;
+			},
+			quanxian:function(ints){
+				let param = {
+					id:localStorage.openid,
+					n_isinfo:this.qxradio==1?1:0,
+					n_yuanying:this.qxyy,
+				}
+				if(param.n_isinfo){
+					
+				}
+				connetAction.ajaxPost(https['quanxian'],param)
+				.then((res)=>{
+					if(res.status==1){
+						this.toastip("设置权限成功了","sucess")
+					}
+				
+				})
+				.catch((res)=>{
+					
+				})
 			},
 			doLink:function(url){
 				this.$router.push(url)
@@ -639,12 +658,15 @@ import { setInterval, clearInterval } from 'timers';
 				if(localStorage.posPAC){
 					this.provincearr =  JSON.parse(localStorage.posPAC);
 					for(var i=0;i<this.provincearr .length;i++){
+						
 						if(this.provincearr[i]['type']==1){
 							this.vc_province.push(this.provincearr[i]);
 						}
+						
 						if(this.provincearr [i]['type']==2){
 							this.citysarrs.push(this.provincearr[i]);
 						}
+						
 						if(this.provincearr[i]['type']==3){
 							this.areaarrs.push(this.provincearr[i]);
 						}
@@ -654,10 +676,20 @@ import { setInterval, clearInterval } from 'timers';
 			
 			},
 			//获取城市
-			getCity: function(pid) {
-				this.formm.vc_city = "";
-				this.formm.vc_area ="";
+			getCity: function(pid,type) {
+				if(!type){
+					this.formm.n_city = "";
+					this.formm.n_area ="";
+				}
 				this.vc_city = [];
+				
+				if(this.formm.n_province){
+					let arrname = this.provincearr.filter((items)=>items.id==this.formm.n_province);
+					if(arrname.length>0){
+							this.formm.vc_province = arrname[0]['name'];
+					}
+				}
+				
 				var flag = 0;
 				if(arguments.length>0){
 					for(var i=0;i<arguments.length;i++){
@@ -666,38 +698,46 @@ import { setInterval, clearInterval } from 'timers';
 							}
 					}
 				}
+				//区分第二个地区
 				if(flag==0){
 					this.form2.n_city = "";
-				};
-				
+				}else{
+					
+				}
 				for(var i=0;i<this.citysarrs.length;i++){
 					if(this.citysarrs[i]['pid']==pid){
 						this.vc_city.push(this.citysarrs[i])
 					}
 				}
-			
+				console.log(pid,'vc_city pid')
 			},
 			//获取地区
-			getArea: function(pid) {
-				this.formm.vc_area ="";
+			getArea: function(pid,type) {
+				if(!type){
+					this.formm.n_area ="";
+				}
 				this.vc_area = [];
 				for(var i=0;i<this.areaarrs.length;i++){
 					if(this.areaarrs[i]['pid']==pid){
 						this.vc_area.push(this.areaarrs[i])
 					}
 				}
-				// console.log(this.vc_area)
-				// connetAction.ajaxPost(https['tree'], {
-				// 		pid,
-				// 		type: 3
-				// 	})
-				// 	.then(rd => {
-				// 		// console.log(rd)
-				// 		this.vc_area = rd.data;
-				// 	})
-				// 	.catch(res => {
-				// 		console.log(res, "res")
-				// 	})
+				if(this.formm.n_city){
+					let arrname = this.citysarrs.filter((items)=>items.id==this.formm.n_city);
+					if(arrname.length>0){
+						this.formm.vc_city = arrname[0]['name'];
+					}
+				}
+			
+			},
+			//获取县镇
+			slecdiqu:function(pid){
+				if(this.formm.n_area){
+					let arrname = this.areaarrs.filter((items)=>items.id==this.formm.n_area);
+					if(arrname.length>0){
+						this.formm.vc_area = arrname[0]['name'];
+					}
+				}
 			},
 			addWsh:function(){ //基本工作
 				let data = {
@@ -772,6 +812,9 @@ import { setInterval, clearInterval } from 'timers';
 					id:localStorage.openid,
 					n_money:this.formm.n_money,
 					n_sg:this.formm.n_sg,
+					n_province:this.formm.n_province,
+					n_city:this.formm.n_city,
+					n_area:this.formm.n_area,
 					vc_province:this.formm.vc_province,
 					vc_city:this.formm.vc_city,
 					vc_area:this.formm.vc_area,
@@ -792,23 +835,24 @@ import { setInterval, clearInterval } from 'timers';
 					this.toastip("请填写身高，再操作");
 					return false;
 				}
-				if(data.vc_province=="" || !data.vc_province){
+				if(data.n_province=="" || !data.n_province){
 					this.toastip("请选择省份，再操作");
 					return false;
 				}
-				if(data.vc_city=="" || !data.vc_city){
+				if(data.n_city=="" || !data.n_city){
 					this.toastip("请选择城市，再操作");
 					return false;
 				}
-				if(data.vc_area=="" || !data.vc_area){
+				if(data.n_area=="" || !data.n_area){
 					this.toastip("请选择地区，再操作");
 					return false;
 				}
 				// console.log(data,333)
+				// return false;
 				connetAction.ajaxPost(https['updateInfo'],data)
 				.then((res)=>{
 					// if(res.status==1){
-								this.toastip("修改成功","success");
+						this.toastip("修改成功","success");
 					// }
 				})
 				.catch((res)=>{
@@ -834,8 +878,8 @@ import { setInterval, clearInterval } from 'timers';
 				connetAction.ajaxPost(https['getCode'], "")
 					.then(rd => {
 						this.autoData = rd.data;
-						this.gzArr = 	this.autoData['2'];
-							
+						this.gzArr = this.autoData['2'];
+						this.qxarray = this.autoData['6']
 						// 获得资料模板数据
 						// this.setpCode(rd.data);
 						//console.log(this.autoData)
@@ -1008,7 +1052,11 @@ import { setInterval, clearInterval } from 'timers';
 							 this.autoInfo = res.data;
 							 // this.dialogImageUrl = res.data.album;
 							 this.infoHeadImg =  this.autoInfo['vc_img'];
-							// 初始化基本数据
+							 this.formm.n_province = res.data['n_province'];
+							 this.formm.n_city = res.data['n_city'];
+							 this.formm.n_area = res.data['n_area'];
+							 this.getProvice();
+							// // 初始化基本数据
 							 this.resetImgArr(res.data['album']);
 							 this.setformmval();
 							// 工作
@@ -1033,13 +1081,17 @@ import { setInterval, clearInterval } from 'timers';
 					})
 				}
 			},
+			//设置初始化UI展示
 			setformmval:function(){
 					this.formm.n_money = Number(this.autoInfo.n_money);
 					this.formm.n_sg = Number(this.autoInfo.n_sg);
 					this.formm.vc_province = 	Number(this.autoInfo.vc_province);
-					this.getCity(this.autoInfo.vc_province);
+					this.getCity(this.autoInfo.n_province,1);
 					this.formm.vc_city = Number(this.autoInfo.vc_city);
-					this.getArea(this.autoInfo.vc_city);
+					this.getArea(this.autoInfo.n_city,1);
+					this.$nextTick(function(){
+						this.slecdiqu(this.autoInfo.n_area);
+					})
 					this.formm.vc_area = Number(this.autoInfo.vc_area);
 					this.formm.n_tz = Number(this.autoInfo.n_tz);
 					this.formm.vc_xinzuo = Number(this.autoInfo.vc_xinzuo);
@@ -1143,7 +1195,7 @@ import { setInterval, clearInterval } from 'timers';
 			
 		},
 		mounted(){
-			this.getProvice();
+			
 			
 		}
 	}

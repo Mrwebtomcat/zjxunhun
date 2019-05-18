@@ -34,7 +34,7 @@ import GetPsw from './views/GetPsw.vue'
 Vue.use(Router)
 let indexRouter;
 export default indexRouter = new Router({
-// 	mode: 'history',
+	// mode: 'history',
 // 	base: process.env.BASE_URL,
 	routes: [
 		{
@@ -175,13 +175,18 @@ indexRouter.beforeEach(function(to, from, next) {
 		}
 	}
 		// 判断是否登录
+	if(to.fullPath=="/register"||to.fullPath=="/getPsw"){
+		next();
+		return false
+	}
+	
 	if(!localStorage.openid){
 		if(to.fullPath!="/"){
-			next('/')
+			next("/")
 			return false;
 		}
 	}
-	document.body.scrollTop = 0;
+	//document.body.scrollTop = 0;
 	next();
 })
 // 每次条路由重设scrollTop值

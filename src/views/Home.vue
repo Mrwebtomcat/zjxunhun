@@ -167,7 +167,11 @@
 									</div>
 									<div v-if="userdata['userlist']['n_isvip']==1" class="lac1" style="padding-top:3%;">
 										<!-- <span>30%</span> -->
-										<span style="color: red;">尊敬的会员您好，您的会员截止时间到：2019-10-12</span>
+										<span style="color: red;font-size: 12px;" v-if="userdata['userlist']['dt_endvip']&&userdata['userlist']['dt_endvip']!=''">会员截止时间到：{{userdata['userlist']['dt_endvip']}}</span>
+										<p></p>
+										<span style="color: red;font-size: 12px;" v-if="userdata['userlist']['dt_endtsfw']&&userdata['userlist']['dt_endtsfw']!=''">特权截止时间到：{{userdata['userlist']['dt_endtsfw']}}</span>
+										<p></p>
+										<span style="color: red;font-size: 12px;" v-if="userdata['userlist']['dt_endstar']&&userdata['userlist']['dt_endstar']!=''">星级截止时间到：{{userdata['userlist']['dt_endstar']}}</span>
 									</div>
 									<div v-else class="lac1" style="padding-top:4%;">
 										<!-- <span>30%</span> -->

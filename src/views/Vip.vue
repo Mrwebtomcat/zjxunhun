@@ -68,8 +68,8 @@
 						</li>
 					</div>
 					<div class="nfeibtn">
-						<el-button v-if="userData['n_sex']==1" @click="ktvip(viplen,vipList[viplen].id)">立即开通 <span>{{vipList[viplen]?vipList[viplen]['n_money']:''}}元/{{vipMoneth}}个月</span></el-button>
-						<el-button v-else @click="ktvip(viplen,vipList[viplen].id)">立即开通 <span>{{vipList[viplen]?vipList[viplen]['n_money']:''}}元{{vipMoneth}}个月</span></el-button>
+						<el-button v-if="userData['n_sex']==1" @click="ktvip(viplen,vipList[viplen].id)">立即开通 <span>{{vipList[viplen]?vipList[viplen]['n_money']:''}}元/{{vipList[viplen]?vipList[viplen]['n_time']:''}}个月</span></el-button>
+						<el-button v-else @click="ktvip(viplen,vipList[viplen].id)">立即开通 <span>{{vipList[viplen]?vipList[viplen]['n_money']:''}}元{{vipList[viplen]?vipList[viplen]['n_time']:''}}个月</span></el-button>
 					</div>
 					<div class="des" >
 						<p class="title">服务说明</p>
@@ -95,17 +95,17 @@
 					</div>
 					<div class="zffs">支付方式：</div>
 					<ul class="paytype">
-						<!-- <li @click="palypost(1)" :class="payType==1?'ative':''">支付宝</li> -->
 						<!-- <li @click="palypost(2)" :class="payType==2?'ative':''">微信</li> -->
-						<li @click="palypost(2)" class="ative">微信</li>
+						<li @click="palypost(1)" class="ative">微信</li>
+						<li @click="palypost(2)" :class="payType!=1?'ative':''">支付宝</li>
 					</ul>
 					<div class="payCode">
 						<div class="left_qrcode">
 							<!-- 支付宝的扫码 -->
-							<img v-show="payType==1" src="https://mobilecodec.alipay.com/show.htm?code=gdxox0xozdovjgkxa2&picSize=S" alt="">
+							<!-- <img v-show="payType!=1" src="https://mobilecodec.alipay.com/show.htm?code=gdxox0xozdovjgkxa2&picSize=S" alt=""> -->
 							<div id="qrcode"  ref="qrcode"></div>
 						</div>
-						<!-- <div class="right_cordeMeta" v-if="payType==1">
+						<div class="right_cordeMeta" v-if="payType!=1">
 							<div>使用支付宝扫码支付</div>
 							<div>
 								<ul>
@@ -115,8 +115,8 @@
 									<li>2.支持二十多家主流银行的储蓄卡（即借记卡）和信用卡，无需开通网银，没有支付宝也可支付。</li>
 								</ul>
 							</div>
-						</div> -->
-						<div class="right_cordeMeta">
+						</div>
+						<div v-show="payType==1" class="right_cordeMeta">
 							<div>请使用微信扫一扫</div>
 							<div>扫描图中二维码支付</div>
 						</div>
@@ -146,8 +146,8 @@
 									</div>
 								</div>
 							</div>
-							<div v-else>
-								暂无发现更多的消息
+							<div v-show="tjUser['tjList']?tjUser['tjList'].length==0:false" style="text-align: center;padding-top: 100px;">
+								暂无发现更多推荐会员消息
 							</div>
 							
 						</div>
@@ -168,7 +168,7 @@
 				vipMoney: 360,
 				vipMoneth: 3,
 				payType: 2,    //支付宝和微信切换
-				vipList:[{n_money:''}],
+				vipList:[],
 				userData:[],
 				tjUser:[],
 				diliArray:"",
@@ -189,9 +189,9 @@
 				})
 			},
 			//更新二维码
-			updateCode:function(data){
+			updateCode:function(data,type){
 				this.processCode.makeCode(data['code_url']);
-				this.getOrder(data.vc_order_sn);
+				this.getOrder(data.vc_order_sn,type);
 			},
 			ktvip: function(i,id) {
 				this.isShowVip = 1;
@@ -204,6 +204,7 @@
 				// vip id
 				this.vipId = id;
 				this.setOrder(this.vipId);
+				
 				// this.orderStatus = 0;
 				
 			},
@@ -222,7 +223,18 @@
 				});
 			},
 			palypost: function(i) {
-				// this.payType = i;
+				this.payType = i;
+				if(i!=1){
+					if(this.timer){
+						clearInterval(this.timer)
+					}
+					this.alipaySetOrder(this.vipId)
+				}else{
+					if(this.timer){
+						clearInterval(this.timer)
+					}
+					this.setOrder(this.vipId);
+				}
 // 				
 // 				if(i==2){
 // 					if(this.orderStatus==1){
@@ -266,6 +278,7 @@
 				.then((res)=>{
 					if(res.status==1){
 							 this.userData = res.data;
+							 this.huiyuanInfo();
 							// 初始化基本数据
 							
 					}else{
@@ -307,19 +320,44 @@
 						// console.log(res,"res")
 					})
 			},
-			getOrder:function(id){
+			alipaySetOrder:function(id){
+				let data = {
+					id:id,
+					oc_usercode:localStorage.openid
+				}
+				connetAction.ajaxPost(https['setaliOrder'], data)
+					.then(rd => {
+						if(rd.status==1){
+							this.updateCode(rd.data,1);
+						}
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
+			getOrder:function(id,type){
 				let data = {
 					vc_order_sn:id
 				}
 				
 				var that = this;
 				var targe = false;
-				
+				let url = https['getOrderStatus'];
+				// 支付宝查询支付状态
+				if(type){
+					url = https['getAliPayStatus'];
+				}
 				this.timer = setInterval(function(){
-					connetAction.ajaxPost(https['getOrderStatus'], {vc_order_sn:id})
+					connetAction.ajaxPost(url, {vc_order_sn:id})
 						.then(rd => {
-							if(rd.data=="支付成功"){
-								that.toastip("支付成功，你已升级为会员赶紧体验下吧",'success');
+							// console.log(rd.data,66666)
+							if(rd.data=="支付成功" || rd.data=="付款成功"){
+								if(rd.data=="付款成功"){
+									that.toastip("支付宝付款成功，你已升级为会员赶紧体验下吧",'success');
+								}else{
+									that.toastip("微信支付成功，你已升级为会员赶紧体验下吧",'success');
+								}
+								
 								clearInterval(that.timer);
 								setTimeout(function(){
 									that.$router.push('./home');
@@ -337,22 +375,38 @@
 			huiyuanInfo(){
 				connetAction.ajaxPost(https['huiyuan'], {id:localStorage.openid})
 				.then(rd => {
-					let mydata = rd.data.filter((item,index,arr)=>(item.n_type==1||item.n_type==3));
-					 this.vipList =mydata;
+					let mydata = rd.data.filter((item,index,arr)=>(item.n_type==1));
+					this.vipList =mydata;
+					
 					if(rd.data.length<=1){
 						this.viplen = 0
 					}else{
 						this.viplen = rd.data.length -2;
 					}
+					this.getFuWu(mydata);
+					
+				})
+				.catch(res => {
+					this.getFuWu()
+					// console.log(res,"res")
+				})
+			},
+			//获取特殊服务和vip服务合并
+			getFuWu:function(dataarr){
+				let that = this;
+				connetAction.ajaxPost(https['nvIndex'], {type:3})
+				.then(rd => {
+					
+					let datas =  rd.data.filter((item,index,arr)=>item.n_sex==that.userData['n_sex']);
+					this.vipList=this.vipList.concat(...datas);
 					if(this.$route.query.hasOwnProperty('vipMoney')){
-						for(var i=0;i<rd.data.length;i++){
-							console.log(rd.data[i])
+						for(var i=0;i<this.vipList.length;i++){
 							if(rd.data[i]['id']==this.$route.query.vipMoney){
 								this.ktvip(i,this.$route.query.vipMoney);
 							}
 						}
 					}
-					//console.log(this.vipList,333)
+					
 				})
 				.catch(res => {
 					// console.log(res,"res")
@@ -365,7 +419,8 @@
 			this.diliArray = JSON.parse(localStorage.posPAC);
 		},
 		mounted() {
-			this.huiyuanInfo();
+			// this.huiyuanInfo();
+			
 			// 初始化二维码
 			this.qrcode();
 			

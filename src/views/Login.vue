@@ -21,8 +21,8 @@
 						<div class="lo_btn">
 							<button @click="goLogin" >登陆</button>
 						</div>
-						<div class="lo_btn" @click="gotoreg">
-							<button class="zhuc">注册</button>
+						<div class="lo_btn">
+							<button class="zhuc" @click="dolink('/register')">注册</button>
 						</div>
 					</div>
 					
@@ -85,6 +85,9 @@ export default {
 		},
 		gotoreg:function(){
 			this.$router.push('./register')
+		},
+		dolink:function(url){
+			this.$router.push(url);
 		},
 		goLogin:function(){ 
 			if(this.user==""){

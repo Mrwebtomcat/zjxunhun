@@ -11,20 +11,23 @@
 					<div class="letcontent">
 						<div class="lef_con_top">
 							<div class="userheader">
-								<div class="myheaderlogo" :style="userData&&userData['vc_img']?`background:url(${userData.vc_img}) no-repeat;background-size:cover;`:'' "></div>
+								<div class="myheaderlogo" :style="`background:url(${userData.vc_img?userData.vc_img:(myn_sex==1?manimg:womanimg)}) 0% 0% / cover no-repeat;`"></div>
 								<div class="infoworks">
 									<div class="name" style="margin-top:25px;">{{userData&&userData['vc_nickname']?userData['vc_nickname']:''}}
 										<span :class="userData&&userData['n_isstar']?'card_type start active':'card_type start'"></span>
-										<span :class="userData&&userData['n_issm']?'card_type card active':'card_type card'"></span>
+										<span :class="userData&&userData['n_issm']==2?'card_type card active':'card_type card'"></span>
 										<span :class="userData&&userData['n_isvip']?'card_type vip active':'card_type vip'"></span>
 									 <span class="userfollow" @click.stop="addGuanzhu">关注</span>
 									</div>
 									<!-- ID：1761685425 -->
 									<div class="user_id mt10"></div>
-									<div class="workesage mt10">
-									<!-- {{bigAreaData[Number(userData['vc_province'])-2]?bigAreaData[Number(userData['vc_province'])-2].name:''}} {{bigAreaData[Number(userData['vc_city'])-2]?bigAreaData[Number(userData['vc_city'])-2].name:''}} | {{userData['n_age']}}岁 | {{autoCode[1][Number(userData['n_xueli'])-1].value}} | {{userData['n_huntype']==1?'未婚':userData['n_huntype']==2?'离异':'丧偶'}} | {{userData['n_sg']}}cm | -->
-										{{userData&&userData['n_money']?strMoney(userData['n_money']):''}}
-										<!-- {{userData&&autoCode[2]?autoCode[2][Number(userData['n_money'])-1].value:''}}元 -->
+									<div class="workesage mt10" style="color: #fff;">
+										{{userData['vc_city']?userData['vc_city']+'|':''}} 
+										{{userData['n_age']?userData['n_age']+' 岁 |':''}} 
+										{{userData['n_xueli']?strMoney(userData['n_xueli'],"1")+' |':''}} 
+										{{userData['n_huntype']?huntext(userData['n_huntype'])+' |':''}} 
+										{{userData['n_sg']?userData['n_sg']+'cm |':''}}  
+										{{userData&&userData['n_money']?strMoney(userData['n_money']) +' 元':''}}
 									</div>
 										
 									<div class="phoneto">
@@ -46,8 +49,8 @@
 								</div>
 							</div>
 							<div class="user_bottom">
-								<div class="hellow" @click="dzh(userData['n_isstar'])">打招呼</div>
-								<div class="messages" @click="fxx(userData['n_isvip'])">发信息</div>
+								<div class="hellow" @click="dzh">打招呼</div>
+								<div class="messages" @click="fxx">发信息</div>
 								<div class="hongniang" @click="lxHn">红娘牵线</div>
 							</div>
 						</div>
@@ -79,24 +82,32 @@
 								<span>个人资料</span>
 							</div>
 							<div class="planemsg">
-								<el-tag v-if="userData['vc_mz']">民族：{{mingzu[Number(userData['vc_mz'])-1]?mingzu[Number(userData['vc_mz'])-1].value:''}}</el-tag>
-								<el-tag type="success">籍贯:{{bigAreaData[Number(userData['vc_province'])-2]?bigAreaData[Number(userData['vc_province'])-2].name:''}} {{bigAreaData[Number(userData['vc_city'])-2]?bigAreaData[Number(userData['vc_city'])-2].name:''}} </el-tag>
-								<el-tag type="info" v-if="userData['n_tz']">体型:苗条</el-tag>
-								<el-tag type="warning" v-if="userData['n_smoke']">{{userData['n_smoke']}}不吸烟社交场合会喝酒</el-tag>
-								<el-tag type="danger" v-if="userData['n_alcohol']">{{userData['n_alcohol']}}不吸烟社交场合会喝酒</el-tag>
-								<el-tag type="info"   v-if="userData['n_iscar']">租房未买车</el-tag>
-								<el-tag type="danger" v-if="userData['n_ischild']">是否想要孩子:视情况而定</el-tag>
-								<el-tag type="info" v-if="userData['n_huntype']">何时结婚:时机成熟就结婚</el-tag>
-								<el-tag type="danger" v-if="userData['n_child']">没有小孩</el-tag>
+								<!-- {{userData}} -->
+								<el-tag v-if="userData['vc_mz']">民族：{{userData['vc_mz']?slectJsontext(userData['vc_mz']):''}}</el-tag>
+								<el-tag type="success">籍贯:{{userData['vc_province']?userData['vc_province']:''}}</el-tag>
+								<el-tag type="info" v-if="userData['n_tz']">体重: {{userData['n_tz']}} kg</el-tag>
+								<el-tag type="warning" >是否吸烟:{{userData['n_smoke']?issmoke(userData['n_smoke'],'吸烟'):'该信息未填写'}}</el-tag>
+								<el-tag type="danger">是否喝酒:{{userData['n_alcohol']?issmoke(userData['n_alcohol'],"喝酒"):'该信息未填写'}}</el-tag>
+								<el-tag type="info"  v-if="userData['n_iscar']!=''||userData['n_iscar']">{{userData['n_iscar']?userData['n_iscar']==1?'已购车':'未购车':'该信息未填写'}}</el-tag>
+								<el-tag type="danger" >是否想要孩子:{{userData['n_ischild']?strMoney(userData['n_ischild'],'5'):'该信息未填写'}}</el-tag>
+								<el-tag type="info" >何时结婚:{{userData['n_huntype']?strMoney(userData['n_huntype'],'4'):'该信息未填写'}}</el-tag>
+								<el-tag type="danger">小孩情况：{{userData['n_child']?strMoney(userData['n_child'],'3'):'该信息未填写'}}</el-tag>
 							</div>
 							<div class="details_header">
 								<span>择偶条件</span>
 							</div>
 							<div class="planemsg">
+								<!-- {{tjUser.tiaoJian}} -->
 								<el-tag type="warning" v-show="!tjUser.tiaoJian">暂无描述</el-tag>
-								<el-tag v-show="tjUser.tiaoJian">汉族</el-tag>
-								<el-tag type="success" v-show="tjUser.tiaoJian">籍贯:四川泸州</el-tag>
-								<el-tag type="info" v-show="tjUser.tiaoJian">体型:苗条</el-tag>
+								<!-- <el-tag   type="success" v-show="tjUser.tiaoJian">籍贯:{{tjUser.tiaoJian['vc_province']?tjUser.tiaoJian['vc_province']:'该信息未填写'}}</el-tag> -->
+								<!-- <el-tag type="warning" v-show="tjUser.tiaoJian">年龄:{{tjUser.tiaoJian['n_min_age']&&tjUser.tiaoJian['n_min_age']!=""?tjUser.tiaoJian['n_min_age']+' ~ ':''}}{{tjUser.tiaoJian['n_max_age']?tjUser.tiaoJian['n_max_age']:''}} 岁</el-tag> -->
+								<el-tag v-if="tjUser.tiaoJian">学历：{{tjUser.tiaoJian['n_xueli']?strMoney(tjUser.tiaoJian['n_xueli'],'1'):'该信息未填写'}}</el-tag>
+								<el-tag v-if="tjUser.tiaoJian">身高: {{tjUser['tiaoJian']?tjUser['tiaoJian']['n_min_sg']+'cm ~ ':''}}{{tjUser['tiaoJian']?tjUser['tiaoJian']['n_max_sg']+'cm ':''}}</el-tag>
+								<el-tag v-if="tjUser.tiaoJian" type="info" >体重:{{tjUser.tiaoJian['n_min_tz']?tjUser.tiaoJian['n_min_tz']+'kg ~ ':''}}{{tjUser.tiaoJian['n_max_tz']?tjUser.tiaoJian['n_max_tz']+'kg':''}}</el-tag>
+								<el-tag v-if="tjUser.tiaoJian">{{tjUser['tiaoJian']['n_money']?'薪资: '+strMoney(tjUser['tiaoJian']['n_money'],'2'):''}}</el-tag>
+								<el-tag v-if="tjUser.tiaoJian">{{tjUser['tiaoJian']['n_smoke']?'是否吸烟: '+issmoke(tjUser['tiaoJian']['n_smoke']):''}}</el-tag>
+								<el-tag v-if="tjUser.tiaoJian">{{tjUser['tiaoJian']['n_alcohol']?'是否喝酒: '+issmoke(tjUser['tiaoJian']['n_alcohol'],'喝酒'):''}}</el-tag>
+							
 							</div>
 						</div>
 					</div>
@@ -171,6 +182,8 @@
 import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
 import mingzu from '../json/mz.json'
 import https from "../utils/Https.js"
+import womanimg from '../assets/img/woman.jpg'
+import manimg from '../assets/img/main.jpg'
 var sokect = null;
 	export default{
 		data(){
@@ -181,12 +194,15 @@ var sokect = null;
 				isShowChat:0, //聊天窗口
 				liaotainarray:[],//聊天容器
 				GMative:1,
+				myn_sex:1,
 				sokect:null,
 				tjUser:[],//推荐会员
 				mingzu:mingzu, //名族
 				bigAreaData:[], //地区bigjson
 				vipList:[], //会员充值列表
 				isguanzu:0,
+				womanimg:womanimg,
+				manimg:manimg,
 				userData:{
 					album: [],
 					dt_addtime: "2019-02-14 07:02:52",
@@ -258,11 +274,28 @@ var sokect = null;
 				});
 			},
 			// 打招呼
-			dzh:function(str,type){
-// 				this.$message({
-// 				  message:str ,
-// 				  type: type||'warning'
-// 				});
+			dzh:function(){
+				let param = {
+					startid:localStorage.openid,
+					vc_nick_name:this.userData.vc_nickname,
+					endid:this.userData.id
+				}
+				
+				connetAction.ajaxPost(https['dzh'],param)
+				.then((res)=>{
+					if(res.status==1){
+							this.$message({
+							  message:res.message ,
+							  type:'succeess'
+							});
+					}else{
+						this.toastip(res.message)
+					}	
+					
+				})
+				.catch((res)=>{
+					
+				})
 			},
 			fnfn1:function(){ //关闭聊天
 				if(sokect){
@@ -283,8 +316,8 @@ var sokect = null;
 				//console.log({'type':'liaotian','startid':this.tjUser['userlist']['id'],'endid':this.$route.query.id,'content':str});
 			},
 			// 发信息
-			fxx:function(str){
-				if(str){
+			fxx:function(){
+				if(!this.tjUser['userlist']['n_isvip']){
 					this.toastip("金梦情缘会员能发起信息聊天哦");
 					return false;
 				}
@@ -307,6 +340,7 @@ var sokect = null;
 						console.log("this.tjUser['userlist']['id']",this.tjUser['userlist']['id'])
 					}
 					if(data.status==2){ //系统消息
+						this.isline = "下线了...";
 						var str  =data.message?data.message:'该用户不在线';
 						//this.liaotainarray.push({state:1,chatTxt:e.data})
 					}
@@ -352,7 +386,7 @@ var sokect = null;
 								this.liaotainarray.push({state:1,chatTxt:data.message});
 								this.$refs.chatPlane.autoScroll();
 							}
-							console.log(data,"data")
+							// console.log(data,"data")
 							
 						}
 					}
@@ -360,23 +394,70 @@ var sokect = null;
 				})
 				this.isShowChat = 1;
 			},
-			strMoney:function(id){
+			//筛选默认code类型
+			strMoney:function(id,arrnum="2",js=1,){
 				let str = "";
-				var autoCode = JSON.parse(localStorage.autoCode);
-				// for(var i=0;i<autoCode["2"].length;i++){
-				// 	if(autoCode["2"][i]['code']==id){
-				// 		str =autoCode["2"][i]['code'].value;
-				// 	}
-				// }
-				str = autoCode['2'][Number(id)-1].value;
+				
+				try{
+					if(id!="" || id!=undefined || id!=null){
+						var autoCode = JSON.parse(localStorage.autoCode);
+						if(autoCode[arrnum][Number(id)-js].value){
+							str = autoCode[arrnum][Number(id)-js].value;
+						}
+					}
+					
+				}catch(e){
+					//TODO handle the exception
+				   console.log(id,'输出报错')
+				}
+			
+				// 
+				// console.log(str)
 				return str;
+			},
+			//筛选结婚类型
+			huntext:function(type){
+				let str = "";
+				type==1?str="未婚":str =(type==2?'离异':'丧偶');
+				return str;
+			},
+			issmoke:function(type,val="吸烟"){
+				let str = "";
+				type!=0?str =(type==1?'可以'+val:'不要'+val):str="不限";
+				return str;
+			},
+			slectJsontext:function(val){
+				let str = "";
+				str = mingzu.mz.filter((item,index,arr)=>item.val==val)
+				return str[0].name;
 			},
 			// 会员列表
 			huiyuanInfo(){
 				connetAction.ajaxPost(https['huiyuan'], {id:localStorage.openid})
 				.then(rd => {
-					this.vipList = rd.data.reverse();
-					console.log(this.vipList,333)
+					// console.log( this.myn_sex,'xingbie')
+					var n_sex = this.myn_sex?1:2;
+					
+					let mydata = rd.data.filter((item,index,arr)=>(item.n_type==1&&item.n_sex==n_sex));
+					this.$nextTick(function(){
+						this.vipList = mydata;
+					})
+					
+					this.getFuWu()
+				})
+				.catch(res => {
+					this.getFuWu()
+				})
+			},
+			//特殊服务和会员列表合并
+			getFuWu:function(){
+				let that = this;
+				connetAction.ajaxPost(https['nvIndex'], {type:3})
+				.then(rd => {
+					var n_sex = this.myn_sex?2:1;
+					let datas =  rd.data.filter((item,index,arr)=>item.n_sex==n_sex);
+					this.vipList=this.vipList.concat(...datas);
+					
 				})
 				.catch(res => {
 					// console.log(res,"res")
@@ -393,6 +474,8 @@ var sokect = null;
 				.then((res)=>{
 					if(res.status==1){
 							 this.userData = res.data;
+							 this.myn_sex =  this.userData.n_sex;
+							 // alert(this.myn_sex)
 							// 初始化基本数据
 							
 					}else{
@@ -436,7 +519,7 @@ var sokect = null;
 				connetAction.ajaxPost(https['getHN'],data)
 				.then((res)=>{
 					if(res.status==1){
-							this.toastip(res.message,'success')
+							this.toastip('已成功联系红娘','success')
 							
 					}else{
 						this.toastip(res.message)
@@ -476,7 +559,7 @@ var sokect = null;
 					.then(rd => {
 						if(rd.status==1){
 							this.tjUser = rd.data;
-							console.log(this.tjUser,333)
+							// console.log(this.tjUser,333)
 						}
 					})
 					.catch(res => {
@@ -586,7 +669,6 @@ var sokect = null;
 		height: 200px;
 		margin-left: 32px;
 		border-radius: 10px;
-		background: url(https://photo.zastatic.com/images/photo/448999/1795993224/2066493103885016.png?scrop=1&crop=1&cpos=north&w=200&h=200) no-repeat;
 	}
 	.userheader{
 		height: 200px;

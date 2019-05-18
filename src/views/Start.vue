@@ -1,17 +1,17 @@
 <!-- vip 充值 -->
 <template>
 	<div class="vipModule">
-		<Header :isHeader="1" :ative="3"></Header>
+		<Header :isHeader="1" :ative="0"></Header>
 		<div class="vipConten flex">
 			<div class="vipclfet">
-				<div class="h_th1">会员充值</div>
+				<div class="h_th1">星级充值</div>
 				<div class="bigBoxvip" :style="userData?(userData['n_sex']!=1?'padding-left:0;':''):''">
-					<div class="recharG" v-if="userData['n_sex']==1" >
+					<div class="recharG" >
 						<li v-for="(items,index) in vipList" :key="index" class="threemonth slider">
 							<div class="li_box">
-								<div class="vip_h1">购买会员{{items.n_time}}个月</div>
+								<div class="vip_h1">购买星级{{items.n_time}}个月</div>
 								<div class="vip_h2">{{items.vc_daymoney}}元/天</div>
-								<div class="vip_content">会员价{{items['n_money']}}元</div>
+								<div class="vip_content">星级价{{items['n_money']}}元</div>
 								<div class="vip_ktbtn">
 									<el-button type="primary" plain @click="ktvip(index,items.id)">立即开通</el-button>
 								</div>
@@ -19,9 +19,9 @@
 						</li>
 						<!-- <li class="threemonth slider">
 							<div class="li_box">
-								<div class="vip_h1">购买会员6个月</div>
+								<div class="vip_h1">购买星级6个月</div>
 								<div class="vip_h2">1.06元/天</div>
-								<div class="vip_content">会员价368元</div>
+								<div class="vip_content">星级价368元</div>
 								<div class="vip_ktbtn">
 									<el-button type="primary" plain @click="ktvip(2)">立即开通</el-button>
 								</div>
@@ -29,24 +29,28 @@
 						</li>
 						<li class="threemonth slider">
 							<div class="li_box">
-								<div class="vip_h1">购买会员12个月</div>
+								<div class="vip_h1">购买星级12个月</div>
 								<div class="vip_h2">1.06元/天</div>
-								<div class="vip_content">会员价388元</div>
+								<div class="vip_content">星级价388元</div>
 								<div class="vip_ktbtn">
 									<el-button type="primary" plain @click="ktvip(3)">立即开通</el-button>
 								</div>
 							</div>
 						</li> -->
+						<div v-if="vipList.length<=0" class="recharG" style="color: blue;">
+							暂无改性别类的星级配置配置信息，请联系管理员配置....
+						</div>	
 					</div>
-					<div v-else class="recharG" >
+					
+					<!-- <div v-else class="recharG" >
 						<img style="width:100%;height:250px;" src="../assets/img/womanvip.png" alt="">
 						{{vipList[2]?vipList[2]['n_money']:''}}
-					</div>
+					</div> -->
 				</div>
 				<div class="vipqaunyi">
 					<div class="qyh1">
 						<div class="borline left"></div>
-						<div class="qyh1txt">会员权益</div>
+						<div class="qyh1txt">星级权益</div>
 						<div class="borline right"></div>
 					</div>
 					<div class="jiesuo">
@@ -58,7 +62,7 @@
 							<div class="img xinxi"></div> <span class="txt">解锁消息发送</span>
 						</li>
 						<li>
-							<div class="img xunzhang"></div><span class="txt">尊贵会员勋章</span>
+							<div class="img xunzhang"></div><span class="txt">尊贵星级勋章</span>
 						</li>
 						<li>
 							<div class="img shaixuan"></div><span class="txt">更多精准筛选条件</span>
@@ -67,9 +71,11 @@
 							<div class="img zhaopian"></div><span class="txt">无限制上传照片</span>
 						</li>
 					</div>
-					<div class="nfeibtn">
-						<el-button v-if="userData['n_sex']==1" @click="ktvip(viplen,vipList[viplen].id)">立即开通 <span>{{vipList[viplen]?vipList[viplen]['n_money']:''}}元/年</span></el-button>
-						<el-button v-else @click="ktvip(viplen,vipList[viplen].id)">立即开通 <span>{{vipList[viplen]?vipList[viplen]['n_money']:''}}元/年</span></el-button>
+					<div v-if="vipList.length>0">
+						<div class="nfeibtn">
+							<el-button v-if="userData['n_sex']==1" @click="ktvip(viplen,vipList[viplen].id)">立即开通 <span>{{vipList[viplen]?vipList[viplen]['n_money']:''}}元/{{vipList[viplen]?vipList[viplen]['n_time']:''}}个月</span></el-button>
+							<el-button v-else @click="ktvip(viplen,vipList[viplen].id)">立即开通 <span>{{vipList[viplen]?vipList[viplen]['n_money']:''}}元{{vipList[viplen]?vipList[viplen]['n_time']:''}}个月</span></el-button>
+						</div>
 					</div>
 					<div class="des" >
 						<p class="title">服务说明</p>
@@ -86,26 +92,26 @@
 			</div>
 			<div class="shadows" v-show="isShowVip==1"></div>
 			<div class="showPay" v-show="isShowVip==1">
-				<div class="showPhead">会员充值 <div class="closePay" @click="closeVip"><span>X</span></div>
+				<div class="showPhead">星级充值 <div class="closePay" @click="closeVip"><span>X</span></div>
 				</div>
 				<div class="showPcontext">
-					<div class="hellowVip">你好，<span class="fontbold">会员 {{userData['vc_nickname']}}</span></div>
-					<div class="nowpay">立即充值：<span class="fontbold">会员{{vipMoneth}}个月</span>
+					<div class="hellowVip">尊敬的<span class="fontbold" style="color:blue;"> {{userData['vc_nickname']}}</span>用户,你好</div>
+					<div class="nowpay">立即充值：<span class="fontbold">星级{{vipMoneth}}个月</span>
 						<div class="Paymoney">应支付：<span class="moeyred">{{vipMoney}}元</span></div>
 					</div>
 					<div class="zffs">支付方式：</div>
 					<ul class="paytype">
-						<!-- <li @click="palypost(1)" :class="payType==1?'ative':''">支付宝</li> -->
 						<!-- <li @click="palypost(2)" :class="payType==2?'ative':''">微信</li> -->
-						<li @click="palypost(2)" class="ative">微信</li>
+						<li @click="palypost(1)" class="ative">微信</li>
+						<li @click="palypost(2)" :class="payType!=1?'ative':''">支付宝</li>
 					</ul>
 					<div class="payCode">
 						<div class="left_qrcode">
 							<!-- 支付宝的扫码 -->
-							<img v-show="payType==1" src="https://mobilecodec.alipay.com/show.htm?code=gdxox0xozdovjgkxa2&picSize=S" alt="">
+							<!-- <img v-show="payType!=1" src="https://mobilecodec.alipay.com/show.htm?code=gdxox0xozdovjgkxa2&picSize=S" alt=""> -->
 							<div id="qrcode"  ref="qrcode"></div>
 						</div>
-						<!-- <div class="right_cordeMeta" v-if="payType==1">
+						<div class="right_cordeMeta" v-if="payType!=1">
 							<div>使用支付宝扫码支付</div>
 							<div>
 								<ul>
@@ -115,8 +121,8 @@
 									<li>2.支持二十多家主流银行的储蓄卡（即借记卡）和信用卡，无需开通网银，没有支付宝也可支付。</li>
 								</ul>
 							</div>
-						</div> -->
-						<div class="right_cordeMeta">
+						</div>
+						<div v-show="payType==1" class="right_cordeMeta">
 							<div>请使用微信扫一扫</div>
 							<div>扫描图中二维码支付</div>
 						</div>
@@ -130,7 +136,7 @@
 			</div>
 			<div class="vipcright">
 					<div class="rightcontent2">
-						<div class="h2">开通金梦情缘会员，联系TA们吧 <span  style="float: right;font-size: 20px;cursor: pointer;" class="el-icon-refresh"></span></div>
+						<div class="h2">开通金梦情缘星级，联系TA们吧 <span  style="float: right;font-size: 20px;cursor: pointer;" class="el-icon-refresh"></span></div>
 						<div class="ranguser">
 							<div v-if="tjUser['tjList'].length>0"  v-for="(items,index) in tjUser['tjList']" :key="index" class="useritem" @click="goChat">
 								<div class="user_left">
@@ -146,8 +152,8 @@
 									</div>
 								</div>
 							</div>
-							<div v-else>
-								暂无发现更多的消息
+							<div v-show="tjUser['tjList']?tjUser['tjList'].length==0:false" style="text-align: center;padding-top: 100px;">
+								暂无发现更多推荐星级消息
 							</div>
 							
 						</div>
@@ -168,7 +174,7 @@
 				vipMoney: 360,
 				vipMoneth: 3,
 				payType: 2,    //支付宝和微信切换
-				vipList:[{n_money:''}],
+				vipList:[],
 				userData:[],
 				tjUser:[],
 				diliArray:"",
@@ -189,9 +195,9 @@
 				})
 			},
 			//更新二维码
-			updateCode:function(data){
+			updateCode:function(data,type){
 				this.processCode.makeCode(data['code_url']);
-				this.getOrder(data.vc_order_sn);
+				this.getOrder(data.vc_order_sn,type);
 			},
 			ktvip: function(i,id) {
 				this.isShowVip = 1;
@@ -222,7 +228,18 @@
 				});
 			},
 			palypost: function(i) {
-				// this.payType = i;
+				this.payType = i;
+				if(i!=1){
+					if(this.timer){
+						clearInterval(this.timer)
+					}
+					this.alipaySetOrder(this.vipId)
+				}else{
+					if(this.timer){
+						clearInterval(this.timer)
+					}
+					this.setOrder(this.vipId);
+				}
 // 				
 // 				if(i==2){
 // 					if(this.orderStatus==1){
@@ -248,7 +265,7 @@
 			goChat: function() {
 				if(!this.userData['n_isvip']){
 					message(this,{
-						title:`不是会员暂时不能与${this.userData['n_sex']==1?'她':'他'}发起消息`,
+						title:`不是星级暂时不能与${this.userData['n_sex']==1?'她':'他'}发起消息`,
 						contxt:"",
 						center:true
 					})
@@ -266,6 +283,7 @@
 				.then((res)=>{
 					if(res.status==1){
 							 this.userData = res.data;
+							 this.getFuWu();
 							// 初始化基本数据
 							
 					}else{
@@ -307,19 +325,43 @@
 						// console.log(res,"res")
 					})
 			},
-			getOrder:function(id){
+			alipaySetOrder:function(id){
+				let data = {
+					id:id,
+					oc_usercode:localStorage.openid
+				}
+				connetAction.ajaxPost(https['setaliOrder'], data)
+					.then(rd => {
+						if(rd.status==1){
+							this.updateCode(rd.data,1);
+						}
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
+			getOrder:function(id,type){
 				let data = {
 					vc_order_sn:id
 				}
 				
 				var that = this;
 				var targe = false;
-				
+				let url = https['getOrderStatus'];
+				// 支付宝查询支付状态
+				if(type){
+					url = https['getAliPayStatus'];
+				}
 				this.timer = setInterval(function(){
-					connetAction.ajaxPost(https['getOrderStatus'], {vc_order_sn:id})
+					connetAction.ajaxPost(url, {vc_order_sn:id})
 						.then(rd => {
-							if(rd.data=="支付成功"){
-								that.toastip("支付成功，你已升级为会员赶紧体验下吧",'success');
+							if(rd.data=="支付成功" || rd.data=="付款成功"){
+								if(rd.data=="付款成功"){
+									that.toastip("支付宝付款成功，你已升级为星级赶紧体验下吧",'success');
+								}else{
+									that.toastip("微信支付成功，你已升级为星级赶紧体验下吧",'success');
+								}
+								
 								clearInterval(that.timer);
 								setTimeout(function(){
 									that.$router.push('./home');
@@ -335,23 +377,35 @@
 				
 			},
 			huiyuanInfo(){
-				connetAction.ajaxPost(https['huiyuan'], {id:localStorage.openid})
+				// connetAction.ajaxPost(https['huiyuan'], {id:localStorage.openid})
+				// .then(rd => {
+				// 	let mydata = rd.data.filter((item,index,arr)=>(item.n_type==2&&item.n_sex==this.userData['n_sex']));
+				// 	this.vipList =mydata;
+				// 	this.getFuWu();
+				// 	if(rd.data.length<=1){
+				// 		this.viplen = 0
+				// 	}else{
+				// 		this.viplen = rd.data.length -2;
+				// 	}
+				// })
+				// .catch(res => {
+				// 	this.getFuWu()
+				// 	// console.log(res,"res")
+				// })
+			},
+			getFuWu:function(){
+				let that = this;
+				connetAction.ajaxPost(https['nvIndex'], {type:2})
 				.then(rd => {
-					this.vipList = rd.data;
+					console.log(this.userData['n_sex'],'cccc')
+					let datas =  rd.data.filter((item,index,arr)=>item.n_sex==this.userData['n_sex']);
 					if(rd.data.length<=1){
 						this.viplen = 0
 					}else{
 						this.viplen = rd.data.length -2;
 					}
-					if(this.$route.query.hasOwnProperty('vipMoney')){
-						for(var i=0;i<rd.data.length;i++){
-							console.log(rd.data[i])
-							if(rd.data[i]['id']==this.$route.query.vipMoney){
-								this.ktvip(i,this.$route.query.vipMoney);
-							}
-						}
-					}
-					//console.log(this.vipList,333)
+					this.vipList = datas;
+				
 				})
 				.catch(res => {
 					// console.log(res,"res")
@@ -364,7 +418,8 @@
 			this.diliArray = JSON.parse(localStorage.posPAC);
 		},
 		mounted() {
-			this.huiyuanInfo();
+			// this.huiyuanInfo();
+			
 			// 初始化二维码
 			this.qrcode();
 			
@@ -418,7 +473,7 @@
 		height: 200px;
 		display: flex;
 		justify-content: center;
-		justify-content: space-between;
+		justify-content: flex-start;
 		padding-left: 20px;
 		background: #f3f3f3;
 		margin-top: 100px;

@@ -32,7 +32,9 @@ let INTERFACE = {
 	delAlbum:'user/delAlbum',				//删除图片  { id:图片id; oc_usercode:用户id}
 	updateLogo:'user/updateLogo',			//上传头像  { id:用户id,id; vc_img:头像}
 	setOrder:'wxpay/setOrder',				//发起微信支付  { id:用户id,}  返回订单id 和url
-	getOrderStatus:'wxpay/getOrderStatus',	//支付状态 vc_order_sn
+	setaliOrder:'alipay/setOrder',			//发起支付宝支付  { id:用户id,}  返回订单id 和url
+	getOrderStatus:'wxpay/getOrderStatus',	//微信支付状态 vc_order_sn
+	getAliPayStatus:'alipay/getOrderStatus',	//微信支付状态 vc_order_sn
 	setSm:'user/setSm',						//实名认证
 	upDatePhone:'user/updatePhone',			//修改手机号码
 	// showDsh:'AdminUser/showDsh',			//待审核会员信息
@@ -40,9 +42,12 @@ let INTERFACE = {
 	getGz:'Llgz/getGz',						//查询关注
 	addGuanzu:'Llgz/addGuanzu',				//关注
 	qxGz:'Llgz/qxGz',						//取消关注
-	getWdxx:'Llgz/getWdxx',					//查询浏览信息
+	getWdxx:'Llgz/getWdxx',					//查询信息
 	getLl:'Llgz/getLl'	,					//查询浏览
-	addLiulan:'Llgz/addLiulan'	,				//增加流量浏览
+	addLiulan:'Llgz/addLiulan'	,			//增加流量浏览
+	getHNinfo: 'Hong_Niang/getInfo',  		//查询红娘
+	getShopInfo:"Shop/getInfo",				//查询店铺信息
+	dzh:'Index/dzh',						//打招呼startid vc_nick_name oc_usercode
 }
 for(var key in INTERFACE){
 	INTERFACE[key] = baseURL+ INTERFACE[key]

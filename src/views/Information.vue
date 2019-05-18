@@ -15,13 +15,13 @@
 						</ul>
 						<div v-if="isShowMesages==1" class="slecmainshow1">
 							<ul class="message_ul">
-								<li v-for="(itmes,index) in wdxinxi.xtMessage" :key="index">
+								<li v-for="(itmes,index) in gfMessage" :key="index">
 									<div class="mesage_li_left">
 										<img src="https://photo.zastatic.com/images/photo/2223/8888888/163784965568714450.jpg?scrop=1&crop=1&cpos=north&w=80&h=80?scrop=1&crop=1&cpos=north&w=80&h=80" alt="">
 										<div class="mesg_boxtxt">
-											<div class="meboxh1">快速找对象 <span class="isguanfan">官方</span></div>
-											<div class="meboxarea">无限制看信发信各项特权助你邂逅真爱</div>
-											<div class="meboxarea">3月15日</div>
+											<div class="meboxh1">{{items.vc_title}} <span class="isguanfan">官方</span></div>
+											<div class="meboxarea">{{items.vc_desc}}</div>
+											<div class="meboxarea">{{items.vc_content}}</div>
 										</div>
 										<div class="mesg_btnx">
 										</div>
@@ -31,7 +31,7 @@
 										<el-button class="showinfo" type="primary">查看</el-button>	
 									</div>
 								</li>
-								<li v-for="(itmes,index) in wdxinxi.yhMessage" :key="index" >
+								<li v-for="(itmes,index) in ltMessage" :key="index" >
 									<div class="mesage_li_left">
 										<img src="https://photo.zastatic.com/images/photo/2223/8888888/163784965568714450.jpg?scrop=1&crop=1&cpos=north&w=80&h=80?scrop=1&crop=1&cpos=north&w=80&h=80" alt="">
 										<div class="mesg_boxtxt">
@@ -114,6 +114,8 @@
 				userdata:{},
 				gzsl:{},
 				LLArr:[],
+				gfMessage:[],
+				ltMessage:[],
 				liulannum:0,
 				wdxinxi:{xtMessage:[],yhMessage:[]},
 				isShowVip:0,
@@ -171,6 +173,8 @@
 				.then((res)=>{
 					if(res.status==1){
 						this.wdxinxi = data.xtMessage;
+						this.gfMessage= wdxinxi.xtMessage;
+						this.ltMessage= wdxinxi.yhMessage;
 					}
 				})
 				.catch(function(rd){

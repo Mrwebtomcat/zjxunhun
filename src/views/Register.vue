@@ -324,7 +324,7 @@ export default {
 							this.provice = this.provincearr;
 							this.setPosition({vc_province:this.provincearr,vc_city:this.citysarrs,vc_area:this.areaarrs})
 						}
-
+						
 					})
 					.catch(res => {
 						console.log(res, "res")
@@ -341,6 +341,7 @@ export default {
 						this.city.push(this.citysarrs[i])
 					}
 				}
+				console.log(JSON.stringify(this.city,2))
 				// 过滤省份
 				let arrs = this.provice.filter((item,index,arr)=>item.id==pid);
 				this.form.vc_province = arrs[0].name;
@@ -354,6 +355,7 @@ export default {
 						this.Area.push(this.areaarrs[i]);
 					}	
 				}
+				console.log(JSON.stringify(this.Area,3))
 				// 过滤城市
 				let arrs = this.citysarrs.filter((item,index,arr)=>item.id==pid);
 				this.form.vc_city = arrs[0].name;

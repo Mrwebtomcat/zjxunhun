@@ -331,7 +331,9 @@ export default {
 				this.toastip('请输入身份证，再操作');
 			return false;
 		}
-		this.renzheng = type;
+		if(type!=2){
+			this.renzheng = type;
+		}
 		if(type==2){
 			let data1 = {
 				id:localStorage.openid,
@@ -355,7 +357,8 @@ export default {
 				if(res.status==1){
 					this.toastip(res.message,'success');
 					setTimeout(function(){
-							that.$route.push('/home')
+							that.renzheng = type;
+							window.location.reload();
 					},4000)
 				}else{
 				

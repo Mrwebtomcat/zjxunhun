@@ -1,7 +1,7 @@
 <!-- 红娘 -->
 <template>
   <div class="module_UserInfo">
-		<Header :isHeader="1" :ative="0" :isShowIcon="0" ></Header>
+		<Header :isHeader="1" :ative="4" :isShowIcon="0" ></Header>
 		<div class="user_info_banner">
 			 <el-carousel :interval="5000" arrow="false" height="400px">
 				<el-carousel-item v-for="item in imgSrc" :key="item">
@@ -25,22 +25,22 @@
 					<li>
 						<div class="itemPhoto"></div>
 						<div class="dianpuMeta">
-							<p>线下门店全直营</p>
-							<p>不做加盟，打造一流品质服务</p>
+							<p>专业的本地红娘</p>
+							<p>用心为你服务</p>
 						</div>
 					</li>
 					<li>
 						<div class="itemPhoto"></div>
 						<div class="dianpuMeta">
-							<p>线下门店全直营</p>
-							<p>不做加盟，打造一流品质服务</p>
+							<p>本地牵线搭桥，婚庆服务</p>
+							<p>价格合理，客户放心</p>
 						</div>
 					</li>
 					<li>
 						<div class="itemPhoto"></div>
 						<div class="dianpuMeta">
-							<p>线下门店全直营</p>
-							<p>不做加盟，打造一流品质服务</p>
+							<p>线下纹眉，化妆专业服务和学习</p>
+							<p>体验不一样的服务</p>
 						</div>
 					</li>
 				</ul>
@@ -88,10 +88,10 @@
 				<h1>红娘风采</h1>
 				<ul class="jmbox imgbox">
 					<li v-for="(item,index) in hnImg" class="cur" :key="index">
-						<img :src="item['imgSrc']" alt="">
+						<img :src="item['vc_img']" alt="">
 						<div class="hnteachear">
-							<p>廖老师</p>
-							<p>婚恋建议：恋爱相处时要知足，珍惜，信任，包容。</p>
+							<p>{{item.vc_name}}</p>
+							<p>{{item.vc_content}}</p>
 						</div>
 					</li>
 				</ul>
@@ -100,9 +100,10 @@
 				<h1>门店地址</h1>
 				<ul class="jmbox mdbox">
 					<li v-for="(item,index) in mdimg" class="cur" :key="index" @click="goToShop">
-						<img :src="item['imgSrc']" alt="">
+						<img :src="item['vc_shopimg']" alt="">
 						<div class="mddizhi">
-							地址：湛江门店
+							<p>描述：{{item.vc_shopdesc}}</p>
+							地址：{{item.vc_shopcity}}
 						</div>
 					</li>
 				</ul>
@@ -111,6 +112,8 @@
   </div>
 </template>
 <script>
+	import {connetAction,message,regPhone,setKey,getKey} from "../utils/index.js"
+	import https from "../utils/Https.js"
 	export default{
 		data(){
 			return{
@@ -164,6 +167,37 @@
 				  }
 				});
 			},
+			//获取红娘列表
+			getHNInfo:function(){
+				connetAction.ajaxPost(https['getHNinfo'], "")
+					.then(rd => {
+						this.hnImg = rd.data;
+							
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
+			getTuiJian:function(){
+				connetAction.ajaxPost(https['getHNinfo'], "")
+					.then(rd => {
+						this.hnImg = rd.data;
+							
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
+			getShopInfo:function(){
+				connetAction.ajaxPost(https['getShopInfo'], "")
+					.then(rd => {
+						this.mdimg = rd.data;
+							
+					})
+					.catch(res => {
+						// console.log(res,"res")
+					})
+			},
 			Lxhn:function(ev,id){
 				this.$alert('是否联系红娘申请VIP服务', {
 				  confirmButtonText: '确定',
@@ -180,6 +214,10 @@
 			goToShop:function(){
 				this.$router.push({name:'shop',meta:{title: "金梦情缘湛江店"},query:{lat:'',lng:''}})
 			}
+		},
+		created(){
+			this.getHNInfo();
+			this.getShopInfo();
 		}
 	}
 	
@@ -239,7 +277,7 @@
 		overflow: hidden;
 	}
 	.mdbox{
-		justify-content: space-between;
+		justify-content: flex-start;
 	}
 	.mdbox li{
 		flex: 0 0 24%;
@@ -247,6 +285,7 @@
 		padding-bottom: 0;
 		margin-bottom: 0;
 		position: relative;
+		margin-right: 3%;
 	}
 	.jmbox img,.mdbox img{
 		width:100% ;
